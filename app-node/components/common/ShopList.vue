@@ -17,8 +17,6 @@
 			<view class="shop-item" v-for="(item, index) in shopList.data" :key="index" @click="changTab(index)">
 				<view :class="shopList.currentIndex == index ? 'f-active-color' : ''">{{ item.name }}</view>
 				<view class="shop-icon">
-					<!-- <view class="iconfont icon-xialajiantou1 up" :class="item.status == 1 ? 'f-active-color' : ''"></view> -->
-					<!-- <view class="iconfont icon-shanglajiantou down" :class="item.status == 2 ? 'f-active-color' : ''"></view> -->
 					<view
 						class="iconfont icon-xialajiantou1 up"
 						:class="shopList.data[index].sort == 1 && shopList.data[index].status == 1 ? 'f-active-color' : ''"></view>
@@ -70,6 +68,7 @@ const getGoodsSearchData = async (data) => {
 	try {
 		const res = await getGoodsSearch(data);
 		dataList.value = res.data;
+		// console.log(res);
 	} catch (e) {
 		// console.log(e);
 	}

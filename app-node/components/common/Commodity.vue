@@ -1,8 +1,12 @@
 <template>
 	<view class="commodity" :style="`flex-wrap:${wrap};`">
-		<view class="commodity-item" v-for="(item, index) in dataList" :key="item.id" :style="`width:${itemWidth};`">
+		<view
+			class="commodity-item"
+			v-for="(item, index) in dataList"
+			:key="item._id"
+			:style="`width:${itemWidth};`"
+			@click="goDetails(item._id)">
 			<image class="commodity-img" :src="item.imgUrl" mode="" :style="`height:${imgHeight};`"></image>
-
 			<view class="commodity-content">
 				<text class="commodity-name" :style="`font-size:${nameSize};`">{{ item.name }}</text>
 				<view class="price">
@@ -42,6 +46,14 @@ const props = defineProps({
 		default: 'wrap',
 	},
 });
+
+// 跳转到商品详情页
+const goDetails = (id) => {
+	console.log(id);
+	// uni.navigateTo({
+	// 	url: `/pages/details/details?id=${id}`,
+	// });
+};
 </script>
 
 <style lang="scss" scoped>

@@ -15,6 +15,7 @@ import { getStatusBarHeight, getTitleBarHeight } from '@/utils/system.ts';
 .nav-bar {
 	width: 100%;
 	.titleBar {
+		width: 100%;
 		display: flex;
 		justify-content: center;
 		align-items: center;

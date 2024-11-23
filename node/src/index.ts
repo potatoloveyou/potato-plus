@@ -39,5 +39,9 @@ router.use(goodsSearch.routes());
 const goodsList = require('./router/goodsList.ts');
 router.use(goodsList.routes());
 
+// 商品详情
+const goodsDetail = require('./router/goodsDetail.ts');
+router.use(goodsDetail.routes());
+
 app.use(router.routes());
 app.listen(9229);

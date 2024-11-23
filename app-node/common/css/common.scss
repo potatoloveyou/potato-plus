@@ -10,10 +10,19 @@
 	background-color: #42b7fb;
 }
 
+.df-aic {
+	display: flex;
+	align-items: center;
+}
+
 ::-webkit-scrollbar {
 	display: none;
 	width: 0 !important;
 	height: 0 !important;
 	-webkit-appearance: none;
 	background: transparent;
+}
+
+.safe-area-inset-bottom {
+	height: env(safe-area-inset-bottom);
 }

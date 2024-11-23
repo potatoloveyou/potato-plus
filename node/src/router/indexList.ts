@@ -25,7 +25,6 @@ router.get('/index_list/data', async (ctx, next) => {
 					{
 						type: 'swiperList',
 						data: [
-							
 							{
 								imgUrl: '/static/imgs/banner1.jpg',
 							},

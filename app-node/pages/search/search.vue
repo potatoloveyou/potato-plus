@@ -54,7 +54,6 @@ import {
 	onNavigationBarSearchInputConfirmed,
 } from '@dcloudio/uni-app';
 import Lines from '@/components/common/Lines.vue';
-import NavBar from '@/components/common/NavBar.vue';
 
 //查询参数
 const queryParams = ref({

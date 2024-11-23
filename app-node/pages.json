@@ -103,6 +103,24 @@
 					}
 				}
 			}
+		},
+		{
+			"path": "pages/details/details",
+			"style": {
+				"navigationBarTitleText": "商品详情",
+				// "navigationStyle": "custom",
+				"app-plus": {
+					"scrollIndicator": "none",
+					"titleNView": {
+						"type": "transparent",
+						"buttons": [{
+							"type": "menu"
+						}, {
+							"type": "share"
+						}]
+					}
+				}
+			}
 		}
 	],
 	"tabBar": {
