@@ -49,10 +49,10 @@ const props = defineProps({
 
 // 跳转到商品详情页
 const goDetails = (id) => {
-	console.log(id);
-	// uni.navigateTo({
-	// 	url: `/pages/details/details?id=${id}`,
-	// });
+	// console.log(id);
+	uni.navigateTo({
+		url: `/pages/details/details?id=${id}`,
+	});
 };
 </script>
 

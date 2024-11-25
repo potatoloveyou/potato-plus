@@ -13,8 +13,6 @@ router.get('/index_list/data/:index/:offset/:limit', bodyParser(), async (ctx, n
 		let { index, offset, limit } = ctx.request.params; // 获取路径参数
 		// let { offset } = ctx.request.query; // 获取查询参数
 
-		console.log(index, offset, limit);
-
 		// switch (index) {
 		// 	case '2':
 		// 		ctx.body = {
@@ -627,13 +625,23 @@ router.get('/index_list/data/:index/:offset/:limit', bodyParser(), async (ctx, n
 		// 		break;
 		// }
 
-		// let query = {};
-		// let options = {
-		// 	sort: {},
-		// };
+		let query = {};
+		const options = {
+			skip: Number(offset), // 从第 offset 条记录开始
+			limit: Number(limit), // 只取 limit 条记录
+		};
 
 		// 查找数据库
-		// const goodsSearch = goods_search.find(query, options);
+		const goodsSearch = await goods_search.find(query, options).toArray();
+		ctx.body = {
+			code: 0,
+			data: [
+				{
+					type: 'commodityList',
+					data: goodsSearch,
+				},
+			],
+		};
 
 		// if (offset >= 2) {
 		// 	ctx.body = {

@@ -2,15 +2,25 @@ const Router = require('@koa/router');
 // https://github.com/koajs/router
 const router = new Router();
 
+const { ObjectId, goods_search } = require('../db/mongo.ts');
+
 // 中间件，解析post请求的参数
 const bodyParser = require('koa-bodyparser');
 
 // 首页推荐
 router.get('/index_list/data', async (ctx, next) => {
 	try {
+		let query = {};
+		const options = {
+			skip: Number(0), // 从第 offset 条记录开始
+			limit: Number(4), // 只取 limit 条记录
+		};
+
+		// 查找数据库
+		const goodsSearch = await goods_search.find(query, options).toArray();
+
 		ctx.body = {
 			code: 0,
-
 			data: {
 				topBar: [
 					{ id: 1, name: '推荐' },
@@ -59,40 +69,7 @@ router.get('/index_list/data', async (ctx, next) => {
 					},
 					{
 						type: 'commodityList',
-						data: [
-							{
-								id: 1,
-								imgUrl: '/static/imgs/classify1.jpg',
-								name: '阿德杀杀毒哈师大哈拉少等哈拉萨大叔大撒打算手打阿是、婶',
-								pprice: '299',
-								oprice: '699',
-								discount: '5.2',
-							},
-							{
-								id: 2,
-								imgUrl: '/static/imgs/classify1.jpg',
-								name: '阿德杀杀毒哈师大哈拉少等哈拉萨大叔大撒打算手打阿是、婶',
-								pprice: '399',
-								oprice: '699',
-								discount: '5.2',
-							},
-							{
-								id: 3,
-								imgUrl: '/static/imgs/classify1.jpg',
-								name: '阿德杀杀毒哈师大哈拉少等哈拉萨大叔大撒打算手打阿是、婶',
-								pprice: '499',
-								oprice: '699',
-								discount: '5.2',
-							},
-							{
-								id: 4,
-								imgUrl: '/static/imgs/classify1.jpg',
-								name: '阿德杀杀毒哈师大哈拉少等哈拉萨大叔大撒打算手打阿是、婶',
-								pprice: '499',
-								oprice: '699',
-								discount: '5.2',
-							},
-						],
+						data: goodsSearch,
 					},
 				],
 			},

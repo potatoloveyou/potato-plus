@@ -97,19 +97,6 @@ import { getIndexList, getIndexClassify } from '@/api/apis.ts';
 
 // 内容块的高度值
 const clentHeight = ref(0);
-// // 兼容可视区域高度
-// const getClentHeight = () => {
-// 	const res = uni.getSystemInfoSync();
-// 	const system = res.platform;
-// 	if (system == 'ios') {
-// 		return 44 + res.statusBarHeight;
-// 	} else if (system == 'android') {
-// 		return 48 + res.statusBarHeight;
-// 	} else {
-// 		return 0;
-// 	}
-// };
-
 onReady(() => {
 	uni.getSystemInfo({
 		success: (res) => {
@@ -137,7 +124,7 @@ const getIndexData = async () => {
 	// console.log(res.data);
 	topBar.value = res.data.topBar;
 	newTopBar.value = initData(res.data);
-	console.log(newTopBar.value);
+	// console.log(newTopBar.value);
 };
 
 onLoad(() => {
@@ -171,8 +158,8 @@ const onChangeTab = (event) => {
 // 查询参数
 const queryparams = ref({
 	index: 1,
-	limit: 10,
-	offset: 0,
+	limit: 4,
+	offset: 10,
 });
 
 // 对应显示不同数据
@@ -184,10 +171,16 @@ const addData = async () => {
 	// 对应topBar的id存储到queryparams的index中
 	queryparams.value.index = id;
 
-	let page = Math.ceil(newTopBar.value[index].data.length / 5) + 1;
-	console.log(page);
+	// let page = Math.ceil(newTopBar.value[index].data.length / 5) + 1;
+	// console.log(page);
 	// console.log(newTopBar.value[index].data.length - 2);
-	queryparams.value.offset = page;
+
+	// console.log(newTopBar.value[index].length / newTopBar.value[index].data.length);
+
+	const page = newTopBar.value[index].data.length - newTopBar.value[index].length + 1;
+	queryparams.value.offset = Math.ceil(page * queryparams.value.limit);
+	console.log(queryparams.value);
+	console.log(page);
 
 	// 上拉加载更多时请求数据
 	let res = await getIndexClassify(queryparams.value);

@@ -14,7 +14,7 @@ interface IndexData {
 	offset: number | string;
 }
 export const getIndexClassify = (data: IndexData) => {
-	let { index = 1, limit = 10, offset = 0 } = data;
+	let { index = 1, limit = 4, offset = 4 } = data;
 	return request({
 		url: `/index_list/data/${index}/${offset}/${limit}`,
 	});
