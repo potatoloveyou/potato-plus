@@ -1,19 +1,24 @@
 <template>
 	<view class="details">
 		<swiper class="swiper" :indicator-dots="true" :autoplay="true" :interval="3000" :duration="1000">
-			<swiper-item v-for="(item, index) in swiperList" :key="index">
+			<!-- 			<swiper-item v-for="(item, index) in swiperList" :key="index">
 				<view class="swiper-item">
 					<image class="swiper-img" :src="item.imgUrl" mode=""></image>
+				</view>
+			</swiper-item> -->
+			<swiper-item>
+				<view class="swiper-item">
+					<image class="swiper-img" :src="goodsDetail.imgUrl" mode=""></image>
 				</view>
 			</swiper-item>
 		</swiper>
 
 		<view class="details-goods">
 			<view class="price">
-				<view class="pprice">￥399</view>
-				<view class="oprice">原价￥599</view>
+				<view class="pprice">￥{{ goodsDetail.pprice }}</view>
+				<view class="oprice">原价￥{{ goodsDetail.oprice }}</view>
 			</view>
-			<text class="goods-name">阿德杀杀毒哈师大哈拉少等哈拉萨大叔大撒打算手打阿是、婶</text>
+			<text class="goods-name">{{ goodsDetail.name }}</text>
 		</view>
 
 		<view>
@@ -73,7 +78,7 @@
 
 <script setup>
 import { ref } from 'vue';
-import { onLoad } from '@dcloudio/uni-app';
+import { onLoad, onShareAppMessage, onShareTimeline, onNavigationBarButtonTap } from '@dcloudio/uni-app';
 
 import Card from '@/components/common/Card.vue';
 import CommodityList from '@/components/common/CommodityList.vue';
@@ -84,7 +89,8 @@ import { getGoodsDetail } from '@/api/apis.ts';
 const goodsDetail = ref({});
 const getGoodsDetailData = async (id) => {
 	let res = await getGoodsDetail(id);
-	console.log(res);
+	goodsDetail.value = res.data;
+	console.log(goodsDetail.value);
 };
 
 onLoad((e) => {
@@ -152,11 +158,47 @@ const closeCollectPopup = () => {
 };
 
 const vModelValue = ref(1);
-
+// 修改购买数量
 const changeValue = (value) => {
 	// console.log(123);
 	console.log(vModelValue.value);
 };
+
+// 分享给好友
+onShareAppMessage(() => {
+	return {
+		title: goodsDetail.value.name,
+		path: `/pages/details/details?id=${goodsDetail.value._id}`,
+	};
+});
+
+// 分享朋友圈(用不了，得认证小程序、花钱才可以开通分享朋友圈)
+onShareTimeline(() => {
+	return {
+		title: goodsDetail.value.name,
+		path: `/pages/details/details?id=${goodsDetail.value._id}`,
+	};
+});
+
+onNavigationBarButtonTap((e) => {
+	if (e.type == 'share') {
+		uni.share({
+			provider: 'weixin',
+			type: 0,
+			scene: 'WXSceneSession',
+			title: goodsDetail.value.name,
+			href: `/pages/details/details?id=${goodsDetail.value._id}`,
+			imageUrl: goodsDetail.value.imgUrl,
+
+			success(res) {
+				uni.showTabBar({
+					title: '分享成功',
+				});
+			},
+			fail() {},
+		});
+	}
+});
 </script>
 
 <style lang="scss" scoped>

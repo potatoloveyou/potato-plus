@@ -13,6 +13,8 @@ router.get('/index_list/data/:index/:offset/:limit', bodyParser(), async (ctx, n
 		let { index, offset, limit } = ctx.request.params; // 获取路径参数
 		// let { offset } = ctx.request.query; // 获取查询参数
 
+		console.log(index, offset, limit);
+
 		// switch (index) {
 		// 	case '2':
 		// 		ctx.body = {
@@ -642,51 +644,6 @@ router.get('/index_list/data/:index/:offset/:limit', bodyParser(), async (ctx, n
 				},
 			],
 		};
-
-		// if (offset >= 2) {
-		// 	ctx.body = {
-		// 		code: 0,
-		// 		data: [
-		// 			{
-		// 				type: 'commodityList',
-		// 				data: [
-		// 					{
-		// 						id: 1,
-		// 						imgUrl: '/static/imgs/classify1.jpg',
-		// 						name: '阿德杀杀毒哈师大哈拉少等哈拉萨大叔大撒打算手打阿是、婶',
-		// 						pprice: '299',
-		// 						oprice: '699',
-		// 						discount: '5.2',
-		// 					},
-		// 					{
-		// 						id: 2,
-		// 						imgUrl: '/static/imgs/classify1.jpg',
-		// 						name: '阿德杀杀毒哈师大哈拉少等哈拉萨大叔大撒打算手打阿是、婶',
-		// 						pprice: '399',
-		// 						oprice: '699',
-		// 						discount: '5.2',
-		// 					},
-		// 					{
-		// 						id: 3,
-		// 						imgUrl: '/static/imgs/classify1.jpg',
-		// 						name: '阿德杀杀毒哈师大哈拉少等哈拉萨大叔大撒打算手打阿是、婶',
-		// 						pprice: '499',
-		// 						oprice: '699',
-		// 						discount: '5.2',
-		// 					},
-		// 					{
-		// 						id: 4,
-		// 						imgUrl: '/static/imgs/classify1.jpg',
-		// 						name: '阿德杀杀毒哈师大哈拉少等哈拉萨大叔大撒打算手打阿是、婶',
-		// 						pprice: '499',
-		// 						oprice: '699',
-		// 						discount: '5.2',
-		// 					},
-		// 				],
-		// 			},
-		// 		],
-		// 	};
-		// }
 	} catch (error) {}
 });
 

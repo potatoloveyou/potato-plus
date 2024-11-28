@@ -34,7 +34,7 @@
 				class="scroll-item"
 				:id="'top' + index"
 				v-for="(item, index) in topBar"
-				:key="item.id"
+				:key="item._id"
 				@click="changeTab(index)">
 				<text :class="topBarIndex == index ? 'f-active-color' : 'f-color'">{{ item.name }}</text>
 			</view>
@@ -124,7 +124,6 @@ const getIndexData = async () => {
 	// console.log(res.data);
 	topBar.value = res.data.topBar;
 	newTopBar.value = initData(res.data);
-	// console.log(newTopBar.value);
 };
 
 onLoad(() => {
@@ -165,17 +164,12 @@ const queryparams = ref({
 // 对应显示不同数据
 const addData = async () => {
 	let index = topBarIndex.value;
+	console.log(index);
 
 	// 切换到那个就存储哪个的id
 	let id = topBar.value[index].id;
 	// 对应topBar的id存储到queryparams的index中
 	queryparams.value.index = id;
-
-	// let page = Math.ceil(newTopBar.value[index].data.length / 5) + 1;
-	// console.log(page);
-	// console.log(newTopBar.value[index].data.length - 2);
-
-	// console.log(newTopBar.value[index].length / newTopBar.value[index].data.length);
 
 	const page = newTopBar.value[index].data.length - newTopBar.value[index].length + 1;
 	queryparams.value.offset = Math.ceil(page * queryparams.value.limit);
