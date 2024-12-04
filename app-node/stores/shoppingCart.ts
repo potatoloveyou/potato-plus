@@ -31,24 +31,9 @@ export const useShoppingCartStore = defineStore('shoppingCart', () => {
 			color: '蓝色',
 			imgUrl: '/static/imgs/classify2.jpg',
 			pprice: 299,
-			num: 2,
+			num: 3,
 		},
 	]);
-
-	// // 被选中商品的 ID 列表
-	// const select = ref<string[]>([]);
-
-	// // 全选商品
-	// const checkAll = (): void => {
-	// 	cartList.value.forEach((item) => (item.checked = true));
-	// 	select.value = cartList.value.map((item) => item.id);
-	// };
-
-	// // 取消全选
-	// const checkNoAll = (): void => {
-	// 	cartList.value.forEach((item) => (item.checked = false));
-	// 	select.value = [];
-	// };
 
 	// 全选
 	const checkAll = (): void => {
@@ -60,33 +45,15 @@ export const useShoppingCartStore = defineStore('shoppingCart', () => {
 		cartList.value.forEach((item) => (item.checked = false));
 	};
 
-	// // 切换单个商品选中状态
-	// const toggleItemSelection = (id: string): void => {
-	// 	const item = cartList.value.find((product) => product.id === id);
-	// 	if (item) {
-	// 		item.checked = !item.checked;
-	// 		if (item.checked) {
-	// 			select.value.push(id);
-	// 		} else {
-	// 			select.value = select.value.filter((selectedId) => selectedId !== id);
-	// 		}
-	// 	}
-	// 	console.log(id);
-	// };
-
 	// 切换单个商品选中状态
-	const toggleItemSelection = (id: string): void => {
+	const toggleItemSelection = ({ id }: { id: string }): void => {
 		const item = cartList.value.find((product) => product.id === id);
 		if (item) {
 			item.checked = !item.checked;
 		}
+		// console.log(selectedItems.value);
+		// console.log(selectedItemIds.value);
 	};
-
-	// 计算选中的商品数量
-	const selectedItems = computed(() => cartList.value.filter((item) => item.checked));
-
-	// // 判断是否全选
-	// const isCheckAll = computed(() => select.value.length === cartList.value.length);
 
 	// 判断是否全选
 	const isCheckAll = computed(() => selectedItems.value.length === cartList.value.length);
@@ -96,35 +63,45 @@ export const useShoppingCartStore = defineStore('shoppingCart', () => {
 		isCheckAll.value ? checkNoAll() : checkAll();
 	};
 
-	// // 动态计算总金额
-	// const amounts = computed(() => {
-	// 	return cartList.value.filter((item) => item.checked).reduce((sum, item) => sum + item.pprice * item.num, 0);
-	// });
+	// 计算选中的商品数量
+	const selectedItems = computed(() => cartList.value.filter((item) => item.checked));
+
+	// 计算选中的商品 ID 列表
+	const selectedItemIds = computed(() => selectedItems.value.map((item) => item.id));
 
 	// 计算选中商品的总金额
+	// 数组累加方法	reduce.((保存上一次计算的结果,遍历对象),逻辑,初始值0)
 	const amounts = computed(() => {
 		return selectedItems.value.reduce((sum, item) => sum + item.pprice * item.num, 0);
 	});
 
-	// return {
-	// 	cartList,
-	// 	select,
-	// 	checkAll,
-	// 	checkNoAll,
-	// 	toggleItemSelection,
-	// 	isCheckAll,
-	// 	checkAllSwitch,
-	// 	amounts,
-	// };
+	// 修改商品数量
+	const updateItemNum = ({ value, id }: { value: number; id: string }): void => {
+		const item = cartList.value.find((product) => product.id === id);
+		if (item) {
+			item.num = value > 0 ? value : 1; // 确保数量至少为1
+		}
+		console.log(cartList.value);
+	};
+
+	// 删除商品
+	const deleteGoods = (): void => {
+		cartList.value = cartList.value.filter((item) => !selectedItemIds.value.includes(item.id));
+		uni.showToast({
+			title: '删除成功',
+			icon: 'none',
+		});
+	};
 
 	return {
 		cartList,
-		checkAll,
-		checkNoAll,
 		toggleItemSelection,
 		isCheckAll,
 		checkAllSwitch,
 		amounts,
 		selectedItems, // 提供选中的商品列表
+		selectedItemIds,
+		updateItemNum,
+		deleteGoods,
 	};
 });
