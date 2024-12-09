@@ -164,7 +164,7 @@ const queryparams = ref({
 // 对应显示不同数据
 const addData = async () => {
 	let index = topBarIndex.value;
-	console.log(index);
+	// console.log(index);
 
 	// 切换到那个就存储哪个的id
 	let id = topBar.value[index].id;
@@ -173,8 +173,8 @@ const addData = async () => {
 
 	const page = newTopBar.value[index].data.length - newTopBar.value[index].length + 1;
 	queryparams.value.offset = Math.ceil(page * queryparams.value.limit);
-	console.log(queryparams.value);
-	console.log(page);
+	// console.log(queryparams.value);
+	// console.log(page);
 
 	// 上拉加载更多时请求数据
 	let res = await getIndexClassify(queryparams.value);

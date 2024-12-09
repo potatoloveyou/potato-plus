@@ -1,14 +1,9 @@
 <template>
 	<view class="details">
 		<swiper class="swiper" :indicator-dots="true" :autoplay="true" :interval="3000" :duration="1000">
-			<!-- 			<swiper-item v-for="(item, index) in swiperList" :key="index">
-				<view class="swiper-item">
-					<image class="swiper-img" :src="item.imgUrl" mode=""></image>
-				</view>
-			</swiper-item> -->
 			<swiper-item>
 				<view class="swiper-item">
-					<image class="swiper-img" :src="goodsDetail.imgUrl" mode=""></image>
+					<image class="swiper-img" :src="goodsDetail.imgUrl" mode="aspectFit"></image>
 				</view>
 			</swiper-item>
 		</swiper>
@@ -28,22 +23,23 @@
 			<image class="details-img" src="../../static/imgs/more.jpg" mode=""></image>
 			<image class="details-img" src="../../static/imgs/more.jpg" mode=""></image>
 		</view>
-		<template>
+		<view>
 			<Card cardName="看了又看" />
 			<CommodityList :dataList="dataList" />
-		</template>
+		</view>
 
-		<view class="details-foot">
+		<view class="details-foot" :class="!isPopup ? 'active' : ''">
 			<view class="foot-content">
 				<view class="iconfont icon-xiaoxi"></view>
-				<view class="iconfont icon-gouwuche"></view>
+				<view class="iconfont icon-gouwuche" @click="goShoppingCart"></view>
 				<view class="content-text add-shopcart" @click="openCollectPopup">加入购物车</view>
 				<view class="content-text purchase">立即购买</view>
 			</view>
 			<view class="safe-area-inset-bottom"></view>
 		</view>
 
-		<uni-popup ref="collectPopup" type="bottom" :is-mask-click="true" :safe-area="false">
+		<uni-popup ref="collectPopup" type="bottom" :is-mask-click="false" :safe-area="false" v-model:show="isPopup">
+			<!--  -->
 			<view class="collectPopup">
 				<view class="pop-content">
 					<view class="popHeader">
@@ -51,12 +47,20 @@
 							<uni-icons type="closeempty" size="=18" color="#999" />
 						</view>
 					</view>
-					<view>
-						<image class="pop-img" src="/static/imgs/xxmLogo.png" mode=""></image>
+
+					<view class="goods-intro1">
+						<image class="pop-img" :src="goodsDetail.imgUrl" mode=""></image>
+
+						<view class="goods-information">
+							<view class="pprice">￥333</view>
+							<view class="goods-limit">可购5件</view>
+							<view class="text">请选择 尺码</view>
+						</view>
 					</view>
+
 					<Linse />
 					<view class="goods-colour">
-						<text>颜色分类</text>
+						<view class="colour-title">颜色分类</view>
 						<view class="colour">
 							<view class="colour-tiem">透明</view>
 						</view>
@@ -64,12 +68,13 @@
 					<Linse />
 					<view class="goods-num">
 						<text class="goods-num-name">购买数量</text>
-						<uni-number-box :min="1" v-model="vModelValue" @change="changeValue" />
+						<uni-number-box :min="1" v-model="goodsNum" @change="changeValue({ value: $event, id: goodsDetail._id })" />
 					</view>
 					<Linse />
 				</view>
 
-				<view class="pop-confirm">确认</view>
+				<view class="pop-confirm" @click="addShopCart">确认</view>
+				<!-- <view class="pop-blank"></view> -->
 				<view class="safe-area-inset-bottom"></view>
 			</view>
 		</uni-popup>
@@ -86,11 +91,15 @@ import Linse from '@/components/common/Lines.vue';
 
 import { getGoodsDetail } from '@/api/apis.ts';
 
+import { useShoppingCartStore } from '@/stores/shoppingCart';
+const shoppingCartStore = useShoppingCartStore();
+
+// 商品详情数据
 const goodsDetail = ref({});
 const getGoodsDetailData = async (id) => {
 	let res = await getGoodsDetail(id);
 	goodsDetail.value = res.data;
-	console.log(goodsDetail.value);
+	// console.log(goodsDetail.value);
 };
 
 onLoad((e) => {
@@ -146,22 +155,26 @@ dataList.value = [
 	},
 ];
 
+// 编辑按钮状态
+const isPopup = ref(true);
 // 加入购物车弹窗
 const collectPopup = ref(null);
 const openCollectPopup = () => {
 	collectPopup.value.open();
+	isPopup.value = !isPopup.value;
 };
 
 // 关闭info弹窗
 const closeCollectPopup = () => {
 	collectPopup.value.close();
+	isPopup.value = !isPopup.value;
 };
 
-const vModelValue = ref(1);
+const goodsNum = ref(1);
 // 修改购买数量
-const changeValue = (value) => {
-	// console.log(123);
-	console.log(vModelValue.value);
+const changeValue = ({ value }) => {
+	// console.log(goodsNum.value);
+	// console.log(value);
 };
 
 // 分享给好友
@@ -199,6 +212,30 @@ onNavigationBarButtonTap((e) => {
 		});
 	}
 });
+
+// 跳转到购物车
+const goShoppingCart = () => {
+	uni.switchTab({
+		url: '/pages/shopping-cart/shopping-cart',
+	});
+};
+
+// 确认添加到购物车
+const addShopCart = () => {
+	// 使用浅拷贝，避免直接修改响应式对象
+	let goods = { ...goodsDetail.value };
+	goods['checked'] = false;
+	goods['num'] = goodsNum.value;
+	// console.log(goods);
+	// console.log(goodsDetail.value);
+	shoppingCartStore.addShopCart(goods);
+
+	closeCollectPopup();
+	uni.showToast({
+		title: '已加入购物车',
+		icon: 'none',
+	});
+};
 </script>
 
 <style lang="scss" scoped>
@@ -253,6 +290,11 @@ onNavigationBarButtonTap((e) => {
 		width: 100%;
 		background-color: #fff;
 		z-index: 999;
+		transition: transform 0.3s ease-in-out; /* 平滑移动动画 */
+		transform: translateY(0%);
+		&.active {
+			transform: translateY(100%);
+		}
 		.foot-content {
 			@extend .df-aic;
 			height: 100rpx;
@@ -285,18 +327,53 @@ onNavigationBarButtonTap((e) => {
 		max-height: 60vh;
 		.pop-content {
 			padding: 30rpx;
+			position: relative;
 			.popHeader {
 				display: flex;
 				justify-content: flex-end;
 				.close {
-					padding: 0 6rpx;
+					// padding: 0 6rpx;
+					width: 40rpx;
+					height: 40rpx;
+					@extend .df-aic;
+					justify-content: center;
+					border: 1rpx solid #000;
+					border-radius: 50%;
 				}
 			}
-			.pop-img {
-				width: 260rpx;
-				height: 260rpx;
+			.goods-intro1 {
+				display: flex;
+				padding-bottom: 30rpx;
+				.pop-img {
+					position: absolute;
+					top: -5%;
+					width: 260rpx;
+					height: 260rpx;
+				}
+				.goods-information {
+					// position: absolute;
+					padding-bottom: 30rpx;
+					// transform: translateX(300rpx);
+					padding-left: 300rpx;
+					& > view {
+						padding-bottom: 2rpx;
+					}
+					.pprice {
+						color: #49bdfb;
+						font-size: 42rpx;
+					}
+					.goods-limit {
+					}
+					.text {
+					}
+				}
 			}
 			.goods-colour {
+				padding: 20rpx 0;
+				.colour-title {
+					font-weight: bold;
+					padding-bottom: 10rpx;
+				}
 				.colour {
 					.colour-tiem {
 					}
@@ -315,6 +392,9 @@ onNavigationBarButtonTap((e) => {
 			padding: 20rpx 0;
 			background-color: #49bdfb;
 		}
+		// .pop-blank {
+		// 	height: 100rpx;
+		// }
 	}
 }
 </style>

@@ -17,8 +17,8 @@
 		</NavBar>
 
 		<view class="shop-list">
-			<view class="shop-item" v-for="(item, index) in shoppingCartStore.cartList" :key="item.id">
-				<label class="radio" @click="toggleItemSelection({ id: item.id })">
+			<view class="shop-item" v-for="(item, index) in shoppingCartStore.cartList" :key="item._id">
+				<label class="radio" @click="toggleItemSelection({ id: item._id })">
 					<radio value="" color="#ff3333" :checked="item.checked" />
 				</label>
 				<image class="goods-img" :src="item.imgUrl" mode=""></image>
@@ -28,14 +28,14 @@
 					<view class="goods-condition">
 						<view class="goods-price">￥{{ item.pprice }}</view>
 						<view class="goods-num-switch">
-							<view class="goods-num" v-if="!item.checked" @click="toggleModifyMode({ id: item.id })">
+							<view class="goods-num" v-if="!item.checked" @click="toggleModifyMode({ id: item._id })">
 								x{{ item.num }}
 							</view>
 							<view class="goods-num-box" v-else>
 								<uni-number-box
 									:min="1"
 									v-model="item.num"
-									@change="changeValue({ value: $event, id: item.id })"
+									@change="changeValue({ value: $event, id: item._id })"
 									@blur="close" />
 							</view>
 						</view>

@@ -5,7 +5,7 @@ export const useShoppingCartStore = defineStore('shoppingCart', () => {
 	// 商品接口定义
 	interface CartItem {
 		checked: boolean;
-		id: string;
+		_id: string;
 		name: string;
 		color: string;
 		imgUrl: string;
@@ -15,24 +15,24 @@ export const useShoppingCartStore = defineStore('shoppingCart', () => {
 
 	// 响应式购物车列表
 	const cartList = ref<CartItem[]>([
-		{
-			checked: false,
-			id: '12356468545614',
-			name: '大羽绒服',
-			color: '红色',
-			imgUrl: '/static/imgs/classify1.jpg',
-			pprice: 199,
-			num: 1,
-		},
-		{
-			checked: false,
-			id: '12356468545615',
-			name: '羽绒服',
-			color: '蓝色',
-			imgUrl: '/static/imgs/classify2.jpg',
-			pprice: 299,
-			num: 3,
-		},
+		// {
+		// 	checked: false,
+		// 	_id: '12356468545614',
+		// 	name: '大羽绒服',
+		// 	color: '红色',
+		// 	imgUrl: '/static/imgs/classify1.jpg',
+		// 	pprice: 199,
+		// 	num: 1,
+		// },
+		// {
+		// 	checked: false,
+		// 	_id: '12356468545615',
+		// 	name: '羽绒服',
+		// 	color: '蓝色',
+		// 	imgUrl: '/static/imgs/classify2.jpg',
+		// 	pprice: 299,
+		// 	num: 3,
+		// },
 	]);
 
 	// 全选
@@ -47,16 +47,14 @@ export const useShoppingCartStore = defineStore('shoppingCart', () => {
 
 	// 切换单个商品选中状态
 	const toggleItemSelection = ({ id }: { id: string }): void => {
-		const item = cartList.value.find((product) => product.id === id);
+		const item = cartList.value.find((product) => product._id === id);
 		if (item) {
 			item.checked = !item.checked;
 		}
-		// console.log(selectedItems.value);
-		// console.log(selectedItemIds.value);
 	};
 
 	// 判断是否全选
-	const isCheckAll = computed(() => selectedItems.value.length === cartList.value.length);
+	const isCheckAll = computed(() => selectedItems.value.length === cartList.value.length && cartList.value.length != 0);
 
 	// 切换全选状态
 	const checkAllSwitch = (): void => {
@@ -67,7 +65,7 @@ export const useShoppingCartStore = defineStore('shoppingCart', () => {
 	const selectedItems = computed(() => cartList.value.filter((item) => item.checked));
 
 	// 计算选中的商品 ID 列表
-	const selectedItemIds = computed(() => selectedItems.value.map((item) => item.id));
+	const selectedItemIds = computed(() => selectedItems.value.map((item) => item._id));
 
 	// 计算选中商品的总金额
 	// 数组累加方法	reduce.((保存上一次计算的结果,遍历对象),逻辑,初始值0)
@@ -77,20 +75,41 @@ export const useShoppingCartStore = defineStore('shoppingCart', () => {
 
 	// 修改商品数量
 	const updateItemNum = ({ value, id }: { value: number; id: string }): void => {
-		const item = cartList.value.find((product) => product.id === id);
+		const item = cartList.value.find((product) => product._id === id);
 		if (item) {
 			item.num = value > 0 ? value : 1; // 确保数量至少为1
 		}
-		console.log(cartList.value);
 	};
 
 	// 删除商品
 	const deleteGoods = (): void => {
-		cartList.value = cartList.value.filter((item) => !selectedItemIds.value.includes(item.id));
+		cartList.value = cartList.value.filter((item) => !selectedItemIds.value.includes(item._id));
 		uni.showToast({
 			title: '删除成功',
 			icon: 'none',
 		});
+	};
+
+	// 加入购物车
+	const addShopCart = (goods: CartItem): void => {
+		// 判断商品是否已存在购物车
+		const existingItem = cartList.value.find((item) => item._id === goods._id);
+		if (existingItem) {
+			// 如果存在，则增加数量
+			existingItem.num += goods.num || 1; // 确保传入数量为空时默认为1
+		} else {
+			// 如果不存在，确保传入对象的完整性
+			const newGoods: CartItem = {
+				checked: false, // 默认未选中
+				_id: goods._id,
+				name: goods.name || '未知商品',
+				color: goods.color || '默认颜色',
+				imgUrl: goods.imgUrl || '/static/imgs/default.jpg',
+				pprice: goods.pprice || 0, // 确保价格为数字
+				num: goods.num || 1, // 默认数量为1
+			};
+			cartList.value.push(newGoods);
+		}
 	};
 
 	return {
@@ -103,5 +122,6 @@ export const useShoppingCartStore = defineStore('shoppingCart', () => {
 		selectedItemIds,
 		updateItemNum,
 		deleteGoods,
+		addShopCart,
 	};
 });
