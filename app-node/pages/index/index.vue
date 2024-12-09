@@ -24,6 +24,7 @@
 						<view class="iconfont icon-xiaoxi"></view>
 					</view>
 					<text class="nav-text">首页</text>
+					<view></view>
 				</view>
 			</template>
 		</NavBar>
@@ -33,7 +34,7 @@
 				class="scroll-item"
 				:id="'top' + index"
 				v-for="(item, index) in topBar"
-				:key="item.id"
+				:key="item._id"
 				@click="changeTab(index)">
 				<text :class="topBarIndex == index ? 'f-active-color' : 'f-color'">{{ item.name }}</text>
 			</view>
@@ -91,27 +92,15 @@ import Hot from '@/components/index/Outdoors/Hot.vue';
 import Shop from '@/components/index/Outdoors/Shop.vue';
 import NavBar from '@/components/common/NavBar.vue';
 
+import { getNavBarHeight } from '@/utils/system.ts';
 import { getIndexList, getIndexClassify } from '@/api/apis.ts';
 
 // 内容块的高度值
 const clentHeight = ref(0);
-// 兼容可视区域高度
-const getClentHeight = () => {
-	const res = uni.getSystemInfoSync();
-	const system = res.platform;
-	if (system == 'ios') {
-		return 44 + res.statusBarHeight;
-	} else if (system == 'android') {
-		return 48 + res.statusBarHeight;
-	} else {
-		return 0;
-	}
-};
-
 onReady(() => {
 	uni.getSystemInfo({
 		success: (res) => {
-			clentHeight.value = res.windowHeight - uni.upx2px(80) - getClentHeight();
+			clentHeight.value = res.windowHeight - uni.upx2px(80) - getNavBarHeight.value;
 		},
 	});
 });
@@ -126,11 +115,13 @@ const initData = (res) => {
 		data: index === 0 ? res.data : [],
 		load: 'first',
 		loadText: '上拉加载更多...',
+		length: res.data.length,
 	}));
 };
 
 const getIndexData = async () => {
 	const res = await getIndexList();
+	// console.log(res.data);
 	topBar.value = res.data.topBar;
 	newTopBar.value = initData(res.data);
 };
@@ -165,29 +156,30 @@ const onChangeTab = (event) => {
 
 // 查询参数
 const queryparams = ref({
-	index: 2,
-	offset: 1,
+	index: 1,
+	limit: 4,
+	offset: 10,
 });
 
 // 对应显示不同数据
 const addData = async () => {
 	let index = topBarIndex.value;
+	// console.log(index);
 
 	// 切换到那个就存储哪个的id
 	let id = topBar.value[index].id;
 	// 对应topBar的id存储到queryparams的index中
 	queryparams.value.index = id;
 
-	//
-	let page = Math.ceil(newTopBar.value[index].data.length / 5) + 1;
-	console.log(page);
-	queryparams.value.offset = page;
+	const page = newTopBar.value[index].data.length - newTopBar.value[index].length + 1;
+	queryparams.value.offset = Math.ceil(page * queryparams.value.limit);
 	// console.log(queryparams.value);
+	// console.log(page);
 
-	// 请求不同数据
+	// 上拉加载更多时请求数据
 	let res = await getIndexClassify(queryparams.value);
 	newTopBar.value[index].data = [...newTopBar.value[index].data, ...res.data];
-	console.log(queryparams.value);
+	// console.log(res);
 
 	// 记录已滑动过的
 	newTopBar.value[index].load = 'last';
@@ -211,9 +203,13 @@ const goSearch = () => {
 
 <style lang="scss" scoped>
 .wx-app-index-nav {
+	width: 100%;
+	display: flex;
+
+	& > view {
+		flex: 1;
+	}
 	.nav-icons {
-		position: absolute;
-		left: 0;
 		display: flex;
 		.iconfont {
 			font-size: 50rpx;

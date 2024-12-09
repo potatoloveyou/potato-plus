@@ -8,7 +8,7 @@ router.get('/goods/search', async (ctx, next) => {
 	try {
 		// console.log(ctx.request.query);
 		let { name, pprice, discount } = ctx.request.query;
-		console.log(name, pprice, discount);
+		// console.log(name, pprice, discount);
 
 		if (!name || (!pprice && !discount) || (pprice && discount)) {
 			ctx.body = {

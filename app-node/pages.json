@@ -34,9 +34,11 @@
 			}
 		},
 		{
-			"path": "pages/shopcart/shopcart",
+			"path": "pages/shopping-cart/shopping-cart",
 			"style": {
-				"navigationBarTitleText": ""
+				"navigationBarTitleText": "购物车",
+				"navigationBarBackgroundColor": "#ffffff",
+				"navigationStyle": "custom"
 			}
 		},
 		{
@@ -103,6 +105,24 @@
 					}
 				}
 			}
+		},
+		{
+			"path": "pages/details/details",
+			"style": {
+				"navigationBarTitleText": "商品详情",
+				// "navigationStyle": "custom",
+				"app-plus": {
+					"scrollIndicator": "none",
+					"titleNView": {
+						"type": "transparent",
+						"buttons": [{
+							"type": "menu"
+						}, {
+							"type": "share"
+						}]
+					}
+				}
+			}
 		}
 	],
 	"tabBar": {
@@ -117,7 +137,7 @@
 			"selectedIconPath": "static/tabbar/分类-h.png",
 			"text": "分类"
 		}, {
-			"pagePath": "pages/shopcart/shopcart",
+			"pagePath": "pages/shopping-cart/shopping-cart",
 			"iconPath": "static/tabbar/购物车.png",
 			"selectedIconPath": "static/tabbar/购物车-h.png",
 			"text": "购物车"

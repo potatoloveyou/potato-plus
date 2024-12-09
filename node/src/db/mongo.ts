@@ -9,4 +9,6 @@ const db = client.db('app_node');
 
 const goods_search = db.collection('goods_search');
 
-module.exports = { ObjectId, client,  goods_search };
+const top_Bar = db.collection('topBar');
+
+module.exports = { ObjectId, client, goods_search, top_Bar };

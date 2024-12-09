@@ -1,7 +1,7 @@
 import { request } from '@/utils/request.ts';
 
 // 首页推荐数据
-export const getIndexList = (): Promise<any> => {
+export const getIndexList = () => {
 	return request({
 		url: '/index_list/data',
 	});
@@ -10,15 +10,13 @@ export const getIndexList = (): Promise<any> => {
 // 首页分类
 interface IndexData {
 	index: number | string;
+	limit: number | string;
 	offset: number | string;
 }
 export const getIndexClassify = (data: IndexData) => {
-	let { index = 1, offset = 1 } = data;
+	let { index = 1, limit = 4, offset = 4 } = data;
 	return request({
-		url: `/index_list/data/${index}`,
-		data: {
-			offset,
-		},
+		url: `/index_list/data/${index}/${offset}/${limit}`,
 	});
 };
 
@@ -39,7 +37,7 @@ interface ShopData {
 	discount: number;
 }
 export const getGoodsSearch = (data: ShopData) => {
-	console.log(data);
+	// console.log(data);
 	return request({
 		url: `/goods/search`,
 		data: mapQueryParams(data),
@@ -50,5 +48,16 @@ export const getGoodsSearch = (data: ShopData) => {
 export const getGoodsClassify = () => {
 	return request({
 		url: `/goods/classify`,
+	});
+};
+
+// 商品详情
+export const getGoodsDetail = (data: string) => {
+	// console.log(data);
+	return request({
+		url: `/goods/detail`,
+		data: {
+			id: data,
+		},
 	});
 };
