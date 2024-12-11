@@ -44,7 +44,8 @@
 		{
 			"path": "pages/my/my",
 			"style": {
-				"navigationBarTitleText": ""
+				"navigationBarTitleText": "",
+				"navigationStyle": "custom"
 			}
 		},
 		{

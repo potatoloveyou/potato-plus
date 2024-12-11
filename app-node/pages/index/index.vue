@@ -20,8 +20,10 @@
 			<template #titleBar-slot>
 				<view class="wx-app-index-nav">
 					<view class="nav-icons">
-						<view class="iconfont icon-search" @click="goSearch"></view>
-						<view class="iconfont icon-xiaoxi"></view>
+						<!-- 						<view class="iconfont icon-search" @click="goSearch"></view> -->
+						<!-- <view class="iconfont icon-xiaoxi"></view> -->
+						<uni-icons class="iconfont" type="search" size="30" @click="goSearch"></uni-icons>
+						<uni-icons class="iconfont" type="chat" size="30"></uni-icons>
 					</view>
 					<text class="nav-text">首页</text>
 					<view></view>

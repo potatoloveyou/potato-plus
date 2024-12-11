@@ -28,13 +28,26 @@
 			<CommodityList :dataList="dataList" />
 		</view>
 
-		<view class="details-foot" :class="!isPopup ? 'active' : ''">
+		<!-- 		<view class="details-foot" :class="!isPopup ? 'active' : ''">
 			<view class="foot-content">
 				<view class="iconfont icon-xiaoxi"></view>
 				<view class="iconfont icon-gouwuche" @click="goShoppingCart"></view>
+
+				<uni-icons class="iconfont" type="chat" size="30"></uni-icons>
+				<uni-icons class="iconfont" type="cart" size="30" @click="goShoppingCart"></uni-icons>
 				<view class="content-text add-shopcart" @click="openCollectPopup">加入购物车</view>
 				<view class="content-text purchase">立即购买</view>
 			</view>
+			<view class="safe-area-inset-bottom"></view>
+		</view> -->
+
+		<view class="details-foot" :class="!isPopup ? 'active' : ''">
+			<uni-goods-nav
+				:fill="true"
+				:options="options"
+				:button-group="customButtonGroup"
+				@click="onClick"
+				@buttonClick="buttonClick" />
 			<view class="safe-area-inset-bottom"></view>
 		</view>
 
@@ -82,8 +95,8 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
-import { onLoad, onShareAppMessage, onShareTimeline, onNavigationBarButtonTap } from '@dcloudio/uni-app';
+import { ref, watch } from 'vue';
+import { onLoad, onReady, onShareAppMessage, onShareTimeline, onNavigationBarButtonTap } from '@dcloudio/uni-app';
 
 import Card from '@/components/common/Card.vue';
 import CommodityList from '@/components/common/CommodityList.vue';
@@ -99,25 +112,15 @@ const goodsDetail = ref({});
 const getGoodsDetailData = async (id) => {
 	let res = await getGoodsDetail(id);
 	goodsDetail.value = res.data;
-	// console.log(goodsDetail.value);
 };
 
 onLoad((e) => {
 	getGoodsDetailData(e.id);
 });
 
-const swiperList = ref([]);
-swiperList.value = [
-	{
-		imgUrl: '/static/imgs/banner1.jpg',
-	},
-	{
-		imgUrl: '/static/imgs/banner2.jpg',
-	},
-	{
-		imgUrl: '/static/imgs/banner3.jpg',
-	},
-];
+onReady(() => {
+	options.value[2].info = shoppingCartStore.getCartItemQuantity(goodsDetail.value._id);
+});
 
 const dataList = ref([]);
 dataList.value = [
@@ -155,26 +158,106 @@ dataList.value = [
 	},
 ];
 
-// 编辑按钮状态
-const isPopup = ref(true);
-// 加入购物车弹窗
-const collectPopup = ref(null);
-const openCollectPopup = () => {
-	collectPopup.value.open();
-	isPopup.value = !isPopup.value;
-};
-
 // 关闭info弹窗
 const closeCollectPopup = () => {
 	collectPopup.value.close();
 	isPopup.value = !isPopup.value;
 };
 
+// 购买数量
 const goodsNum = ref(1);
 // 修改购买数量
-const changeValue = ({ value }) => {
-	// console.log(goodsNum.value);
-	// console.log(value);
+const changeValue = ({ value }) => {};
+
+// 确认添加到购物车
+const addShopCart = () => {
+	// 使用浅拷贝，避免直接修改响应式对象
+	let goods = { ...goodsDetail.value };
+	goods['checked'] = false;
+	goods['num'] = goodsNum.value;
+	shoppingCartStore.addShopCart(goods);
+
+	options.value[2].info = shoppingCartStore.getCartItemQuantity(goodsDetail.value._id);
+	uni.showToast({
+		title: '已加入购物车',
+		icon: 'none',
+	});
+	closeCollectPopup();
+};
+
+// 底部左边
+const options = ref([]);
+options.value = [
+	{
+		icon: 'chat',
+		text: '客服',
+	},
+	{
+		icon: 'shop',
+		text: '店铺',
+		infoBackgroundColor: '#007aff',
+		infoColor: '#f5f5f5',
+	},
+	{
+		icon: 'cart',
+		text: '购物车',
+		info: shoppingCartStore.getCartItemQuantity(goodsDetail.value._id),
+	},
+];
+
+// 底部右边按钮
+const customButtonGroup = ref([]);
+customButtonGroup.value = [
+	{
+		text: '加入购物车',
+		backgroundColor: 'linear-gradient(90deg, #1E83FF, #0053B8)',
+		color: '#fff',
+	},
+	{
+		text: '立即购买',
+		backgroundColor: 'linear-gradient(90deg, #60F3FF, #088FEB)',
+		color: '#fff',
+	},
+];
+
+// 底部左侧点击事件
+const onClick = (event) => {
+	// console.log(event);
+	switch (event.content.icon) {
+		case 'chat':
+			console.log('客服');
+			break;
+		case 'shop':
+			console.log('店铺');
+			break;
+		case 'cart':
+			uni.switchTab({
+				url: '/pages/shopping-cart/shopping-cart',
+			});
+			break;
+		default:
+			break;
+	}
+};
+
+// 编辑按钮状态
+const isPopup = ref(true);
+// 加入购物车弹窗
+const collectPopup = ref(null);
+// 右侧按钮组点击事件
+const buttonClick = (event) => {
+	// console.log(event);
+	switch (event.content.text) {
+		case '加入购物车':
+			collectPopup.value.open();
+			isPopup.value = !isPopup.value;
+			break;
+		case '立即购买':
+			console.log('立即购买');
+			break;
+		default:
+			break;
+	}
 };
 
 // 分享给好友
@@ -212,30 +295,6 @@ onNavigationBarButtonTap((e) => {
 		});
 	}
 });
-
-// 跳转到购物车
-const goShoppingCart = () => {
-	uni.switchTab({
-		url: '/pages/shopping-cart/shopping-cart',
-	});
-};
-
-// 确认添加到购物车
-const addShopCart = () => {
-	// 使用浅拷贝，避免直接修改响应式对象
-	let goods = { ...goodsDetail.value };
-	goods['checked'] = false;
-	goods['num'] = goodsNum.value;
-	// console.log(goods);
-	// console.log(goodsDetail.value);
-	shoppingCartStore.addShopCart(goods);
-
-	closeCollectPopup();
-	uni.showToast({
-		title: '已加入购物车',
-		icon: 'none',
-	});
-};
 </script>
 
 <style lang="scss" scoped>
@@ -299,14 +358,11 @@ const addShopCart = () => {
 			@extend .df-aic;
 			height: 100rpx;
 			.iconfont {
-				width: 60rpx;
-				height: 60rpx;
-				@extend .df-aic;
-				justify-content: center;
-				border-radius: 100%;
-				background-color: #000;
-				color: #fff;
-				margin: 0 20rpx;
+				// width: 60rpx;
+				// height: 60rpx;
+				// @extend .df-aic;
+				// justify-content: center;
+				margin-left: 40rpx;
 			}
 			.content-text {
 				margin: 0 30rpx;

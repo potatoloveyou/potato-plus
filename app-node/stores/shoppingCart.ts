@@ -112,6 +112,12 @@ export const useShoppingCartStore = defineStore('shoppingCart', () => {
 		}
 	};
 
+	// 获取指定商品数量
+	const getCartItemQuantity = (itemId: string): number => {
+		const item = cartList.value.find((cartItem) => cartItem._id === itemId);
+		return item ? item.num : 0;
+	};
+
 	return {
 		cartList,
 		toggleItemSelection,
@@ -123,5 +129,6 @@ export const useShoppingCartStore = defineStore('shoppingCart', () => {
 		updateItemNum,
 		deleteGoods,
 		addShopCart,
+		getCartItemQuantity,
 	};
 });
