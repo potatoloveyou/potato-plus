@@ -1,5 +1,5 @@
 <template>
-	<view class="shopping-cart">
+	<view class="shoppingCart">
 		<NavBar>
 			<template #titleBar-slot>
 				<view class="wx-app-index-nav">
@@ -118,7 +118,7 @@ onLoad(() => {
 	text-align: center;
 	box-sizing: border-box;
 }
-.shopping-cart {
+.shoppingCart {
 	.wx-app-index-nav {
 		width: 100%;
 		display: flex;

@@ -118,10 +118,6 @@ onLoad((e) => {
 	getGoodsDetailData(e.id);
 });
 
-onReady(() => {
-	options.value[2].info = shoppingCartStore.getCartItemQuantity(goodsDetail.value._id);
-});
-
 const dataList = ref([]);
 dataList.value = [
 	{
@@ -158,6 +154,45 @@ dataList.value = [
 	},
 ];
 
+// 底部左边
+const options = ref([]);
+options.value = [
+	{
+		icon: 'chat',
+		text: '客服',
+	},
+	{
+		icon: 'shop',
+		text: '店铺',
+		infoBackgroundColor: '#007aff',
+		infoColor: '#f5f5f5',
+	},
+	{
+		icon: 'cart',
+		text: '购物车',
+		info: 0,
+	},
+];
+
+onReady(() => {
+	options.value[2].info = shoppingCartStore.getCartItemQuantity(goodsDetail.value._id);
+});
+
+// 底部右边按钮
+const customButtonGroup = ref([]);
+customButtonGroup.value = [
+	{
+		text: '加入购物车',
+		backgroundColor: 'linear-gradient(90deg, #1E83FF, #0053B8)',
+		color: '#fff',
+	},
+	{
+		text: '立即购买',
+		backgroundColor: 'linear-gradient(90deg, #60F3FF, #088FEB)',
+		color: '#fff',
+	},
+];
+
 // 关闭info弹窗
 const closeCollectPopup = () => {
 	collectPopup.value.close();
@@ -185,41 +220,6 @@ const addShopCart = () => {
 	closeCollectPopup();
 };
 
-// 底部左边
-const options = ref([]);
-options.value = [
-	{
-		icon: 'chat',
-		text: '客服',
-	},
-	{
-		icon: 'shop',
-		text: '店铺',
-		infoBackgroundColor: '#007aff',
-		infoColor: '#f5f5f5',
-	},
-	{
-		icon: 'cart',
-		text: '购物车',
-		info: shoppingCartStore.getCartItemQuantity(goodsDetail.value._id),
-	},
-];
-
-// 底部右边按钮
-const customButtonGroup = ref([]);
-customButtonGroup.value = [
-	{
-		text: '加入购物车',
-		backgroundColor: 'linear-gradient(90deg, #1E83FF, #0053B8)',
-		color: '#fff',
-	},
-	{
-		text: '立即购买',
-		backgroundColor: 'linear-gradient(90deg, #60F3FF, #088FEB)',
-		color: '#fff',
-	},
-];
-
 // 底部左侧点击事件
 const onClick = (event) => {
 	// console.log(event);
@@ -232,7 +232,7 @@ const onClick = (event) => {
 			break;
 		case 'cart':
 			uni.switchTab({
-				url: '/pages/shopping-cart/shopping-cart',
+				url: '/pages/shoppingCart/shoppingCart',
 			});
 			break;
 		default:

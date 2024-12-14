@@ -34,7 +34,7 @@
 			}
 		},
 		{
-			"path": "pages/shopping-cart/shopping-cart",
+			"path": "pages/shoppingCart/shoppingCart",
 			"style": {
 				"navigationBarTitleText": "购物车",
 				"navigationBarBackgroundColor": "#ffffff",
@@ -79,7 +79,7 @@
 			}
 		},
 		{
-			"path": "pages/search-list/search-list",
+			"path": "pages/searchList/searchList",
 			"style": {
 				"navigationBarTitleText": "搜索",
 				"navigationBarBackgroundColor": "#ffffff",
@@ -124,6 +124,12 @@
 					}
 				}
 			}
+		},
+		{
+			"path": "pages/myConfig/myConfig",
+			"style": {
+				"navigationBarTitleText": "设置"
+			}
 		}
 	],
 	"tabBar": {
@@ -138,7 +144,7 @@
 			"selectedIconPath": "static/tabbar/分类-h.png",
 			"text": "分类"
 		}, {
-			"pagePath": "pages/shopping-cart/shopping-cart",
+			"pagePath": "pages/shoppingCart/shoppingCart",
 			"iconPath": "static/tabbar/购物车.png",
 			"selectedIconPath": "static/tabbar/购物车-h.png",
 			"text": "购物车"
