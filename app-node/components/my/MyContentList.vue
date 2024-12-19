@@ -88,7 +88,7 @@
 	justify-content: space-between;
 	background-color: #fff;
 	padding: 24rpx 30rpx;
-	border-bottom: 4rpx solid #f6f6f6;
+	border-bottom: 2rpx solid #e0e0e0;
 	.item-left {
 		@extend .df-aic;
 		.iconfont {
@@ -108,7 +108,7 @@
 		}
 		.iconfont {
 			font-size: 44rpx;
-			opacity: 0.3;
+			opacity: 0.5;
 		}
 	}
 }

@@ -20,7 +20,7 @@ export const getIndexClassify = (data: IndexData) => {
 	});
 };
 
-const mapQueryParams = (params) => {
+const mapQueryParams = (params: any) => {
 	const { keyword, ...rest } = params;
 	return {
 		name: keyword, // 映射为 name

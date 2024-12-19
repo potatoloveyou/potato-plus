@@ -9,7 +9,7 @@ export const useShoppingCartStore = defineStore('shoppingCart', () => {
 		name: string;
 		color: string;
 		imgUrl: string;
-		pprice: number; // 改为数字类型以便于金额计算
+		pprice: number;
 		num: number;
 	}
 

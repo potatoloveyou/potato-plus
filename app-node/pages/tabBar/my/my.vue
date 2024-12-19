@@ -107,7 +107,6 @@ const goMyConfig = () => {
 			}
 			.user-name {
 				text-align: center;
-				color: #fff;
 			}
 		}
 	}
@@ -126,7 +125,6 @@ const goMyConfig = () => {
 			}
 			.order-all {
 				@extend .df-aic;
-				color: #666;
 				color: #666;
 				font-size: 30rpx;
 				.iconfont {

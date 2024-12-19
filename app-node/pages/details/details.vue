@@ -232,7 +232,7 @@ const onClick = (event) => {
 			break;
 		case 'cart':
 			uni.switchTab({
-				url: '/pages/shoppingCart/shoppingCart',
+				url: '/pages/tabBar/shoppingCart/shoppingCart',
 			});
 			break;
 		default:
