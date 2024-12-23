@@ -5,7 +5,7 @@
 				<view class="manage" v-if="!isManage">管理</view>
 				<view class="manage" v-if="isManage">退出管理</view>
 			</view>
-			<view class="add-address" v-if="!isManage">新增地址</view>
+			<view class="add-address" v-if="!isManage" @click="modifyAddressPopup">新增地址</view>
 		</view>
 		<view class="address-list">
 			<view class="address-item" v-for="(item, index) in addressManageStore.addressList" :key="item._id">
@@ -15,7 +15,7 @@
 						<view class="phone-number">{{ item.phone }}</view>
 					</view>
 					<view class="top-right">
-						<view class="iconfont icon-daipingjia" @click="modifyAddressPopup"></view>
+						<view class="iconfont icon-daipingjia"></view>
 					</view>
 				</view>
 				<view class="item-bottom">
@@ -35,7 +35,47 @@
 
 		<uni-popup ref="collectPopup" type="bottom" :safe-area="false">
 			<view class="collectPopup">
-				<view class="pop-content"></view>
+				<view class="pop-content">
+					<view class="pop-content-item">
+						<view class="item-top" @click="showCityPicker">
+							<view class="item-text">所在地区</view>
+							<view class="iconfont icon-shanglajiantou"></view>
+						</view>
+						<!-- 						<mpvue-city-picker
+							ref="mpvuePicker"
+							:pickerValueDefault="pickerValueDefault"
+							@onChange="onChange"
+							@onCancel="onCancel"
+							@onConfirm="onConfirm"></mpvue-city-picker> -->
+						<input type="text" v-model="addressCity" placeholder="所在地区" />
+					</view>
+
+					<view class="pop-content-item">
+						<view class="item-top">
+							<view class="item-text">详细地址与门牌号</view>
+							<view class="iconfont icon-shanglajiantou"></view>
+						</view>
+						<input type="text" v-model="address" placeholder="详细地址与门牌号" />
+					</view>
+
+					<view class="pop-content-item">
+						<view class="item-top">
+							<view class="item-text">收货人名字</view>
+							<view class="iconfont icon-shanglajiantou"></view>
+						</view>
+						<input type="text" v-model="recipient" placeholder="收货人名字" />
+					</view>
+
+					<view class="pop-content-item">
+						<view class="item-top">
+							<view class="item-text">手机号</view>
+							<view class="iconfont icon-shanglajiantou"></view>
+						</view>
+						<input type="text" v-model="phone" placeholder="手机号" />
+					</view>
+				</view>
+
+				<view class="save" @click="addAddress(newAddress)">保存地址</view>
 				<view class="safe-area-inset-bottom"></view>
 			</view>
 		</uni-popup>
@@ -44,6 +84,9 @@
 
 <script setup>
 import { ref } from 'vue';
+
+import mpvueCityPicker from 'mpvue-citypicker';
+
 import { useAddressManageStore } from '@/stores/addressManage.ts';
 const addressManageStore = useAddressManageStore();
 
@@ -55,9 +98,6 @@ const toggleManageMode = () => {
 // 切换地址为默认地址
 const toggleDefaultAddress = addressManageStore.toggleDefaultAddress;
 
-// 添加地址
-const addAddress = addressManageStore.addAddress;
-
 // 删除地址
 const removeAddress = addressManageStore.removeAddress;
 
@@ -67,6 +107,74 @@ const collectPopup = ref(null);
 const modifyAddressPopup = () => {
 	collectPopup.value.open();
 	console.log(123);
+};
+
+// // 三级弹窗
+// const mpvuePicker = ref(null);
+// const pickerValueDefault = [0, 0, 2];
+// const cityName = ref('所在地区');
+// const showCityPicker = () => {
+// 	mpvuePicker.value.show();
+// };
+// const onConfirm = (e) => {
+// 	console.log(e);
+// 	cityName.value = e.label;
+// };
+
+const addressCity = ref('');
+const address = ref('');
+const recipient = ref('');
+const phone = ref('');
+const newAddress = ref({});
+
+const validateAddress = (address) => {
+	if (!address.recipient) {
+		uni.showToast({ title: '请填写收货人名字', icon: 'none' });
+		return false;
+	}
+	if (!address.phone || !/^1[3-9]\d{9}$/.test(address.phone)) {
+		uni.showToast({ title: '请填写正确的手机号', icon: 'none' });
+		return false;
+	}
+	if (!address.addressCity) {
+		uni.showToast({ title: '请选择所在地区', icon: 'none' });
+		return false;
+	}
+	if (!address.address) {
+		uni.showToast({ title: '请填写详细地址', icon: 'none' });
+		return false;
+	}
+	return true;
+};
+
+// 添加地址
+const addAddress = () => {
+	// 整合新地址数据
+	newAddress.value = {
+		recipient: recipient.value,
+		phone: phone.value,
+		addressCity: addressCity.value,
+		address: address.value,
+		isDefault: false,
+	};
+
+	// 校验表单数据
+	if (!validateAddress(newAddress.value)) return;
+
+	// 同步添加地址
+	addressManageStore.addAddress(newAddress.value);
+
+	uni.showToast({ title: '地址保存成功', icon: 'success' });
+
+	// 清空表单
+	recipient.value = '';
+	phone.value = '';
+	addressCity.value = '';
+	address.value = '';
+	newAddress.value = {};
+
+	// 关闭弹窗
+	collectPopup.value.close();
 };
 </script>
 
@@ -103,7 +211,6 @@ const modifyAddressPopup = () => {
 	.address-item {
 		padding: 10rpx;
 		border-bottom: 2rpx solid #e0e0e0;
-
 		& > view {
 			padding: 15rpx 0;
 		}
@@ -159,5 +266,25 @@ const modifyAddressPopup = () => {
 	background-color: #fff;
 	border-radius: 20rpx 20rpx 0 0;
 	max-height: 80vh;
+	.pop-content {
+		padding: 0 20rpx;
+		.pop-content-item {
+			padding: 20rpx 0;
+			border-bottom: 2rpx solid #e0e0e0;
+			.item-top {
+				@extend .df-aic;
+				.item-text {
+				}
+				.iconfont {
+				}
+			}
+		}
+	}
+	.save {
+		text-align: center;
+		background-color: #49bdfb;
+		color: #fff;
+		padding: 30rpx 0;
+	}
 }
 </style>

@@ -61,7 +61,7 @@
 						</view>
 					</view>
 
-					<view class="goods-intro1">
+					<view class="goods-intro">
 						<image class="pop-img" :src="goodsDetail.imgUrl" mode=""></image>
 
 						<view class="goods-information">
@@ -70,8 +70,8 @@
 							<view class="text">请选择 尺码</view>
 						</view>
 					</view>
-
 					<Linse />
+
 					<view class="goods-colour">
 						<view class="colour-title">颜色分类</view>
 						<view class="colour">
@@ -397,7 +397,7 @@ onNavigationBarButtonTap((e) => {
 					border-radius: 50%;
 				}
 			}
-			.goods-intro1 {
+			.goods-intro {
 				display: flex;
 				padding-bottom: 30rpx;
 				.pop-img {

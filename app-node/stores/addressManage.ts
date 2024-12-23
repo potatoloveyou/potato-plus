@@ -40,6 +40,20 @@ export const useAddressManageStore = defineStore('addressManage', () => {
 		addressList.value.push(newAddress);
 	};
 
+	// // 修改 store 中的 addAddress 方法
+	// const addAddress = async (newAddress: AddressItem) => {
+	// 	return new Promise<void>((resolve, reject) => {
+	// 		try {
+	// 			setTimeout(() => {
+	// 				addressList.value.push(newAddress); // 模拟异步保存
+	// 				resolve();
+	// 			}, 1000); // 假设 1 秒后保存完成
+	// 		} catch (error) {
+	// 			reject(error);
+	// 		}
+	// 	});
+	// };
+
 	// 删除地址
 	const removeAddress = (_id: string) => {
 		addressList.value = addressList.value.filter((item) => item._id !== _id);
