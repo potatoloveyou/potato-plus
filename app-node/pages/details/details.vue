@@ -193,12 +193,6 @@ customButtonGroup.value = [
 	},
 ];
 
-// 关闭info弹窗
-const closeCollectPopup = () => {
-	collectPopup.value.close();
-	isPopup.value = !isPopup.value;
-};
-
 // 购买数量
 const goodsNum = ref(1);
 // 修改购买数量
@@ -258,6 +252,12 @@ const buttonClick = (event) => {
 		default:
 			break;
 	}
+};
+
+// 关闭info弹窗
+const closeCollectPopup = () => {
+	collectPopup.value.close();
+	isPopup.value = !isPopup.value;
 };
 
 // 分享给好友

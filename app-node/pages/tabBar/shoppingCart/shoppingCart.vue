@@ -19,7 +19,7 @@
 		<view class="shop-list">
 			<view class="shop-item" v-for="(item, index) in shoppingCartStore.cartList" :key="item._id">
 				<label class="radio" @click="toggleItemSelection({ id: item._id })">
-					<radio value="" color="#ff3333" :checked="item.checked" />
+					<radio value="" color="#49bdfb" :checked="item.checked" />
 				</label>
 				<image class="goods-img" :src="item.imgUrl" mode=""></image>
 				<view class="goods-details">
@@ -46,7 +46,7 @@
 
 		<view class="shop-bottom">
 			<label class="radio" @click="checkAllSwitch">
-				<radio value="" color="#ff3333" :checked="shoppingCartStore.isCheckAll" />
+				<radio value="" color="#49bdfb" :checked="shoppingCartStore.isCheckAll" />
 				<text>全选</text>
 			</label>
 

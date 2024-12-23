@@ -35,7 +35,7 @@
 						<view class="item-text">待收货</view>
 					</view>
 					<view class="order-item">
-						<view class="iconfont icon-daipingjia"></view>
+						<view class="iconfont icon-pingjia"></view>
 						<view class="item-text">待评价</view>
 					</view>
 					<view class="order-item">

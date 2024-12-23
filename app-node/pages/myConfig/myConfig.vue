@@ -11,7 +11,7 @@
 				</view>
 			</view>
 
-			<view class="my-config-item" @click="goMyPath">
+			<view class="my-config-item" @click="goMyAddress">
 				<view class="content-left">
 					<view class="content-name">地址管理</view>
 				</view>
@@ -83,9 +83,9 @@
 <script setup>
 import { ref } from 'vue';
 
-const goMyPath = () => {
+const goMyAddress = () => {
 	uni.navigateTo({
-		url: '/pages/my/myPath/myPath',
+		url: '/pages/my/myAddress/myAddress',
 	});
 };
 </script>
