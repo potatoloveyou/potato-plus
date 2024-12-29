@@ -5,7 +5,7 @@
 				<view class="manage" v-if="!isManage">管理</view>
 				<view class="manage" v-if="isManage">退出管理</view>
 			</view>
-			<view class="add-address" v-if="!isManage" @click="modifyAddressPopup">新增地址</view>
+			<view class="add-address" v-if="!isManage" @click="addCollectPopupOpen">新增地址</view>
 		</view>
 		<view class="address-list">
 			<view class="address-item" v-for="(item, index) in addressManageStore.addressList" :key="item._id">
@@ -15,9 +15,10 @@
 						<view class="phone-number">{{ item.phone }}</view>
 					</view>
 					<view class="top-right">
-						<view class="iconfont icon-daipingjia"></view>
+						<view class="iconfont icon-daipingjia" @click="updateCollectPopupOpen(item)"></view>
 					</view>
 				</view>
+
 				<view class="item-bottom">
 					<view class="address-details">{{ item.address }}</view>
 					<view class="select" v-if="item.isDefault">默认</view>
@@ -37,45 +38,35 @@
 			<view class="collectPopup">
 				<view class="pop-content">
 					<view class="pop-content-item">
-						<view class="item-top" @click="showCityPicker">
+						<view class="item-top">
 							<view class="item-text">所在地区</view>
-							<view class="iconfont icon-shanglajiantou"></view>
 						</view>
-						<!-- 						<mpvue-city-picker
-							ref="mpvuePicker"
-							:pickerValueDefault="pickerValueDefault"
-							@onChange="onChange"
-							@onCancel="onCancel"
-							@onConfirm="onConfirm"></mpvue-city-picker> -->
-						<input type="text" v-model="addressCity" placeholder="所在地区" />
+						<input type="text" v-model="tempAddress.addressCity" placeholder="所在地区" />
 					</view>
 
 					<view class="pop-content-item">
 						<view class="item-top">
 							<view class="item-text">详细地址与门牌号</view>
-							<view class="iconfont icon-shanglajiantou"></view>
 						</view>
-						<input type="text" v-model="address" placeholder="详细地址与门牌号" />
+						<input type="text" v-model="tempAddress.address" placeholder="详细地址与门牌号" />
 					</view>
 
 					<view class="pop-content-item">
 						<view class="item-top">
 							<view class="item-text">收货人名字</view>
-							<view class="iconfont icon-shanglajiantou"></view>
 						</view>
-						<input type="text" v-model="recipient" placeholder="收货人名字" />
+						<input type="text" v-model="tempAddress.recipient" placeholder="收货人名字" />
 					</view>
 
 					<view class="pop-content-item">
 						<view class="item-top">
 							<view class="item-text">手机号</view>
-							<view class="iconfont icon-shanglajiantou"></view>
 						</view>
-						<input type="text" v-model="phone" placeholder="手机号" />
+						<input type="text" v-model="tempAddress.phone" placeholder="手机号" />
 					</view>
 				</view>
 
-				<view class="save" @click="addAddress(newAddress)">保存地址</view>
+				<view class="save" @click="saveAddress">保存地址</view>
 				<view class="safe-area-inset-bottom"></view>
 			</view>
 		</uni-popup>
@@ -84,10 +75,8 @@
 
 <script setup>
 import { ref } from 'vue';
-
-import mpvueCityPicker from 'mpvue-citypicker';
-
 import { useAddressManageStore } from '@/stores/addressManage.ts';
+
 const addressManageStore = useAddressManageStore();
 
 const isManage = ref(false);
@@ -101,80 +90,60 @@ const toggleDefaultAddress = addressManageStore.toggleDefaultAddress;
 // 删除地址
 const removeAddress = addressManageStore.removeAddress;
 
-// 加入购物车弹窗
+// 新增/修改的临时数据
+const tempAddress = ref({
+	isDefault: false,
+	recipient: '',
+	phone: '',
+	addressCity: '',
+	address: '',
+});
+
+// 是否为编辑模式（true：新增，false：修改）
+const isEditing = ref(true);
+
+// 弹窗实例
 const collectPopup = ref(null);
-// 修改地址按钮
-const modifyAddressPopup = () => {
+const collectPopupOpen = () => {
 	collectPopup.value.open();
-	console.log(123);
 };
-
-// // 三级弹窗
-// const mpvuePicker = ref(null);
-// const pickerValueDefault = [0, 0, 2];
-// const cityName = ref('所在地区');
-// const showCityPicker = () => {
-// 	mpvuePicker.value.show();
-// };
-// const onConfirm = (e) => {
-// 	console.log(e);
-// 	cityName.value = e.label;
-// };
-
-const addressCity = ref('');
-const address = ref('');
-const recipient = ref('');
-const phone = ref('');
-const newAddress = ref({});
-
-const validateAddress = (address) => {
-	if (!address.recipient) {
-		uni.showToast({ title: '请填写收货人名字', icon: 'none' });
-		return false;
-	}
-	if (!address.phone || !/^1[3-9]\d{9}$/.test(address.phone)) {
-		uni.showToast({ title: '请填写正确的手机号', icon: 'none' });
-		return false;
-	}
-	if (!address.addressCity) {
-		uni.showToast({ title: '请选择所在地区', icon: 'none' });
-		return false;
-	}
-	if (!address.address) {
-		uni.showToast({ title: '请填写详细地址', icon: 'none' });
-		return false;
-	}
-	return true;
-};
-
-// 添加地址
-const addAddress = () => {
-	// 整合新地址数据
-	newAddress.value = {
-		recipient: recipient.value,
-		phone: phone.value,
-		addressCity: addressCity.value,
-		address: address.value,
-		isDefault: false,
-	};
-
-	// 校验表单数据
-	if (!validateAddress(newAddress.value)) return;
-
-	// 同步添加地址
-	addressManageStore.addAddress(newAddress.value);
-
-	uni.showToast({ title: '地址保存成功', icon: 'success' });
-
-	// 清空表单
-	recipient.value = '';
-	phone.value = '';
-	addressCity.value = '';
-	address.value = '';
-	newAddress.value = {};
-
-	// 关闭弹窗
+const collectPopupClose = () => {
 	collectPopup.value.close();
+};
+
+// 点击新增地址打开弹窗
+const addCollectPopupOpen = () => {
+	isEditing.value = true; // 新增模式
+	tempAddress.value = {
+		// 初始化为空数据
+		isDefault: false,
+		recipient: '',
+		phone: '',
+		addressCity: '',
+		address: '',
+	};
+	collectPopupOpen();
+};
+
+// 点击修改地址打开弹窗
+const updateCollectPopupOpen = (item) => {
+	isEditing.value = false; // 修改模式
+	tempAddress.value = { ...item }; // 深拷贝数据
+	collectPopupOpen();
+};
+
+// 保存地址（新增或修改）
+const saveAddress = async () => {
+	if (isEditing.value) {
+		// 新增地址
+		await addressManageStore.addAddress(tempAddress.value);
+		uni.showToast({ title: '地址保存成功', icon: 'success' });
+	} else {
+		// 修改地址
+		await addressManageStore.updateAddress(tempAddress.value._id, tempAddress.value);
+		uni.showToast({ title: '地址更新成功', icon: 'success' });
+	}
+	collectPopupClose(); // 关闭弹窗
 };
 </script>
 

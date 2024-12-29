@@ -55,6 +55,10 @@ export const useShoppingCartStore = defineStore('shoppingCart', () => {
 
 	// 判断是否全选
 	const isCheckAll = computed(() => selectedItems.value.length === cartList.value.length && cartList.value.length != 0);
+	// // 判断是否全选
+	// isCheckAll() {
+	// 	return this.cartItems.every((item) => item.selected);
+	// },
 
 	// 切换全选状态
 	const checkAllSwitch = (): void => {
