@@ -90,7 +90,7 @@ const changeLeftTab = (index) => {
 const goSearchList = (value) => {
 	console.log(value);
 	uni.navigateTo({
-		url: `/pages/searchList/searchList?keyword=${value}`,
+		url: `/pages/search/searchList/searchList?keyword=${value}`,
 	});
 };
 </script>

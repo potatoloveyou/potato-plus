@@ -60,7 +60,7 @@ import MyContentList from '@/components/my/MyContentList.vue';
 // 跳转到我的设置
 const goMyConfig = () => {
 	uni.navigateTo({
-		url: '/pages/myConfig/myConfig',
+		url: '/pages/my/myConfig/myConfig',
 	});
 };
 </script>

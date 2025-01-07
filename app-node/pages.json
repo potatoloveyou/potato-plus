@@ -79,7 +79,7 @@
 			}
 		},
 		{
-			"path": "pages/searchList/searchList",
+			"path": "pages/search/searchList/searchList",
 			"style": {
 				"navigationBarTitleText": "搜索",
 				"navigationBarBackgroundColor": "#ffffff",
@@ -126,7 +126,7 @@
 			}
 		},
 		{
-			"path": "pages/myConfig/myConfig",
+			"path": "pages/my/myConfig/myConfig",
 			"style": {
 				"navigationBarTitleText": "设置",
 				"navigationBarBackgroundColor": "#f6f6f6"

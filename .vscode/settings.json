@@ -1,4 +1,6 @@
 {
 	"Codegeex.CompletionDelay": 0.4,
-	"Codegeex.CommitMessageStyle": "ConventionalCommits"
+	"Codegeex.CommitMessageStyle": "ConventionalCommits",
+	"Codegeex.GenerationPreference": "automatic",
+	"Codegeex.Chat.fontSize": 12
 }

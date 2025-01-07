@@ -123,7 +123,7 @@ const toSearchList = (item) => {
 	// #endif
 
 	uni.navigateTo({
-		url: `/pages/searchList/searchList?keyword=${item}`,
+		url: `/pages/search/searchList/searchList?keyword=${item}`,
 	});
 };
 
