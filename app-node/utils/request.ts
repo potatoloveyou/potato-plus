@@ -1,5 +1,5 @@
 // const base_url = 'http://localhost:9229';
-const base_url = 'http://192.168.190.71:9229';
+const base_url = 'http://192.168.39.7:9229';
 
 interface Config {
 	url: string;
@@ -27,8 +27,12 @@ export const request = (config: Config) => {
 				if (res.statusCode != 200) {
 					return reject();
 				}
+
 				if (res.data.code === 0) {
 					resolve(res.data);
+				}
+				if (res.data.code === 200) {
+					console.log('你的接口返回的code是200，确定是正确的吗？');
 				}
 			},
 			// 请求失败的回调函数

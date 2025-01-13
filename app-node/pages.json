@@ -1,5 +1,6 @@
 {
-	"pages": [ //pages数组中第一项表示应用启动页，参考：https://uniapp.dcloud.io/collocation/pages
+	"pages": [
+		//pages数组中第一项表示应用启动页，参考：https://uniapp.dcloud.io/collocation/pages
 		{
 			"path": "pages/tabBar/index/index",
 			"style": {
@@ -52,7 +53,6 @@
 			"path": "pages/search/search",
 			"style": {
 				"navigationBarTitleText": "搜索",
-				"titleSiez": "50rpx",
 				"navigationBarBackgroundColor": "#ffffff",
 				// "navigationStyle": "custom",
 				"app-plus": {
@@ -67,13 +67,15 @@
 							"backgroundColor": "#f5f5f5",
 							"placeholderColor": "#b3b3b3"
 						},
-						"buttons": [{
-							"float": "right",
-							"color": "#636363",
-							"text": "搜索",
-							"fontSize": "16px",
-							"width": "60px"
-						}]
+						"buttons": [
+							{
+								"float": "right",
+								"color": "#636363",
+								"text": "搜索",
+								"fontSize": "16px",
+								"width": "60px"
+							}
+						]
 					}
 				}
 			}
@@ -96,13 +98,15 @@
 							"backgroundColor": "#f5f5f5",
 							"placeholderColor": "#b3b3b3"
 						},
-						"buttons": [{
-							"float": "right",
-							"color": "#636363",
-							"text": "筛选",
-							"fontSize": "16px",
-							"width": "60px"
-						}]
+						"buttons": [
+							{
+								"float": "right",
+								"color": "#636363",
+								"text": "筛选",
+								"fontSize": "16px",
+								"width": "60px"
+							}
+						]
 					}
 				}
 			}
@@ -116,11 +120,14 @@
 					"scrollIndicator": "none",
 					"titleNView": {
 						"type": "transparent",
-						"buttons": [{
-							"type": "menu"
-						}, {
-							"type": "share"
-						}]
+						"buttons": [
+							{
+								"type": "menu"
+							},
+							{
+								"type": "share"
+							}
+						]
 					}
 				}
 			}
@@ -138,30 +145,42 @@
 				"navigationBarTitleText": "地址管理",
 				"navigationBarBackgroundColor": "#ffffff"
 			}
+		},
+		{
+			"path": "pages/my/myOrder/myOrder",
+			"style": {
+				"navigationBarTitleText": "我的订单",
+				"navigationBarBackgroundColor": "#ffffff"
+			}
 		}
 	],
 	"tabBar": {
-		"list": [{
-			"pagePath": "pages/tabBar/index/index",
-			"iconPath": "static/tabBar/首页.png",
-			"selectedIconPath": "static/tabBar/首页-h.png",
-			"text": "首页"
-		}, {
-			"pagePath": "pages/tabBar/classify/classify",
-			"iconPath": "static/tabBar/分类.png",
-			"selectedIconPath": "static/tabBar/分类-h.png",
-			"text": "分类"
-		}, {
-			"pagePath": "pages/tabBar/shoppingCart/shoppingCart",
-			"iconPath": "static/tabBar/购物车.png",
-			"selectedIconPath": "static/tabBar/购物车-h.png",
-			"text": "购物车"
-		}, {
-			"pagePath": "pages/tabBar/my/my",
-			"iconPath": "static/tabBar/我的.png",
-			"selectedIconPath": "static/tabBar/我的-h.png",
-			"text": "我的"
-		}]
+		"list": [
+			{
+				"pagePath": "pages/tabBar/index/index",
+				"iconPath": "static/tabBar/首页.png",
+				"selectedIconPath": "static/tabBar/首页-h.png",
+				"text": "首页"
+			},
+			{
+				"pagePath": "pages/tabBar/classify/classify",
+				"iconPath": "static/tabBar/分类.png",
+				"selectedIconPath": "static/tabBar/分类-h.png",
+				"text": "分类"
+			},
+			{
+				"pagePath": "pages/tabBar/shoppingCart/shoppingCart",
+				"iconPath": "static/tabBar/购物车.png",
+				"selectedIconPath": "static/tabBar/购物车-h.png",
+				"text": "购物车"
+			},
+			{
+				"pagePath": "pages/tabBar/my/my",
+				"iconPath": "static/tabBar/我的.png",
+				"selectedIconPath": "static/tabBar/我的-h.png",
+				"text": "我的"
+			}
+		]
 	},
 	"globalStyle": {
 		"navigationBarTextStyle": "black",

@@ -44,7 +44,7 @@
 
 		<swiper @change="onChangeTab" :current="topBarIndex" :style="`height:${clentHeight}px;`">
 			<swiper-item v-for="(item, index) in newTopBar" :key="index">
-				<scroll-view scroll-y="true" :style="`height:${clentHeight}px;`" @scrolltolower="loadMore(index)">
+				<scroll-view scroll-y :style="`height:${clentHeight}px;`" @scrolltolower="loadMore(index)">
 					<block v-if="item.data.length > 0">
 						<block v-for="(k, i) in item.data" :key="i">
 							<!-- 首页推荐 -->
@@ -81,165 +81,165 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
-import { onLoad, onReady } from '@dcloudio/uni-app';
-import IndexSwiper from '@/components/index/recommend/IndexSwiper.vue';
-import Recommend from '@/components/index/recommend/Recommend.vue';
-import Card from '@/components/common/Card.vue';
-import CommodityList from '@/components/common/CommodityList.vue';
+	import { ref } from 'vue';
+	import { onLoad, onReady } from '@dcloudio/uni-app';
+	import IndexSwiper from '@/components/index/recommend/IndexSwiper.vue';
+	import Recommend from '@/components/index/recommend/Recommend.vue';
+	import Card from '@/components/common/Card.vue';
+	import CommodityList from '@/components/common/CommodityList.vue';
 
-import Banner from '@/components/index/Outdoors/Banner.vue';
-import Icons from '@/components/index/Outdoors/Icons.vue';
-import Hot from '@/components/index/Outdoors/Hot.vue';
-import Shop from '@/components/index/Outdoors/Shop.vue';
-import NavBar from '@/components/common/NavBar.vue';
+	import Banner from '@/components/index/Outdoors/Banner.vue';
+	import Icons from '@/components/index/Outdoors/Icons.vue';
+	import Hot from '@/components/index/Outdoors/Hot.vue';
+	import Shop from '@/components/index/Outdoors/Shop.vue';
+	import NavBar from '@/components/common/NavBar.vue';
 
-import { getNavBarHeight } from '@/utils/system.ts';
-import { getIndexList, getIndexClassify } from '@/api/apis.ts';
+	import { getNavBarHeight } from '@/utils/system.ts';
+	import { getIndexList, getIndexClassify } from '@/api/apis.ts';
 
-// 内容块的高度值
-const clentHeight = ref(0);
-onReady(() => {
-	uni.getSystemInfo({
-		success: (res) => {
-			clentHeight.value = res.windowHeight - uni.upx2px(80) - getNavBarHeight.value;
-		},
+	// 内容块的高度值
+	const clentHeight = ref(0);
+	onReady(() => {
+		uni.getSystemInfo({
+			success: (res) => {
+				clentHeight.value = res.windowHeight - uni.upx2px(80) - getNavBarHeight.value;
+			},
+		});
 	});
-});
 
-// 顶部topBar内容
-const topBar = ref([]);
-// 承载数据
-const newTopBar = ref([]);
+	// 顶部topBar内容
+	const topBar = ref([]);
+	// 承载数据
+	const newTopBar = ref([]);
 
-const initData = (res) => {
-	return topBar.value.map((_, index) => ({
-		data: index === 0 ? res.data : [],
-		load: 'first',
-		loadText: '上拉加载更多...',
-		length: res.data.length,
-	}));
-};
+	const initData = (res) => {
+		return topBar.value.map((_, index) => ({
+			data: index === 0 ? res.data : [],
+			load: 'first',
+			loadText: '上拉加载更多...',
+			length: res.data.length,
+		}));
+	};
 
-const getIndexData = async () => {
-	const res = await getIndexList();
-	// console.log(res.data);
-	topBar.value = res.data.topBar;
-	newTopBar.value = initData(res.data);
-};
+	const getIndexData = async () => {
+		const res = await getIndexList();
 
-onLoad(() => {
-	getIndexData();
-});
+		topBar.value = res.data.topBar;
+		newTopBar.value = initData(res.data);
+	};
 
-// 选中索引
-const topBarIndex = ref(0);
-// 顶部tab跟随索引
-const scrollIntoIndex = ref('top0');
+	onLoad(() => {
+		getIndexData();
+	});
 
-// 点击顶部tab
-const changeTab = (index) => {
-	if (topBarIndex.value == index) {
-		return;
-	}
-	topBarIndex.value = index;
-	scrollIntoIndex.value = 'top' + index;
+	// 选中索引
+	const topBarIndex = ref(0);
+	// 顶部tab跟随索引
+	const scrollIntoIndex = ref('top0');
 
-	// 首次滑动
-	if (newTopBar.value[topBarIndex.value].load == 'first') {
+	// 点击顶部tab
+	const changeTab = (index) => {
+		if (topBarIndex.value == index) {
+			return;
+		}
+		topBarIndex.value = index;
+		scrollIntoIndex.value = 'top' + index;
+
+		// 首次滑动
+		if (newTopBar.value[topBarIndex.value].load == 'first') {
+			addData();
+		}
+	};
+
+	// 滑动内容
+	const onChangeTab = (event) => {
+		changeTab(event.detail.current);
+	};
+
+	// 查询参数
+	const queryparams = ref({
+		index: 1,
+		limit: 4,
+		offset: 10,
+	});
+
+	// 对应显示不同数据
+	const addData = async () => {
+		let index = topBarIndex.value;
+		// console.log(index);
+
+		// 切换到那个就存储哪个的id
+		let id = topBar.value[index].id;
+		// 对应topBar的id存储到queryparams的index中
+		queryparams.value.index = id;
+
+		const page = newTopBar.value[index].data.length - newTopBar.value[index].length + 1;
+		queryparams.value.offset = Math.ceil(page * queryparams.value.limit);
+		// console.log(queryparams.value);
+		// console.log(page);
+
+		// 上拉加载更多时请求数据
+		let res = await getIndexClassify(queryparams.value);
+		newTopBar.value[index].data = [...newTopBar.value[index].data, ...res.data];
+		// console.log(res);
+
+		// 记录已滑动过的
+		newTopBar.value[index].load = 'last';
+
+		newTopBar.value[index].loadText = '上拉加载更多...';
+	};
+
+	// 上拉加载更多
+	const loadMore = (index) => {
+		newTopBar.value[index].loadText = '加载中...';
 		addData();
-	}
-};
+	};
 
-// 滑动内容
-const onChangeTab = (event) => {
-	changeTab(event.detail.current);
-};
-
-// 查询参数
-const queryparams = ref({
-	index: 1,
-	limit: 4,
-	offset: 10,
-});
-
-// 对应显示不同数据
-const addData = async () => {
-	let index = topBarIndex.value;
-	// console.log(index);
-
-	// 切换到那个就存储哪个的id
-	let id = topBar.value[index].id;
-	// 对应topBar的id存储到queryparams的index中
-	queryparams.value.index = id;
-
-	const page = newTopBar.value[index].data.length - newTopBar.value[index].length + 1;
-	queryparams.value.offset = Math.ceil(page * queryparams.value.limit);
-	// console.log(queryparams.value);
-	// console.log(page);
-
-	// 上拉加载更多时请求数据
-	let res = await getIndexClassify(queryparams.value);
-	newTopBar.value[index].data = [...newTopBar.value[index].data, ...res.data];
-	// console.log(res);
-
-	// 记录已滑动过的
-	newTopBar.value[index].load = 'last';
-
-	newTopBar.value[index].loadText = '上拉加载更多...';
-};
-
-// 上拉加载更多
-const loadMore = (index) => {
-	newTopBar.value[index].loadText = '加载中...';
-	addData();
-};
-
-// 跳转到搜索页面
-const goSearch = () => {
-	uni.navigateTo({
-		url: '/pages/search/search',
-	});
-};
+	// 跳转到搜索页面
+	const goSearch = () => {
+		uni.navigateTo({
+			url: '/pages/search/search',
+		});
+	};
 </script>
 
 <style lang="scss" scoped>
-.wx-app-index-nav {
-	width: 100%;
-	display: flex;
-
-	& > view {
-		flex: 1;
-	}
-	.nav-icons {
+	.wx-app-index-nav {
+		width: 100%;
 		display: flex;
-		.iconfont {
-			font-size: 50rpx;
-			padding-left: 50rpx;
+
+		& > view {
+			flex: 1;
+		}
+		.nav-icons {
+			display: flex;
+			.iconfont {
+				font-size: 50rpx;
+				padding-left: 50rpx;
+			}
+		}
+		.nav-text {
+			font-size: 40rpx;
 		}
 	}
-	.nav-text {
-		font-size: 40rpx;
+	.f-active-color {
+		padding: 10rpx 0;
+		border-bottom: 6rpx solid #49bdfb;
 	}
-}
-.f-active-color {
-	padding: 10rpx 0;
-	border-bottom: 6rpx solid #49bdfb;
-}
 
-.scroll-content {
-	width: 100%;
-	height: 80rpx;
-	white-space: nowrap;
-	.scroll-item {
-		display: inline-block;
-		padding: 10rpx 30rpx;
-		font-size: 36rpx;
+	.scroll-content {
+		width: 100%;
+		height: 80rpx;
+		white-space: nowrap;
+		.scroll-item {
+			display: inline-block;
+			padding: 10rpx 30rpx;
+			font-size: 36rpx;
+		}
 	}
-}
-.load-text {
-	border-top: 2rpx solid #636363;
-	line-height: 60rpx;
-	text-align: center;
-}
+	.load-text {
+		border-top: 2rpx solid #636363;
+		line-height: 60rpx;
+		text-align: center;
+	}
 </style>

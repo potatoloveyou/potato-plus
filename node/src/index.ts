@@ -43,5 +43,9 @@ router.use(goodsList.routes());
 const goodsDetail = require('./router/goodsDetail.ts');
 router.use(goodsDetail.routes());
 
+// 订单导航栏
+const orderBar = require('./router/orderBar.ts');
+router.use(orderBar.routes());
+
 app.use(router.routes());
 app.listen(9229);

@@ -61,3 +61,10 @@ export const getGoodsDetail = (data: string) => {
 		},
 	});
 };
+
+// 订单导航栏
+export const getMyOrderBar = () => {
+	return request({
+		url: `/orderBar`,
+	});
+};
