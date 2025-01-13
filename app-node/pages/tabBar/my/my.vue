@@ -22,25 +22,9 @@
 				</view>
 
 				<view class="order-list">
-					<view class="order-item">
-						<view class="iconfont icon-gerenzhongxindingdandaifukuan"></view>
-						<view class="item-text">待付款</view>
-					</view>
-					<view class="order-item">
-						<view class="iconfont icon-a-fahuodaifahuo"></view>
-						<view class="item-text">待发货</view>
-					</view>
-					<view class="order-item">
-						<view class="iconfont icon-daishouhuo"></view>
-						<view class="item-text">待收货</view>
-					</view>
-					<view class="order-item">
-						<view class="iconfont icon-pingjia"></view>
-						<view class="item-text">待评价</view>
-					</view>
-					<view class="order-item">
-						<view class="iconfont icon-tuikuan"></view>
-						<view class="item-text">退款管理</view>
+					<view class="order-item" v-for="item in orderBar.slice(1)" :key="item._id">
+						<view class="iconfont" :class="item.class"></view>
+						<view class="item-text">{{ item.name }}</view>
 					</view>
 				</view>
 			</view>
@@ -54,8 +38,23 @@
 
 <script setup>
 	import { ref } from 'vue';
-	import NavBar from '@/components/common/NavBar.vue';
+	import { onLoad } from '@dcloudio/uni-app';
 	import MyContentList from '@/components/my/MyContentList.vue';
+
+	import { getMyOrderBar } from '@/api/apis.ts';
+
+	// 顶部tab
+	const orderBar = ref([]);
+
+	const getMyOrderBarData = async () => {
+		const res = await getMyOrderBar();
+		orderBar.value = res.orderBar;
+		console.log(orderBar.value);
+	};
+
+	onLoad(() => {
+		getMyOrderBarData();
+	});
 
 	// 跳转到我的设置
 	const goMyConfig = () => {

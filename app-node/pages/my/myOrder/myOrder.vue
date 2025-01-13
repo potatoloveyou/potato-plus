@@ -21,7 +21,7 @@
 					:style="`height:${clentHeight}px;`"
 					@scrolltolower="loadMore(index)"
 					class="bg-active-color">
-					<view class="order-content" v-show="false">
+					<view class="order-content">
 						<view class="order-item" v-for="item in 5" :key="item">
 							<view class="item-top">
 								<view class="order-status f-active-color">待买家支付</view>
@@ -63,10 +63,10 @@
 						</view>
 					</view>
 
-					<view class="no-order">
+					<!-- <view class="no-order">
 						<view>你还没有订单</view>
 						<view class="no-order-home" @click="goHome">去首页逛逛吧</view>
-					</view>
+					</view> -->
 				</scroll-view>
 			</swiper-item>
 		</swiper>
@@ -102,6 +102,7 @@
 		const res = await getMyOrderBar();
 		orderBar.value = res.orderBar;
 		newTopBar.value = res.orderBar;
+		console.log(res);
 	};
 
 	onLoad(() => {
