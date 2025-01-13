@@ -2,7 +2,7 @@ const Router = require('@koa/router');
 // https://github.com/koajs/router
 const router = new Router();
 
-const { ObjectId, goods_search, top_Bar } = require('../db/mongo.ts');
+const { ObjectId, goods_search, top_bar } = require('../db/mongo.ts');
 
 // 中间件，解析post请求的参数
 const bodyParser = require('koa-bodyparser');
@@ -10,7 +10,7 @@ const bodyParser = require('koa-bodyparser');
 // 首页推荐
 router.get('/index_list/data', async (ctx, next) => {
 	try {
-		const topBar = await top_Bar.find().toArray();
+		const topBar = await top_bar.find().toArray();
 
 		let query = {};
 		const options = {

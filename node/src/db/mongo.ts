@@ -9,8 +9,12 @@ const db = client.db('app_node');
 
 const goods_search = db.collection('goods_search');
 
-const top_Bar = db.collection('topBar');
+const top_bar = db.collection('top_bar');
 
-const order_Bar = db.collection('orderBar');
+const order_bar = db.collection('order_bar');
 
-module.exports = { ObjectId, client, goods_search, top_Bar, order_Bar };
+const shopping_cart = db.collection('orderBar');
+
+const order = db.collection('order');
+
+module.exports = { ObjectId, client, goods_search, top_bar, order_bar, order };
