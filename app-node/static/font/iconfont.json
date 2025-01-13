@@ -1,10 +1,17 @@
 {
-  "id": "4729311",
-  "name": "abc",
+  "id": "4729265",
+  "name": "app",
   "font_family": "iconfont",
   "css_prefix_text": "icon-",
   "description": "",
   "glyphs": [
+    {
+      "icon_id": "42761136",
+      "name": "设置-copy",
+      "font_class": "shezhi-copy",
+      "unicode": "e70c",
+      "unicode_decimal": 59148
+    },
     {
       "icon_id": "755541",
       "name": "放大镜",

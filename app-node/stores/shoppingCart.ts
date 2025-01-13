@@ -9,7 +9,7 @@ export const useShoppingCartStore = defineStore('shoppingCart', () => {
 		name: string;
 		color: string;
 		imgUrl: string;
-		pprice: number; // 改为数字类型以便于金额计算
+		pprice: number;
 		num: number;
 	}
 
@@ -55,6 +55,10 @@ export const useShoppingCartStore = defineStore('shoppingCart', () => {
 
 	// 判断是否全选
 	const isCheckAll = computed(() => selectedItems.value.length === cartList.value.length && cartList.value.length != 0);
+	// // 判断是否全选
+	// isCheckAll() {
+	// 	return this.cartItems.every((item) => item.selected);
+	// },
 
 	// 切换全选状态
 	const checkAllSwitch = (): void => {
@@ -112,6 +116,12 @@ export const useShoppingCartStore = defineStore('shoppingCart', () => {
 		}
 	};
 
+	// 获取指定商品数量
+	const getCartItemQuantity = (itemId: string): number => {
+		const item = cartList.value.find((cartItem) => cartItem._id === itemId);
+		return item ? item.num : 0;
+	};
+
 	return {
 		cartList,
 		toggleItemSelection,
@@ -123,5 +133,6 @@ export const useShoppingCartStore = defineStore('shoppingCart', () => {
 		updateItemNum,
 		deleteGoods,
 		addShopCart,
+		getCartItemQuantity,
 	};
 });

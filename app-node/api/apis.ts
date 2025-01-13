@@ -20,7 +20,7 @@ export const getIndexClassify = (data: IndexData) => {
 	});
 };
 
-const mapQueryParams = (params) => {
+const mapQueryParams = (params: any) => {
 	const { keyword, ...rest } = params;
 	return {
 		name: keyword, // 映射为 name
@@ -59,5 +59,12 @@ export const getGoodsDetail = (data: string) => {
 		data: {
 			id: data,
 		},
+	});
+};
+
+// 订单导航栏
+export const getMyOrderBar = () => {
+	return request({
+		url: `/orderBar`,
 	});
 };

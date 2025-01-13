@@ -11,4 +11,6 @@ const goods_search = db.collection('goods_search');
 
 const top_Bar = db.collection('topBar');
 
-module.exports = { ObjectId, client, goods_search, top_Bar };
+const order_Bar = db.collection('orderBar');
+
+module.exports = { ObjectId, client, goods_search, top_Bar, order_Bar };
