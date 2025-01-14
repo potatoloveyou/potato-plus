@@ -1,4 +1,5 @@
-// supervisor --inspect
+// supervisor --inspect index.ts
+// ts-node index.ts
 
 const Koa = require('koa');
 // https://www.koajs.com.cn/
@@ -18,9 +19,9 @@ const Router = require('@koa/router');
 // https://github.com/koajs/router
 const router = new Router();
 
-router.get('/', (ctx, next) => {
-	ctx.body = 'get 方式123';
-});
+// router.get('/', (ctx, next) => {
+// 	ctx.body = 'get 方式123';
+// });
 
 // 引入路由 使用路由
 // 首页推荐
@@ -46,6 +47,10 @@ router.use(goodsDetail.routes());
 // 订单导航栏
 const orderBar = require('./router/orderBar.ts');
 router.use(orderBar.routes());
+
+// 添加地址
+const addAddress = require('./router/addAddress.ts');
+router.use(addAddress.routes());
 
 app.use(router.routes());
 app.listen(9229);

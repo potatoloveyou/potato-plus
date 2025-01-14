@@ -13,8 +13,18 @@ const top_bar = db.collection('top_bar');
 
 const order_bar = db.collection('order_bar');
 
+const user_shipping_addresses = db.collection('user_shipping_addresses');
+
 const shopping_cart = db.collection('orderBar');
 
 const order = db.collection('order');
 
-module.exports = { ObjectId, client, goods_search, top_bar, order_bar, order };
+module.exports = {
+	ObjectId,
+	client,
+	goods_search,
+	top_bar,
+	order_bar,
+	user_shipping_addresses,
+	order,
+};
