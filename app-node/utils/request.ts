@@ -1,4 +1,3 @@
-// const base_url = 'http://localhost:9229';
 const base_url = 'http://192.168.39.7:9229';
 
 interface Config {
@@ -24,25 +23,27 @@ export const request = (config: Config) => {
 			header,
 			// 请求成功的回调函数
 			success: (res: any) => {
-				if (res.statusCode != 200) {
-					return reject();
+				if (res.statusCode !== 200) {
+					console.log('HTTP 状态码异常:', res.statusCode);
+					return reject(new Error(`HTTP error: ${res.statusCode}`));
 				}
 
 				if (res.data.code === 0) {
 					resolve(res.data);
-				}
-				if (res.data.code === 200) {
-					console.log('你的接口返回的code是200，确定是正确的吗？');
+				} else {
+					console.log('接口返回非正常 code:', res.data.code);
+					reject(new Error(`API error: code ${res.data.code}`));
 				}
 			},
 			// 请求失败的回调函数
 			fail: (error) => {
-				console.log(error);
+				console.error('请求失败:', error);
+				reject(error); // 确保 fail 的情况下也触发 reject
 			},
 			// 请求完成
 			complete: () => {
-				setTimeout(function () {
-					uni.hideLoading();
+				setTimeout(() => {
+					uni.hideLoading(); // 确保每次请求完成时都隐藏 loading
 				}, 200);
 			},
 		});

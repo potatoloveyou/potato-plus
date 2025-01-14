@@ -68,3 +68,31 @@ export const getMyOrderBar = () => {
 		url: `/orderBar`,
 	});
 };
+
+// 添加地址
+export const addAddAddress = (data: any) => {
+	return request({
+		url: `/address/add`,
+		method: 'POST',
+		data,
+	});
+};
+
+// 获取用户地址列表
+interface UserAddress {
+	userId: string;
+	limit: number;
+	offset: number;
+}
+export const getUserAddressList = (data: UserAddress) => {
+	let { userId, offset = 0, limit = 10 } = data;
+	return request({
+		url: `/addresses/get`,
+		method: 'POST',
+		data: {
+			userId,
+			offset,
+			limit,
+		},
+	});
+};

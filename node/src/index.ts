@@ -49,8 +49,12 @@ const orderBar = require('./router/orderBar.ts');
 router.use(orderBar.routes());
 
 // 添加地址
-const addAddress = require('./router/addAddress.ts');
+const addAddress = require('./router/address/addUserAddress.ts');
 router.use(addAddress.routes());
+
+// 获取用户收货地址
+const getUserAddress = require('./router/address/getUserAddress.ts');
+router.use(getUserAddress.routes());
 
 app.use(router.routes());
 app.listen(9229);
