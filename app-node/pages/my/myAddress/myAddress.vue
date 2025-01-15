@@ -20,6 +20,7 @@
 				</view>
 
 				<view class="item-bottom">
+					<view class="address-city">{{ item.addressCity }}</view>
 					<view class="address-details">{{ item.address }}</view>
 					<view class="select" v-if="item.isDefault">默认</view>
 				</view>
@@ -29,7 +30,7 @@
 						<text>默认</text>
 					</label>
 
-					<view class="delete" @click="removeAddress(item._id)">删除</view>
+					<view class="delete" @click="deleteAddress(item._id)">删除</view>
 				</view>
 			</view>
 		</view>
@@ -40,6 +41,10 @@
 					<view class="pop-content-item">
 						<view class="item-top">
 							<view class="item-text">所在地区</view>
+							<label class="radio" @click="tempAddress.isDefault = !tempAddress.isDefault">
+								<radio value="" color="#49bdfb" :checked="tempAddress.isDefault" />
+								<text>默认地址</text>
+							</label>
 						</view>
 						<input type="text" v-model="tempAddress.addressCity" placeholder="所在地区" />
 					</view>
@@ -66,7 +71,7 @@
 					</view>
 				</view>
 
-				<view class="save" @click="saveAddress">保存地址</view>
+				<view class="save" @click="saveAddress()">保存地址</view>
 				<view class="safe-area-inset-bottom"></view>
 			</view>
 		</uni-popup>
@@ -74,186 +79,270 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
-import { useAddressManageStore } from '@/stores/addressManage.ts';
+	import { ref } from 'vue';
+	import { onLoad } from '@dcloudio/uni-app';
 
-const addressManageStore = useAddressManageStore();
+	import { useAddressManageStore } from '@/stores/addressManage.ts';
+	const addressManageStore = useAddressManageStore();
 
-const isManage = ref(false);
-const toggleManageMode = () => {
-	isManage.value = !isManage.value;
-};
+	import { getUserAddress, addUserAddress, delUserAddress, updateUserAddress } from '@/api/apis.ts';
 
-// 切换地址为默认地址
-const toggleDefaultAddress = addressManageStore.toggleDefaultAddress;
+	// 查询参数
+	const queryparams = ref({
+		userId: '123',
+		offset: 0,
+		limit: 10,
+	});
 
-// 删除地址
-const removeAddress = addressManageStore.removeAddress;
+	// 获取用户收货地址
+	const getUserAddressData = async () => {
+		const res = await getUserAddress(queryparams.value);
+		addressManageStore.addressList = res.data;
+	};
 
-// 新增/修改的临时数据
-const tempAddress = ref({
-	isDefault: false,
-	recipient: '',
-	phone: '',
-	addressCity: '',
-	address: '',
-});
+	onLoad(() => {
+		getUserAddressData();
+	});
 
-// 是否为编辑模式（true：新增，false：修改）
-const isEditing = ref(true);
+	// 管理状态
+	const isManage = ref(false);
+	const toggleManageMode = () => {
+		isManage.value = !isManage.value;
+	};
 
-// 弹窗实例
-const collectPopup = ref(null);
-const collectPopupOpen = () => {
-	collectPopup.value.open();
-};
-const collectPopupClose = () => {
-	collectPopup.value.close();
-};
+	// 删除地址
+	const deleteAddress = async (addressId) => {
+		try {
+			const res = await delUserAddress(addressId);
+			console.log(res);
+			if (res.code === 0) {
+				// 更新地址列表
+				await getUserAddressData();
+				uni.showToast({ title: '删除成功', icon: 'success' });
+			}
+		} catch (error) {}
+	};
 
-// 点击新增地址打开弹窗
-const addCollectPopupOpen = () => {
-	isEditing.value = true; // 新增模式
-	tempAddress.value = {
-		// 初始化为空数据
+	// 弹窗实例
+	const collectPopup = ref(null);
+	const collectPopupOpen = () => {
+		collectPopup.value.open();
+	};
+	const collectPopupClose = () => {
+		collectPopup.value.close();
+	};
+
+	// 新增/修改的临时数据
+	const tempAddress = ref({
 		isDefault: false,
 		recipient: '',
 		phone: '',
 		addressCity: '',
 		address: '',
+	});
+
+	// 添加地址
+	const addressAdd = async () => {
+		// 调用 validateAddress 校验
+		const isValid = addressManageStore.validateAddress(tempAddress.value);
+		if (!isValid) {
+			return; // 校验未通过，直接退出
+		}
+		try {
+			const res = await addUserAddress({
+				userId: queryparams.value.userId,
+				...tempAddress.value,
+			});
+			if (res.code === 0) {
+				// 关闭弹窗
+				collectPopupClose();
+				// 更新地址列表
+				await getUserAddressData();
+				uni.showToast({ title: '地址添加成功', icon: 'success' });
+			} else {
+				uni.showToast({ title: '地址添加失败', icon: 'none' });
+			}
+		} catch (error) {
+			console.log(error);
+		}
 	};
-	collectPopupOpen();
-};
 
-// 点击修改地址打开弹窗
-const updateCollectPopupOpen = (item) => {
-	isEditing.value = false; // 修改模式
-	tempAddress.value = { ...item }; // 深拷贝数据
-	collectPopupOpen();
-};
+	// 修改地址
+	const updateAddress = async (addressId) => {
+		// 调用 validateAddress 校验
+		const isValid = addressManageStore.validateAddress(tempAddress.value);
+		if (!isValid) {
+			return; // 校验未通过，直接退出
+		}
 
-// 保存地址（新增或修改）
-const saveAddress = async () => {
-	if (isEditing.value) {
-		// 新增地址
-		await addressManageStore.addAddress(tempAddress.value);
-		uni.showToast({ title: '地址保存成功', icon: 'success' });
-	} else {
-		// 修改地址
-		await addressManageStore.updateAddress(tempAddress.value._id, tempAddress.value);
-		uni.showToast({ title: '地址更新成功', icon: 'success' });
-	}
-	collectPopupClose(); // 关闭弹窗
-};
+		try {
+			const res = await updateUserAddress({ addressId, data: tempAddress.value });
+			console.log(res);
+
+			if (res.code == 0) {
+				// 关闭弹窗
+				collectPopupClose();
+				// 更新地址列表
+				await getUserAddressData();
+				uni.showToast({ title: '地址更新成功', icon: 'success' });
+			} else {
+				uni.showToast({ title: '地址更新失败', icon: 'none' });
+			}
+		} catch (error) {
+			console.error(error);
+		}
+	};
+
+	// 是否为编辑模式（true：新增，false：修改）
+	const isEditing = ref(true);
+
+	// 点击新增地址打开弹窗
+	const addCollectPopupOpen = () => {
+		isEditing.value = true; // 新增模式
+		tempAddress.value = {
+			// 初始化为空数据
+			isDefault: false,
+			recipient: '',
+			phone: '',
+			addressCity: '',
+			address: '',
+		};
+		collectPopupOpen();
+	};
+
+	const editingAddressId = ref(null); // 用于存储正在编辑的地址的 _id
+	// 点击修改地址打开弹窗
+	const updateCollectPopupOpen = (item) => {
+		editingAddressId.value = item._id;
+		isEditing.value = false; // 修改模式
+		const { _id, ...addressData } = { ...item }; // 深拷贝并删除 _id
+		tempAddress.value = addressData; // 将删除了 _id 的数据赋值给 tempAddress
+		collectPopupOpen();
+	};
+
+	// 保存地址（新增或修改）
+	const saveAddress = async () => {
+		if (isEditing.value) {
+			// 新增地址
+			await addressAdd();
+		} else {
+			// 修改地址
+			await updateAddress(editingAddressId.value);
+		}
+	};
 </script>
 
 <style lang="scss" scoped>
-.df-aic {
-	display: flex;
-	align-items: center;
-}
-.df-jic {
-	display: flex;
-	justify-content: center;
-}
+	.df-aic {
+		display: flex;
+		align-items: center;
+	}
+	.df-jic {
+		display: flex;
+		justify-content: center;
+	}
 
-.my-address {
-}
-.my-address-top {
-	width: 100%;
-	@extend .df-aic;
-	margin: 20rpx;
-	& > view {
-		padding: 10rpx 20rpx;
-		background-color: #49bdfb;
-		color: #fff;
-		border-radius: 40rpx;
+	.my-address {
 	}
-	justify-content: space-around;
-	.manage {
-	}
-	.add-address {
-	}
-}
-.address-list {
-	padding-left: 30rpx;
-	.address-item {
-		padding: 10rpx;
-		border-bottom: 2rpx solid #e0e0e0;
+	.my-address-top {
+		width: 100%;
+		@extend .df-aic;
+		margin: 20rpx;
 		& > view {
-			padding: 15rpx 0;
+			padding: 10rpx 20rpx;
+			background-color: #49bdfb;
+			color: #fff;
+			border-radius: 40rpx;
 		}
-		.item-top {
-			@extend .df-aic;
-			justify-content: space-between;
-			.top-left {
-				@extend .df-aic;
-
-				.recipient {
-					margin-right: 20rpx;
-				}
-				.phone-number {
-				}
-			}
-			.top-right {
-				.iconfont {
-					font-size: 40rpx;
-					padding-right: 40rpx;
-				}
-			}
+		justify-content: space-around;
+		.manage {
 		}
-		.item-bottom {
-			@extend .df-aic;
-
-			.address-details {
-			}
-
-			.select {
-				padding: 4rpx 8rpx;
-				background-color: #49bdfb;
-				color: #fff;
-				border-radius: 10rpx;
-				font-size: 24rpx;
-				margin-left: 20rpx;
-			}
-		}
-		.manage-module {
-			@extend .df-aic;
-			justify-content: space-between;
-			.radio {
-			}
-			.delete {
-				padding: 10rpx 20rpx;
-				background-color: #f0f0f0;
-				border-radius: 15rpx;
-				margin-right: 50rpx;
-			}
+		.add-address {
 		}
 	}
-}
-.collectPopup {
-	background-color: #fff;
-	border-radius: 20rpx 20rpx 0 0;
-	max-height: 80vh;
-	.pop-content {
-		padding: 0 20rpx;
-		.pop-content-item {
-			padding: 20rpx 0;
+	.address-list {
+		padding-left: 30rpx;
+		.address-item {
+			padding: 10rpx;
 			border-bottom: 2rpx solid #e0e0e0;
+			& > view {
+				padding: 15rpx 0;
+			}
 			.item-top {
 				@extend .df-aic;
-				.item-text {
+				justify-content: space-between;
+				.top-left {
+					@extend .df-aic;
+
+					.recipient {
+						margin-right: 20rpx;
+					}
+					.phone-number {
+					}
 				}
-				.iconfont {
+				.top-right {
+					.iconfont {
+						font-size: 40rpx;
+						padding-right: 40rpx;
+					}
+				}
+			}
+			.item-bottom {
+				@extend .df-aic;
+				.address-city {
+					margin-right: 20rpx;
+				}
+
+				.address-details {
+				}
+
+				.select {
+					padding: 4rpx 8rpx;
+					background-color: #49bdfb;
+					color: #fff;
+					border-radius: 10rpx;
+					font-size: 24rpx;
+					margin-left: 20rpx;
+				}
+			}
+			.manage-module {
+				@extend .df-aic;
+				justify-content: space-between;
+				.radio {
+				}
+				.delete {
+					padding: 10rpx 20rpx;
+					background-color: #f0f0f0;
+					border-radius: 15rpx;
+					margin-right: 50rpx;
 				}
 			}
 		}
 	}
-	.save {
-		text-align: center;
-		background-color: #49bdfb;
-		color: #fff;
-		padding: 30rpx 0;
+	.collectPopup {
+		background-color: #fff;
+		border-radius: 20rpx 20rpx 0 0;
+		max-height: 80vh;
+		.pop-content {
+			padding: 0 20rpx;
+			.pop-content-item {
+				padding: 20rpx 0;
+				border-bottom: 2rpx solid #e0e0e0;
+				.item-top {
+					@extend .df-aic;
+					justify-content: space-between;
+					.item-text {
+					}
+					.radio {
+					}
+				}
+			}
+		}
+		.save {
+			text-align: center;
+			background-color: #49bdfb;
+			color: #fff;
+			padding: 30rpx 0;
+		}
 	}
-}
 </style>

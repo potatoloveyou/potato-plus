@@ -22,25 +22,9 @@
 				</view>
 
 				<view class="order-list">
-					<view class="order-item">
-						<view class="iconfont icon-gerenzhongxindingdandaifukuan"></view>
-						<view class="item-text">待付款</view>
-					</view>
-					<view class="order-item">
-						<view class="iconfont icon-a-fahuodaifahuo"></view>
-						<view class="item-text">待发货</view>
-					</view>
-					<view class="order-item">
-						<view class="iconfont icon-daishouhuo"></view>
-						<view class="item-text">待收货</view>
-					</view>
-					<view class="order-item">
-						<view class="iconfont icon-pingjia"></view>
-						<view class="item-text">待评价</view>
-					</view>
-					<view class="order-item">
-						<view class="iconfont icon-tuikuan"></view>
-						<view class="item-text">退款管理</view>
+					<view class="order-item" v-for="item in orderBar.slice(1)" :key="item._id">
+						<view class="iconfont" :class="item.class"></view>
+						<view class="item-text">{{ item.name }}</view>
 					</view>
 				</view>
 			</view>
@@ -53,111 +37,125 @@
 </template>
 
 <script setup>
-	import { ref } from 'vue';
-	import NavBar from '@/components/common/NavBar.vue';
-	import MyContentList from '@/components/my/MyContentList.vue';
+import { ref } from 'vue';
+import { onLoad } from '@dcloudio/uni-app';
+import MyContentList from '@/components/my/MyContentList.vue';
 
-	// 跳转到我的设置
-	const goMyConfig = () => {
-		uni.navigateTo({
-			url: '/pages/my/myConfig/myConfig',
-		});
-	};
+import { getMyOrderBar } from '@/api/apis.ts';
 
-	// 跳转到我的订单
-	const goMyOrder = () => {
-		uni.navigateTo({
-			url: '/pages/my/myOrder/myOrder',
-		});
-	};
+// 顶部tab
+const orderBar = ref([]);
+
+const getMyOrderBarData = async () => {
+	const res = await getMyOrderBar();
+	orderBar.value = res.orderBar;
+};
+
+onLoad(() => {
+	getMyOrderBarData();
+});
+
+// 跳转到我的设置
+const goMyConfig = () => {
+	uni.navigateTo({
+		url: '/pages/my/myConfig/myConfig',
+	});
+};
+
+// 跳转到我的订单
+const goMyOrder = () => {
+	uni.navigateTo({
+		url: '/pages/my/myOrder/myOrder',
+	});
+};
 </script>
 
 <style lang="scss" scoped>
-	.df-aic {
+.df-aic {
+	display: flex;
+	align-items: center;
+}
+.dg-jic {
+	display: grid;
+	justify-items: center;
+}
+.my {
+	background-color: #f6f6f6;
+	height: 100vh;
+}
+.my-header {
+	background: linear-gradient(to bottom, transparent, #fff 800rpx), linear-gradient(to right, #beecd8 20%, #f4e2d8);
+	width: 100%;
+	height: 400rpx;
+	position: relative;
+	box-sizing: border-box;
+	padding: 180rpx 40rpx 0;
+	.header-main {
 		display: flex;
-		align-items: center;
-	}
-	.dg-jic {
-		display: grid;
-		justify-items: center;
-	}
-	.my {
-		background-color: #f6f6f6;
-		height: 100vh;
-	}
-	.my-header {
-		background: linear-gradient(to bottom, transparent, #fff 800rpx), linear-gradient(to right, #beecd8 20%, #f4e2d8);
-		width: 100%;
-		height: 400rpx;
-		position: relative;
-		box-sizing: border-box;
-		padding: 180rpx 40rpx 0;
-		.header-main {
-			display: flex;
-			justify-content: space-between;
-			.iconfont {
-				font-size: 50rpx;
-				padding: 20rpx;
-			}
+		justify-content: space-between;
+		.iconfont {
+			font-size: 50rpx;
+			padding: 20rpx;
+		}
 
-			.header-user {
-				position: absolute;
-				left: 50%;
-				top: 60%;
-				transform: translateX(-50%) translateY(-50%);
-				.user-img {
-					width: 180rpx;
-					height: 180rpx;
-					border-radius: 50%;
-					border: 2rpx solid #ccc;
-					background-color: #fff;
-				}
-				.user-name {
-					text-align: center;
-				}
+		.header-user {
+			position: absolute;
+			left: 50%;
+			top: 60%;
+			transform: translateX(-50%) translateY(-50%);
+			.user-img {
+				width: 180rpx;
+				height: 180rpx;
+				border-radius: 50%;
+				border: 2rpx solid #ccc;
+				background-color: #fff;
+			}
+			.user-name {
+				text-align: center;
 			}
 		}
 	}
-	.my-order {
-		margin-bottom: 30rpx;
-		.order-content {
-			background-color: #fff;
-			.order-title {
+}
+.my-order {
+	margin-bottom: 30rpx;
+	.order-content {
+		background-color: #fff;
+		.order-title {
+			@extend .df-aic;
+			justify-content: space-between;
+			padding: 30rpx;
+			.order-my {
+				font-weight: bold;
+				font-size: 36rpx;
+			}
+			.order-all {
 				@extend .df-aic;
-				justify-content: space-between;
-				padding: 30rpx;
-				.order-my {
-					font-weight: bold;
-					font-size: 36rpx;
-				}
-				.order-all {
-					@extend .df-aic;
+				color: #666;
+				font-size: 30rpx;
+				.iconfont {
+					font-size: 24rpx;
+					padding-left: 10rpx;
 					color: #666;
-					font-size: 30rpx;
-					.iconfont {
-						font-size: 24rpx;
-						padding-left: 10rpx;
-						color: #666;
-						opacity: 0.4;
-					}
+					opacity: 0.4;
 				}
 			}
-			.order-list {
+		}
+		.order-list {
+			@extend .dg-jic;
+			grid-template-columns: repeat(5, 1fr);
+			padding: 30rpx 0;
+			.order-item {
 				@extend .dg-jic;
-				grid-template-columns: repeat(5, 1fr);
-				padding: 30rpx 0;
-				.order-item {
-					@extend .dg-jic;
-					.iconfont {
-						font-size: 60rpx;
-						padding-bottom: 10rpx;
-					}
-					.item-text {
-						color: #666;
-						font-size: 25rpx;
-					}
+				.iconfont {
+					font-size: 60rpx;
+					padding-bottom: 10rpx;
+				}
+				.item-text {
+					color: #666;
+					font-size: 25rpx;
 				}
 			}
 		}
 	}
+}
 </style>
