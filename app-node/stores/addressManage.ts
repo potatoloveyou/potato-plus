@@ -2,37 +2,19 @@ import { ref, computed } from 'vue';
 import { defineStore } from 'pinia';
 
 export const useAddressManageStore = defineStore('addressManage', () => {
-	// // 地址接口定义
-	// interface AddressItem {
-	// 	_id: string;
-	// 	isDefault: boolean;
-	// 	recipient: string;
-	// 	phone: string;
-	// 	addressCity: string;
-	// 	address: string;
-	// }
-
 	const addressList = ref([]);
 
-	// // 获取默认地址
-	// const defaultAddress = computed(() => addressList.value.find((item) => item.isDefault));
+	// 地址接口定义
+	interface AddressItem {
+		isDefault: boolean;
+		recipient: string;
+		phone: string;
+		addressCity: string;
+		address: string;
+	}
 
-	// const validateAddress = (address: AddressItem): boolean => {
-	// 	if (!address.recipient || !address.phone || !address.address) {
-	// 		console.error('Invalid address data:', address);
-	// 		return false;
-	// 	}
-	// 	return true;
-	// };
-
-	// // 切换默认地址
-	// const toggleDefaultAddress = (_id: string) => {
-	// 	addressList.value.forEach((item) => {
-	// 		item.isDefault = item._id === _id;
-	// 	});
-	// };
-
-	const validateAddress = (address): boolean => {
+	// 验证地址格式
+	const validateAddress = (address: AddressItem): boolean => {
 		if (!address.addressCity) {
 			uni.showToast({ title: '请选择所在地区', icon: 'none' });
 			return false;
@@ -53,39 +35,8 @@ export const useAddressManageStore = defineStore('addressManage', () => {
 		return true;
 	};
 
-	// 添加地址
-	const addAddress = (newAddress) => {
-		if (!validateAddress(newAddress)) {
-			throw new Error('Invalid address data');
-		}
-
-		addressList.value.push(newAddress);
-	};
-
-	// 删除地址
-	const removeAddress = (_id: string) => {
-		addressList.value = addressList.value.filter((item) => item._id !== _id);
-	};
-
-	// // 更新地址
-	// // Partial<Type>是TypeScript提供的一个工具类型,用于将对象类型的所有属性变为可选。
-	// const updateAddress = (_id: string, updatedData: Partial<AddressItem>) => {
-	// 	const addressIndex = addressList.value.findIndex((item) => item._id === _id);
-	// 	if (addressIndex === -1) {
-	// 		throw new Error('Address not found');
-	// 	}
-	// 	addressList.value[addressIndex] = {
-	// 		...addressList.value[addressIndex],
-	// 		...updatedData,
-	// 	};
-	// };
-
 	return {
 		addressList,
-		// toggleDefaultAddress,
-		addAddress,
-		removeAddress,
 		validateAddress,
-		// updateAddress,
 	};
 });

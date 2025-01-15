@@ -69,8 +69,27 @@ export const getMyOrderBar = () => {
 	});
 };
 
+// 获取用户地址列表
+interface UserAddress {
+	userId: string;
+	limit: number;
+	offset: number;
+}
+export const getUserAddress = (data: UserAddress) => {
+	let { userId, offset = 0, limit = 10 } = data;
+	return request({
+		url: `/address/get`,
+		method: 'POST',
+		data: {
+			userId,
+			offset,
+			limit,
+		},
+	});
+};
+
 // 添加地址
-export const addAddAddress = (data: any) => {
+export const addUserAddress = (data: any) => {
 	return request({
 		url: `/address/add`,
 		method: 'POST',
@@ -78,21 +97,27 @@ export const addAddAddress = (data: any) => {
 	});
 };
 
-// 获取用户地址列表
-interface UserAddress {
-	userId: string;
-	limit: number;
-	offset: number;
-}
-export const getUserAddressList = (data: UserAddress) => {
-	let { userId, offset = 0, limit = 10 } = data;
+// 删除用户地址
+export const delUserAddress = (addressId: any) => {
 	return request({
-		url: `/addresses/get`,
-		method: 'POST',
-		data: {
-			userId,
-			offset,
-			limit,
-		},
+		url: `/address/delete/${addressId}`,
+		method: 'DELETE',
+	});
+};
+
+// 更新用户地址
+export const updateUserAddress = (update: any) => {
+	let { addressId, data } = update;
+	return request({
+		url: `/address/update/${addressId}`,
+		method: 'PUT',
+		data,
+	});
+};
+
+// 获取购物车列表
+export const getShoppingCart = () => {
+	return request({
+		url: `/shoppingCart/get`,
 	});
 };

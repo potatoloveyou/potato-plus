@@ -15,6 +15,9 @@ app.use(
 	}),
 );
 
+// 中间件，解析post请求的参数
+const bodyParser = require('koa-bodyparser');
+
 const Router = require('@koa/router');
 // https://github.com/koajs/router
 const router = new Router();
@@ -48,13 +51,21 @@ router.use(goodsDetail.routes());
 const orderBar = require('./router/orderBar.ts');
 router.use(orderBar.routes());
 
+// 获取用户收货地址
+const getUserAddress = require('./router/address/getUserAddress.ts');
+router.use(getUserAddress.routes());
+
 // 添加地址
 const addAddress = require('./router/address/addUserAddress.ts');
 router.use(addAddress.routes());
 
-// 获取用户收货地址
-const getUserAddress = require('./router/address/getUserAddress.ts');
-router.use(getUserAddress.routes());
+// 删除用户收货地址
+const deleteUserAddress = require('./router/address/deleteUserAddress.ts');
+router.use(deleteUserAddress.routes());
+
+// 修改用户收货地址
+const updateUserAddress = require('./router/address/updateUserAddress.ts');
+router.use(updateUserAddress.routes());
 
 app.use(router.routes());
 app.listen(9229);

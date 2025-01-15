@@ -6,26 +6,6 @@ const bodyParser = require('koa-bodyparser');
 
 const { user_shipping_addresses } = require('../../db/mongo.ts');
 
-// // 定义接口
-// interface AddressItem {
-// 	userId: string;
-// 	isDefault: boolean;
-// 	recipient: string;
-// 	phone: string;
-// 	addressCity: string;
-// 	address: string;
-// 	createdAt?: Date;
-// 	updatedAt?: Date;
-// }
-
-// // 定义响应接口
-// interface ApiResponse {
-// 	code: number;
-// 	message?: string;
-// 	error?: string;
-// 	addressId?: string;
-// }
-
 router.post('/address/add', bodyParser(), async (ctx, next) => {
 	// console.log(ctx.request.body);
 
@@ -37,14 +17,26 @@ router.post('/address/add', bodyParser(), async (ctx, next) => {
 		if (!userId || !recipient || !phone || !addressCity || !address) {
 			ctx.status = 400;
 			ctx.body = {
-				code: 1,
+				code: 400,
 				error: '缺少必填字段:用户ID、收件人、电话、地址城市、地址',
 			};
 			return;
 		}
 
-		// 如果 isDefault 为 true，将该用户其他地址的 isDefault 置为 false
-		if (isDefault) {
+		// 检查当前用户是否已有地址
+		const userHasAddresses = await user_shipping_addresses.countDocuments({ userId });
+
+		// console.log(userHasAddresses);
+
+		let finalIsDefault = isDefault;
+
+		// 如果用户没有任何地址，将 isDefault 强制设置为 true
+		if (userHasAddresses === 0) {
+			finalIsDefault = true;
+		}
+
+		// 如果 finalIsDefault 为 true，将该用户其他地址的 isDefault 置为 false
+		if (finalIsDefault) {
 			await user_shipping_addresses.updateMany(
 				{ userId, isDefault: true }, // 限制条件，确保只更新默认地址
 				{ $set: { isDefault: false } },
@@ -54,7 +46,7 @@ router.post('/address/add', bodyParser(), async (ctx, next) => {
 		// 创建新地址对象
 		const newAddress = {
 			userId,
-			isDefault,
+			isDefault: finalIsDefault,
 			recipient,
 			phone,
 			addressCity,
@@ -66,6 +58,7 @@ router.post('/address/add', bodyParser(), async (ctx, next) => {
 		// 插入新地址
 		const result = await user_shipping_addresses.insertOne(newAddress);
 
+		ctx.status = 200;
 		ctx.body = {
 			code: 0,
 			message: '添加成功',
@@ -77,7 +70,7 @@ router.post('/address/add', bodyParser(), async (ctx, next) => {
 		console.error('Error adding address:', error);
 		ctx.status = 500;
 		ctx.body = {
-			code: 1,
+			code: 500,
 			error: 'Internal server error',
 		};
 	}

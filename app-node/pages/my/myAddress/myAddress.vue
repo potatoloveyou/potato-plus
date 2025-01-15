@@ -20,6 +20,7 @@
 				</view>
 
 				<view class="item-bottom">
+					<view class="address-city">{{ item.addressCity }}</view>
 					<view class="address-details">{{ item.address }}</view>
 					<view class="select" v-if="item.isDefault">默认</view>
 				</view>
@@ -29,7 +30,7 @@
 						<text>默认</text>
 					</label>
 
-					<view class="delete" @click="removeAddress(item._id)">删除</view>
+					<view class="delete" @click="deleteAddress(item._id)">删除</view>
 				</view>
 			</view>
 		</view>
@@ -70,7 +71,7 @@
 					</view>
 				</view>
 
-				<view class="save" @click="saveAddress">保存地址</view>
+				<view class="save" @click="saveAddress()">保存地址</view>
 				<view class="safe-area-inset-bottom"></view>
 			</view>
 		</uni-popup>
@@ -84,7 +85,7 @@
 	import { useAddressManageStore } from '@/stores/addressManage.ts';
 	const addressManageStore = useAddressManageStore();
 
-	import { getUserAddressList, addAddAddress } from '@/api/apis.ts';
+	import { getUserAddress, addUserAddress, delUserAddress, updateUserAddress } from '@/api/apis.ts';
 
 	// 查询参数
 	const queryparams = ref({
@@ -95,7 +96,7 @@
 
 	// 获取用户收货地址
 	const getUserAddressData = async () => {
-		const res = await getUserAddressList(queryparams.value);
+		const res = await getUserAddress(queryparams.value);
 		addressManageStore.addressList = res.data;
 	};
 
@@ -109,23 +110,18 @@
 		isManage.value = !isManage.value;
 	};
 
-	// // 切换地址为默认地址
-	// const toggleDefaultAddress = addressManageStore.toggleDefaultAddress;
-
-	// // 删除地址
-	// const removeAddress = addressManageStore.removeAddress;
-
-	// 新增/修改的临时数据
-	const tempAddress = ref({
-		isDefault: false,
-		recipient: '',
-		phone: '',
-		addressCity: '',
-		address: '',
-	});
-
-	// 是否为编辑模式（true：新增，false：修改）
-	const isEditing = ref(true);
+	// 删除地址
+	const deleteAddress = async (addressId) => {
+		try {
+			const res = await delUserAddress(addressId);
+			console.log(res);
+			if (res.code === 0) {
+				// 更新地址列表
+				await getUserAddressData();
+				uni.showToast({ title: '删除成功', icon: 'success' });
+			}
+		} catch (error) {}
+	};
 
 	// 弹窗实例
 	const collectPopup = ref(null);
@@ -136,33 +132,69 @@
 		collectPopup.value.close();
 	};
 
+	// 新增/修改的临时数据
+	const tempAddress = ref({
+		isDefault: false,
+		recipient: '',
+		phone: '',
+		addressCity: '',
+		address: '',
+	});
+
 	// 添加地址
-	const addAddressAdd = async () => {
+	const addressAdd = async () => {
 		// 调用 validateAddress 校验
 		const isValid = addressManageStore.validateAddress(tempAddress.value);
 		if (!isValid) {
 			return; // 校验未通过，直接退出
 		}
 		try {
-			const res = await addAddAddress({
+			const res = await addUserAddress({
 				userId: queryparams.value.userId,
 				...tempAddress.value,
 			});
 			if (res.code === 0) {
-				uni.showToast({ title: '地址添加成功', icon: 'success' });
 				// 关闭弹窗
 				collectPopupClose();
 				// 更新地址列表
 				await getUserAddressData();
+				uni.showToast({ title: '地址添加成功', icon: 'success' });
 			} else {
 				uni.showToast({ title: '地址添加失败', icon: 'none' });
 			}
 		} catch (error) {
 			console.log(error);
 		}
-
-		// console.log(res);
 	};
+
+	// 修改地址
+	const updateAddress = async (addressId) => {
+		// 调用 validateAddress 校验
+		const isValid = addressManageStore.validateAddress(tempAddress.value);
+		if (!isValid) {
+			return; // 校验未通过，直接退出
+		}
+
+		try {
+			const res = await updateUserAddress({ addressId, data: tempAddress.value });
+			console.log(res);
+
+			if (res.code == 0) {
+				// 关闭弹窗
+				collectPopupClose();
+				// 更新地址列表
+				await getUserAddressData();
+				uni.showToast({ title: '地址更新成功', icon: 'success' });
+			} else {
+				uni.showToast({ title: '地址更新失败', icon: 'none' });
+			}
+		} catch (error) {
+			console.error(error);
+		}
+	};
+
+	// 是否为编辑模式（true：新增，false：修改）
+	const isEditing = ref(true);
 
 	// 点击新增地址打开弹窗
 	const addCollectPopupOpen = () => {
@@ -178,10 +210,13 @@
 		collectPopupOpen();
 	};
 
+	const editingAddressId = ref(null); // 用于存储正在编辑的地址的 _id
 	// 点击修改地址打开弹窗
 	const updateCollectPopupOpen = (item) => {
+		editingAddressId.value = item._id;
 		isEditing.value = false; // 修改模式
-		tempAddress.value = { ...item }; // 深拷贝数据
+		const { _id, ...addressData } = { ...item }; // 深拷贝并删除 _id
+		tempAddress.value = addressData; // 将删除了 _id 的数据赋值给 tempAddress
 		collectPopupOpen();
 	};
 
@@ -189,12 +224,10 @@
 	const saveAddress = async () => {
 		if (isEditing.value) {
 			// 新增地址
-			await addAddressAdd();
+			await addressAdd();
 		} else {
 			// 修改地址
-			// await addressManageStore.updateAddress(tempAddress.value._id, tempAddress.value);
-			uni.showToast({ title: '地址更新成功', icon: 'success' });
-			collectPopupClose(); // 关闭弹窗
+			await updateAddress(editingAddressId.value);
 		}
 	};
 </script>
@@ -256,6 +289,9 @@
 			}
 			.item-bottom {
 				@extend .df-aic;
+				.address-city {
+					margin-right: 20rpx;
+				}
 
 				.address-details {
 				}

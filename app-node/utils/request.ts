@@ -42,9 +42,7 @@ export const request = (config: Config) => {
 			},
 			// 请求完成
 			complete: () => {
-				setTimeout(() => {
-					uni.hideLoading(); // 确保每次请求完成时都隐藏 loading
-				}, 200);
+				uni.hideLoading(); // 确保每次请求完成时都隐藏 loading
 			},
 		});
 	});

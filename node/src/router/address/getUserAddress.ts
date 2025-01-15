@@ -7,7 +7,7 @@ const { user_shipping_addresses } = require('../../db/mongo.ts');
 const bodyParser = require('koa-bodyparser');
 
 // 获取用户地址接口
-router.post('/addresses/get', bodyParser(), async (ctx, next) => {
+router.post('/address/get', bodyParser(), async (ctx, next) => {
 	try {
 		// 从请求参数中获取 userId、offset 和 limit
 		const { userId, offset = 0, limit = 10 } = ctx.request.body;
