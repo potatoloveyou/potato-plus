@@ -16,34 +16,36 @@
 			</template>
 		</NavBar>
 
-		<!-- <view @click="setOpened">起飞{{ isOpened }}</view>
-		<uni-swipe-action>
-			<uni-swipe-action-item :right-options="options" :show="isOpened" :auto-close="false" @click="bindClick">
-				123
-			</uni-swipe-action-item>
-		</uni-swipe-action> -->
-
 		<view class="shop-list bg-active-color">
 			<scroll-view scroll-y :style="`height:${clentHeight}px;`">
-				<view class="shop-item" v-for="(item, index) in shoppingCartStore.cartList" :key="item._id">
-					<label class="radio" @click="toggleItemSelection({ id: item._id })">
+				<view
+					class="shop-item"
+					v-for="(item, index) in shoppingCartStore.cartList"
+					:key="`${item.goodsDetails._id}+${item.addedAt}`">
+					<label class="radio" @click="toggleItemSelection({ id: item.goodsDetails._id })">
 						<radio value="" color="#49bdfb" :checked="item.checked" />
 					</label>
-					<image class="goods-img" :src="item.imgUrl" mode="" @click="goDetails(item._id)"></image>
+					<image
+						class="goods-img"
+						:src="item.goodsDetails.imgUrl"
+						mode=""
+						@click="goDetails(item.goodsDetails._id)"></image>
 					<view class="goods-details">
-						<view class="goods-name" @click="goDetails(item._id)">{{ item.name }}</view>
-						<view class="goods-color f-color">颜色分类：{{ item.color }}</view>
+						<view class="goods-name" @click="goDetails(item.goodsDetails._id)">{{ item.goodsDetails.name }}</view>
+						<view class="goods-color f-color">颜色分类：{{ item.selectedAttributes.color }}</view>
+						<view class="goods-size f-color">大小：{{ item.selectedAttributes.size }}</view>
+
 						<view class="goods-condition">
-							<view class="goods-price">￥{{ item.pprice }}</view>
+							<view class="goods-price">￥{{ item.goodsDetails.pprice }}</view>
 							<view class="goods-num-switch">
-								<view class="goods-num" v-if="!item.checked" @click="toggleModifyMode({ id: item._id })">
-									x{{ item.num }}
+								<view class="goods-num" v-if="!item.checked" @click="toggleModifyMode({ id: item.goodsDetails._id })">
+									x{{ item.quantity }}
 								</view>
 								<view class="goods-num-box" v-else>
 									<uni-number-box
 										:min="1"
-										v-model="item.num"
-										@change="changeValue({ value: $event, id: item._id })"
+										v-model="item.quantity"
+										@change="changeValue({ value: $event, id: item.goodsDetails._id })"
 										@blur="close" />
 								</view>
 							</view>
@@ -66,7 +68,7 @@
 				</view>
 				<view class="settlement">
 					结算
-					<text>({{ shoppingCartStore.selectedItems.length }})</text>
+					<!-- <text>({{ shoppingCartStore.selectedItems.length }})</text> -->
 				</view>
 			</view>
 
@@ -86,6 +88,8 @@
 	import { useShoppingCartStore } from '@/stores/shoppingCart';
 	const shoppingCartStore = useShoppingCartStore();
 
+	import { getUserShoppingCart } from '@/api/apis.ts';
+
 	import { getNavBarHeight } from '@/utils/system.ts';
 	// 内容块的高度值
 	const clentHeight = ref(0);
@@ -96,6 +100,29 @@
 				clentHeight.value = res.windowHeight - uni.upx2px(100) - getNavBarHeight.value;
 			},
 		});
+	});
+
+	// 获取购物车数据
+	const getUserShoppingCartData = async () => {
+		const res = await getUserShoppingCart('123');
+
+		// 如果接口返回的数据中包含商品列表
+		if (res?.data) {
+			// 为每个商品添加 checked 属性，并存储到 Pinia
+			shoppingCartStore.cartList = res.data.map((item) => ({
+				...item, // 保留原有的商品属性
+				checked: false, // 默认未选中
+			}));
+
+			console.log(shoppingCartStore.cartList);
+		} else {
+			console.warn('购物车数据为空');
+			shoppingCartStore.cartList = [];
+		}
+	};
+
+	onLoad(() => {
+		getUserShoppingCartData();
 	});
 
 	// 编辑按钮状态
@@ -112,8 +139,8 @@
 		console.log(123);
 	};
 
-	// 修改购买数量
-	const changeValue = shoppingCartStore.updateItemNum;
+	// // 修改购买数量
+	// const changeValue = shoppingCartStore.updateItemNum;
 
 	// 切换单个商品选中状态
 	const toggleItemSelection = shoppingCartStore.toggleItemSelection;
@@ -121,54 +148,14 @@
 	// 全选商品
 	const checkAllSwitch = shoppingCartStore.checkAllSwitch;
 
-	// 删除选中商品
-	const deleteGoods = shoppingCartStore.deleteGoods;
-
-	onLoad(() => {
-		// console.log(shoppingCartStore.amounts);
-	});
+	// // 删除选中商品
+	// const deleteGoods = shoppingCartStore.deleteGoods;
 
 	// 跳转到商品详情页
 	const goDetails = (id) => {
 		// console.log(id);
 		uni.navigateTo({
 			url: `/pages/details/details?id=${id}`,
-		});
-	};
-
-	const options = ref([
-		{
-			text: '移入收藏',
-			style: {
-				backgroundColor: '#49bdfb',
-			},
-		},
-		{
-			text: '删除',
-			style: {
-				backgroundColor: '#F56C6C',
-			},
-		},
-	]);
-
-	const isOpened = ref('none');
-
-	const setOpened = () => {
-		if (isOpened.value === 'none') {
-			isOpened.value = 'right';
-			return;
-		}
-		if (isOpened.value === 'right') {
-			isOpened.value = 'none';
-			return;
-		}
-	};
-
-	const bindClick = (e) => {
-		console.log(e);
-		uni.showToast({
-			title: `点击了${e.position === 'left' ? '左侧' : '右侧'} ${e.content.text}按钮`,
-			icon: 'none',
 		});
 	};
 </script>
@@ -232,15 +219,15 @@
 					flex: 1;
 					height: 200rpx;
 					padding-left: 20rpx;
-					// display: flex;
-					// flex-direction: column;
-					// justify-content: space-between;
 					& > view {
-						padding-bottom: 20rpx;
+						padding-bottom: 10rpx;
 					}
 					.goods-name {
 					}
 					.goods-color {
+						font-size: 24rpx;
+					}
+					.goods-size {
 						font-size: 24rpx;
 					}
 					.goods-condition {

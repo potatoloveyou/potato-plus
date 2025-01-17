@@ -94,8 +94,11 @@
 	import Shop from '@/components/index/Outdoors/Shop.vue';
 	import NavBar from '@/components/common/NavBar.vue';
 
+	import { useShoppingCartStore } from '@/stores/shoppingCart';
+	const shoppingCartStore = useShoppingCartStore();
+
 	import { getNavBarHeight } from '@/utils/system.ts';
-	import { getIndexList, getIndexClassify } from '@/api/apis.ts';
+	import { getIndexList, getIndexClassify, getUserShoppingCart } from '@/api/apis.ts';
 
 	// 内容块的高度值
 	const clentHeight = ref(0);
@@ -116,6 +119,7 @@
 		return topBar.value.map((_, index) => ({
 			data: index === 0 ? res.data : [],
 			load: 'first',
+
 			loadText: '上拉加载更多...',
 			length: res.data.length,
 		}));
@@ -123,13 +127,30 @@
 
 	const getIndexData = async () => {
 		const res = await getIndexList();
-
 		topBar.value = res.data.topBar;
 		newTopBar.value = initData(res.data);
 	};
 
+	// 获取购物车数据
+	const getUserShoppingCartData = async () => {
+		const res = await getUserShoppingCart('123');
+
+		// 如果接口返回的数据中包含商品列表
+		if (res?.data) {
+			// 为每个商品添加 checked 属性，并存储到 Pinia
+			shoppingCartStore.cartList = res.data.map((item) => ({
+				...item, // 保留原有的商品属性
+				checked: false, // 默认未选中
+			}));
+		} else {
+			// console.log('购物车数据为空');
+			shoppingCartStore.cartList = [];
+		}
+	};
+
 	onLoad(() => {
 		getIndexData();
+		getUserShoppingCartData();
 	});
 
 	// 选中索引

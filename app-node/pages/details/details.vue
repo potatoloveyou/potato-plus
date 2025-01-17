@@ -52,7 +52,6 @@
 		</view>
 
 		<uni-popup ref="collectPopup" type="bottom" :is-mask-click="false" :safe-area="false" v-model:show="isPopup">
-			<!--  -->
 			<view class="collectPopup">
 				<view class="pop-content">
 					<view class="popHeader">
@@ -66,7 +65,10 @@
 
 						<view class="goods-information">
 							<view class="pprice">￥333</view>
-							<view class="goods-limit">可购5件</view>
+							<view class="goods-quantity">
+								<view class="goods-limit">可购5件</view>
+								<view class="goods-stock">库存{{ goodsDetail.stock }}</view>
+							</view>
 							<view class="text">请选择 尺码</view>
 						</view>
 					</view>
@@ -81,12 +83,12 @@
 					<Linse />
 					<view class="goods-num">
 						<text class="goods-num-name">购买数量</text>
-						<uni-number-box :min="1" v-model="goodsNum" @change="changeValue({ value: $event, id: goodsDetail._id })" />
+						<uni-number-box :min="1" v-model="goodsNum" />
 					</view>
 					<Linse />
 				</view>
 
-				<button class="pop-confirm" @click="addShopCart">确认</button>
+				<button class="pop-confirm" @click="shoppingCartAdd">确认</button>
 
 				<view class="safe-area-inset-bottom"></view>
 			</view>
@@ -95,14 +97,14 @@
 </template>
 
 <script setup>
-	import { ref, watch } from 'vue';
+	import { ref } from 'vue';
 	import { onLoad, onReady, onShareAppMessage, onShareTimeline, onNavigationBarButtonTap } from '@dcloudio/uni-app';
 
 	import Card from '@/components/common/Card.vue';
 	import CommodityList from '@/components/common/CommodityList.vue';
 	import Linse from '@/components/common/Lines.vue';
 
-	import { getGoodsDetail } from '@/api/apis.ts';
+	import { getGoodsDetail, getUserShoppingCart, addUserShoppingCart } from '@/api/apis.ts';
 
 	import { useShoppingCartStore } from '@/stores/shoppingCart';
 	const shoppingCartStore = useShoppingCartStore();
@@ -112,6 +114,23 @@
 	const getGoodsDetailData = async (id) => {
 		let res = await getGoodsDetail(id);
 		goodsDetail.value = res.data;
+	};
+
+	// 获取购物车数据
+	const getUserShoppingCartData = async () => {
+		const res = await getUserShoppingCart('123');
+
+		// 如果接口返回的数据中包含商品列表
+		if (res?.data) {
+			// 为每个商品添加 checked 属性，并存储到 Pinia
+			shoppingCartStore.cartList = res.data.map((item) => ({
+				...item, // 保留原有的商品属性
+				checked: false, // 默认未选中
+			}));
+		} else {
+			// console.log('购物车数据为空');
+			shoppingCartStore.cartList = [];
+		}
 	};
 
 	onLoad((e) => {
@@ -196,23 +215,52 @@
 	// 购买数量
 	const goodsNum = ref(1);
 	// 修改购买数量
-	const changeValue = ({ value }) => {};
+	const changeValue = (value) => {};
 
-	// 确认添加到购物车
-	const addShopCart = () => {
-		// 使用浅拷贝，避免直接修改响应式对象
-		let goods = { ...goodsDetail.value };
-		goods['checked'] = false;
-		goods['num'] = goodsNum.value;
-		shoppingCartStore.addShopCart(goods);
-
+	// 加入购物车
+	const shoppingCartAdd = async () => {
+		// 新增/修改的临时数据
+		const tempShoppingCart = {
+			userId: '123',
+			goodsId: goodsDetail.value._id,
+			quantity: goodsNum.value,
+			selectedAttributes: {
+				color: '红色',
+				size: 'XL',
+			},
+		};
+		const res = await addUserShoppingCart(tempShoppingCart);
+		await getUserShoppingCartData();
 		options.value[2].info = shoppingCartStore.getCartItemQuantity(goodsDetail.value._id);
-		uni.showToast({
-			title: '已加入购物车',
-			icon: 'none',
-		});
+		if (res.code === 0) {
+			uni.showToast({
+				title: '加入购物车成功',
+				icon: 'success',
+			});
+		} else {
+			uni.showToast({
+				title: '加入购物车失败',
+				icon: 'none',
+			});
+		}
 		closeCollectPopup();
 	};
+
+	// // 确认添加到购物车
+	// const addShopCart = () => {
+	// 	// 使用浅拷贝，避免直接修改响应式对象
+	// 	let goods = { ...goodsDetail.value };
+	// 	goods['checked'] = false;
+	// 	goods['num'] = goodsNum.value;
+	// 	shoppingCartStore.addShopCart(goods);
+
+	// 	options.value[2].info = shoppingCartStore.getCartItemQuantity(goodsDetail.value._id);
+	// 	uni.showToast({
+	// 		title: '已加入购物车',
+	// 		icon: 'none',
+	// 	});
+	// 	closeCollectPopup();
+	// };
 
 	// 底部左侧点击事件
 	const onClick = (event) => {
@@ -407,9 +455,7 @@
 						height: 260rpx;
 					}
 					.goods-information {
-						// position: absolute;
 						padding-bottom: 30rpx;
-						// transform: translateX(300rpx);
 						padding-left: 300rpx;
 						& > view {
 							padding-bottom: 2rpx;
@@ -418,7 +464,18 @@
 							color: #49bdfb;
 							font-size: 42rpx;
 						}
-						.goods-limit {
+						.goods-quantity {
+							display: flex;
+							justify-content: space-between;
+							align-items: center;
+							.goods-limit {
+								// font-size: 24rpx;
+								padding-right: 50rpx;
+							}
+							.goods-stock {
+								color: #636363;
+								font-size: 24rpx;
+							}
 						}
 						.text {
 						}

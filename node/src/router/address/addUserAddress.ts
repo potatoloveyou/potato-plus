@@ -26,8 +26,6 @@ router.post('/address/add', bodyParser(), async (ctx, next) => {
 		// 检查当前用户是否已有地址
 		const userHasAddresses = await user_shipping_addresses.countDocuments({ userId });
 
-		// console.log(userHasAddresses);
-
 		let finalIsDefault = isDefault;
 
 		// 如果用户没有任何地址，将 isDefault 强制设置为 true

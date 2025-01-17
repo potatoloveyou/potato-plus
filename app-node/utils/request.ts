@@ -25,14 +25,18 @@ export const request = (config: Config) => {
 			success: (res: any) => {
 				if (res.statusCode !== 200) {
 					console.log('HTTP 状态码异常:', res.statusCode);
-					return reject(new Error(`HTTP error: ${res.statusCode}`));
+					// reject(new Error(`HTTP error: ${res.statusCode}`));
+					return resolve(res.data);
 				}
 
 				if (res.data.code === 0) {
 					resolve(res.data);
-				} else {
+					return;
+				}
+
+				if (res.data.code !== 0) {
 					console.log('接口返回非正常 code:', res.data.code);
-					reject(new Error(`API error: code ${res.data.code}`));
+					resolve(res.data);
 				}
 			},
 			// 请求失败的回调函数

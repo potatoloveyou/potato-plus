@@ -36,7 +36,7 @@ interface ShopData {
 	pprice: number;
 	discount: number;
 }
-export const getGoodsSearch = (data: ShopData) => {
+export const getGoodsSearch = (data) => {
 	// console.log(data);
 	return request({
 		url: `/goods/search`,
@@ -70,12 +70,7 @@ export const getMyOrderBar = () => {
 };
 
 // 获取用户地址列表
-interface UserAddress {
-	userId: string;
-	limit: number;
-	offset: number;
-}
-export const getUserAddress = (data: UserAddress) => {
+export const getUserAddress = (data: { userId: any; offset?: number | undefined; limit?: number | undefined }) => {
 	let { userId, offset = 0, limit = 10 } = data;
 	return request({
 		url: `/address/get`,
@@ -88,7 +83,7 @@ export const getUserAddress = (data: UserAddress) => {
 	});
 };
 
-// 添加地址
+// 添加用户地址
 export const addUserAddress = (data: any) => {
 	return request({
 		url: `/address/add`,
@@ -98,7 +93,7 @@ export const addUserAddress = (data: any) => {
 };
 
 // 删除用户地址
-export const delUserAddress = (addressId: any) => {
+export const delUserAddress = (addressId: string) => {
 	return request({
 		url: `/address/delete/${addressId}`,
 		method: 'DELETE',
@@ -116,8 +111,17 @@ export const updateUserAddress = (update: any) => {
 };
 
 // 获取购物车列表
-export const getShoppingCart = () => {
+export const getUserShoppingCart = (userId: string) => {
 	return request({
-		url: `/shoppingCart/get`,
+		url: `/shoppingCart/get/${userId}`,
+	});
+};
+
+// 添加购物车
+export const addUserShoppingCart = (data: object) => {
+	return request({
+		url: `/shoppingCart/add`,
+		method: 'POST',
+		data,
 	});
 };

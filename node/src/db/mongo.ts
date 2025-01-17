@@ -15,7 +15,7 @@ const order_bar = db.collection('order_bar');
 
 const user_shipping_addresses = db.collection('user_shipping_addresses');
 
-const shopping_cart = db.collection('orderBar');
+const shopping_cart = db.collection('shopping_cart');
 
 const order = db.collection('order');
 
@@ -26,5 +26,6 @@ module.exports = {
 	top_bar,
 	order_bar,
 	user_shipping_addresses,
+	shopping_cart,
 	order,
 };
