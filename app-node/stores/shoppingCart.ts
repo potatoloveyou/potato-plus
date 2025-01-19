@@ -13,7 +13,7 @@ export const useShoppingCartStore = defineStore('shoppingCart', () => {
 		}
 	};
 
-	// 计算选中的商品数量
+	// 计算选中的商品
 	const selectedItems = computed(() => cartList.value.filter((item: any) => item.checked));
 
 	// 判断是否全选
@@ -46,12 +46,15 @@ export const useShoppingCartStore = defineStore('shoppingCart', () => {
 
 	// 获取指定商品数量
 	const getCartItemQuantity = (itemId: string): number => {
-    const item = cartList.value.find((product: { goodsDetails: { _id: string } }) => product.goodsDetails._id === itemId);
+		const item = cartList.value.find(
+			(product: { goodsDetails: { _id: string } }) => product.goodsDetails._id === itemId,
+		);
 		return item ? item.quantity : 0;
 	};
 
 	return {
 		cartList,
+		selectedItems,
 		toggleItemSelection,
 		isCheckAll,
 		checkAllSwitch,

@@ -125,3 +125,21 @@ export const addUserShoppingCart = (data: object) => {
 		data,
 	});
 };
+
+// 删除购物车某个商品
+export const delUserShoppingCart = (data: object) => {
+	return request({
+		url: `/shoppingCart/delete`,
+		method: 'DELETE',
+		data,
+	});
+};
+
+// 更新购物车某个商品
+export const updateUserShoppingCart = (data: object) => {
+	return request({
+		url: `/shoppingCart/update`,
+		method: 'PUT',
+		data,
+	});
+};

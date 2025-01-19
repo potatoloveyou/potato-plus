@@ -246,22 +246,6 @@
 		closeCollectPopup();
 	};
 
-	// // 确认添加到购物车
-	// const addShopCart = () => {
-	// 	// 使用浅拷贝，避免直接修改响应式对象
-	// 	let goods = { ...goodsDetail.value };
-	// 	goods['checked'] = false;
-	// 	goods['num'] = goodsNum.value;
-	// 	shoppingCartStore.addShopCart(goods);
-
-	// 	options.value[2].info = shoppingCartStore.getCartItemQuantity(goodsDetail.value._id);
-	// 	uni.showToast({
-	// 		title: '已加入购物车',
-	// 		icon: 'none',
-	// 	});
-	// 	closeCollectPopup();
-	// };
-
 	// 底部左侧点击事件
 	const onClick = (event) => {
 		// console.log(event);

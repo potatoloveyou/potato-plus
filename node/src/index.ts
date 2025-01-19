@@ -76,6 +76,9 @@ router.use(addUserShoppingCart.routes());
 const deleteUserShoppingCart = require('./router/shoppingCart/deleteUserShoppingCart.ts');
 router.use(deleteUserShoppingCart.routes());
 
+// 修改用户购物车商品
+const updateUserShoppingCart = require('./router/shoppingCart/updateUserShoppingCart.ts');
+router.use(updateUserShoppingCart.routes());
 
 app.use(router.routes());
 app.listen(9229);

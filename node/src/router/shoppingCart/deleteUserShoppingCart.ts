@@ -25,11 +25,6 @@ router.delete('/shoppingCart/delete', bodyParser(), async (ctx) => {
 			selectedAttributes: item.selectedAttributes,
 		}));
 
-		// ctx.body = {
-		// 	code: 0,
-		// 	conditions,
-		// };
-
 		// 使用 $pull 删除多个商品
 		const result = await shopping_cart.updateOne(
 			{ userId },

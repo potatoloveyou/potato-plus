@@ -1,8 +1,9 @@
 const Router = require('@koa/router');
-const { ObjectId, user_shipping_addresses } = require('../../db/mongo.ts');
-const bodyParser = require('koa-bodyparser');
-
 const router = new Router();
+
+const { ObjectId, user_shipping_addresses } = require('../../db/mongo.ts');
+
+const bodyParser = require('koa-bodyparser');
 
 router.put('/address/update/:id', bodyParser(), async (ctx) => {
 	try {

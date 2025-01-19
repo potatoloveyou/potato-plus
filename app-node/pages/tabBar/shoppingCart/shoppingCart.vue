@@ -45,8 +45,8 @@
 									<uni-number-box
 										:min="1"
 										v-model="item.quantity"
-										@change="changeValue({ value: $event, id: item.goodsDetails._id })"
-										@blur="close" />
+										@change="updateShoppingCart({ value: $event, item })"
+										@blur="blur" />
 								</view>
 							</view>
 						</view>
@@ -68,13 +68,13 @@
 				</view>
 				<view class="settlement">
 					结算
-					<!-- <text>({{ shoppingCartStore.selectedItems.length }})</text> -->
+					<text v-if="shoppingCartStore.selectedItems.length">({{ shoppingCartStore.selectedItems.length }})</text>
 				</view>
 			</view>
 
 			<view class="shopping-edit" :class="!isEdit ? 'active' : ''">
 				<view class="move-collect">移入收藏</view>
-				<view class="delete" @click="deleteGoods">删除</view>
+				<view class="delete" @click="deleteShoppingCartGoods">删除</view>
 			</view>
 		</view>
 	</view>
@@ -88,7 +88,7 @@
 	import { useShoppingCartStore } from '@/stores/shoppingCart';
 	const shoppingCartStore = useShoppingCartStore();
 
-	import { getUserShoppingCart } from '@/api/apis.ts';
+	import { getUserShoppingCart, delUserShoppingCart, updateUserShoppingCart } from '@/api/apis.ts';
 
 	import { getNavBarHeight } from '@/utils/system.ts';
 	// 内容块的高度值
@@ -113,8 +113,6 @@
 				...item, // 保留原有的商品属性
 				checked: false, // 默认未选中
 			}));
-
-			console.log(shoppingCartStore.cartList);
 		} else {
 			console.warn('购物车数据为空');
 			shoppingCartStore.cartList = [];
@@ -122,7 +120,7 @@
 	};
 
 	onLoad(() => {
-		getUserShoppingCartData();
+		// getUserShoppingCartData();
 	});
 
 	// 编辑按钮状态
@@ -135,21 +133,53 @@
 	// 点击切换数量组件
 	const toggleModifyMode = shoppingCartStore.toggleItemSelection;
 
-	const close = () => {
-		console.log(123);
-	};
-
-	// // 修改购买数量
-	// const changeValue = shoppingCartStore.updateItemNum;
-
 	// 切换单个商品选中状态
 	const toggleItemSelection = shoppingCartStore.toggleItemSelection;
 
 	// 全选商品
 	const checkAllSwitch = shoppingCartStore.checkAllSwitch;
 
-	// // 删除选中商品
-	// const deleteGoods = shoppingCartStore.deleteGoods;
+	// 删除商品
+	const deleteShoppingCartGoods = async () => {
+		try {
+			新增 / 修改的临时数据;
+			const tempShoppingCart = {
+				userId: '123',
+				goods: [],
+			};
+
+			shoppingCartStore.selectedItems.forEach((item) => {
+				tempShoppingCart.goods.push({
+					goodsId: item.goodsDetails._id,
+					selectedAttributes: item.selectedAttributes,
+				});
+			});
+			const res = await delUserShoppingCart(tempShoppingCart);
+			console.log(res);
+			await getUserShoppingCartData();
+		} catch (error) {}
+	};
+
+	// 输入框值改变时触发更新购物车商品数量
+	const updateShoppingCart = async ({ value, item }) => {
+		// 新增 / 修改的临时数据;
+		const tempShoppingCart = {
+			userId: '123',
+			goodsId: item.goodsDetails._id,
+			quantity: value,
+			selectedAttributes: {
+				color: '红色',
+				size: 'XL',
+			},
+		};
+
+		const res = await updateUserShoppingCart(tempShoppingCart);
+		console.log(res);
+	};
+
+	const blur = (e) => {
+		console.log(e);
+	};
 
 	// 跳转到商品详情页
 	const goDetails = (id) => {
