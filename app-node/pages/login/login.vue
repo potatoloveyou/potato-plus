@@ -1,35 +1,36 @@
 <template>
 	<view class="login">
-		<button @click="login">手机号一键登录</button>
+		<!-- #ifdef APP -->
+		<button @click="appLogin">授权登录</button>
+
+		<!-- #endif -->
+
+		<!-- #ifdef MP-WEIXIN -->
+		<button @click="getPhoneMask">授权登录</button>
+		<button bindphoneoneclicklogin="onHandleLogin" open-type="phoneOneClickLogin">微信一键登录</button>
+
+		<!-- #endif -->
 	</view>
 </template>
 
 <script setup>
-	import { getUserPhoneNumber } from '@/api/apis.ts';
-	const login = async () => {
-		//在这里写一键登录的代码
-		// uni.preLogin({
-		// 	provider: 'univerify',
-		// 	success() {
-		// 		//预登录成功
-		// 		// 显示一键登录选项
-		// 		uni.login({});
-		// 	},
-		// 	fail(res) {
-		// 		// 预登录失败
-		// 		// 不显示一键登录选项（或置灰）
-		// 		// 根据错误信息判断失败原因，如有需要可将错误提交给统计服务器
-		// 		console.log(res.errCode);
-		// 		console.log(res.errMsg);
-		// 	},
-		// });
+	import { onReady } from '@dcloudio/uni-app';
+	import { getPhoneNumberLogin } from '@/api/apis.ts';
 
+	// onReady(() => {
+	// 	// #ifdef APP
+	// 	appLogin();
+	// 	// #endif
+	// });
+
+	// #ifdef APP
+	const appLogin = async () => {
 		uni.login({
 			provider: 'univerify',
 			univerifyStyle: {
 				// 自定义登录框样式
 				//参考`univerifyStyle 数据结构`
-				fullScreen: true, // 是否全屏显示，默认值： false
+				fullScreen: false, // 是否全屏显示，默认值： false
 				title: '快速登录',
 				backgroundColor: '#ffffff', // 授权页面背景颜色，默认值：#ffffff
 				icon: {
@@ -95,12 +96,12 @@
 			success: async (res) => {
 				// 登录成功，获取 openId 和 accessToken
 				const data = {
-					openId: res.authResult.openid,
 					accessToken: res.authResult.access_token,
+					openId: res.authResult.openid,
 				};
 
 				// 发送到后端
-				const response = await getUserPhoneNumber(data);
+				const response = await getPhoneNumberLogin(data);
 				console.log('服务器返回的结果：', response);
 			},
 			// 当用户点击自定义按钮时，会触发uni.login的fail回调[点击其他登录方式，可以跳转页面，或执行事件]
@@ -112,6 +113,31 @@
 			},
 		});
 	};
+	// #endif
+
+	// #ifdef MP-WEIXIN
+	const getPhoneMask = () => {
+		wx.getPhoneMask({
+			success(res) {
+				if (res.phoneMask) {
+					// 获取手机号掩码 res.phoneMask 成功，展示在登录页。
+					console.log(res.phoneMask);
+				}
+				if (res.operatorType) {
+					// 运营商名称；1 表示移动，2 表示联通，3 表示电信
+
+					console.log(res.operatorType);
+				}
+			},
+		});
+	};
+
+	const onHandleLogin = (e) => {
+		const detail = e.detail;
+		console.log('phoneOneClickLogin errCode', detail.errCode);
+	};
+
+	// #endif
 </script>
 
 <style lang="scss" scoped></style>

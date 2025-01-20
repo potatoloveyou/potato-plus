@@ -5,7 +5,7 @@ exports.main = async (event, context) => {
 
 	// context里包含系统环境变量的集合
 
-	const SECRET_KEY = 'potato-love-you'; // 安全密钥
+	const SECRET_KEY = 'potato-love-you-get-phone-number'; // 安全密钥
 	const hmac = crypto.createHmac('sha256', SECRET_KEY);
 
 	try {

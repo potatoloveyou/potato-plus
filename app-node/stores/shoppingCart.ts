@@ -54,7 +54,6 @@ export const useShoppingCartStore = defineStore('shoppingCart', () => {
 
 	// 切换全选状态
 	const checkAllSwitch = (): void => {
-
 		isCheckAll.value ? checkNoAll() : checkAll();
 	};
 

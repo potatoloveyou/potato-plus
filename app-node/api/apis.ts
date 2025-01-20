@@ -145,9 +145,9 @@ export const updateUserShoppingCart = (data: object) => {
 };
 
 // 获取用户手机号
-export const getUserPhoneNumber = (data: object) => {
+export const getPhoneNumberLogin = (data: object) => {
 	return request({
-		url: `/user/getPhoneNumber`,
+		url: `/user/getPhoneNumberLogin`,
 		method: 'POST',
 		data,
 	});

@@ -138,19 +138,10 @@
 	const toggleModifyMode = shoppingCartStore.toggleItemSelection;
 
 	// 切换单个商品选中状态
-	const toggleItemSelection = ({ id }) => {
-		shoppingCartStore.toggleItemSelection({ id });
-		console.log(shoppingCartStore.cartList);
-		console.log(shoppingCartStore.isCheckAll);
-		console.log(shoppingCartStore.selectedItems);
-	};
+	const toggleItemSelection = shoppingCartStore.toggleItemSelection;
 
 	// 全选商品
-	const checkAllSwitch = () => {
-		shoppingCartStore.checkAllSwitch();
-		console.log(shoppingCartStore.isCheckAll);
-		console.log(shoppingCartStore.cartList);
-	};
+	const checkAllSwitch = shoppingCartStore.checkAllSwitch;
 
 	// 删除商品
 	const deleteShoppingCartGoods = async () => {

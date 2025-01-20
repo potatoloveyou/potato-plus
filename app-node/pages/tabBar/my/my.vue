@@ -11,7 +11,7 @@
 			</view>
 		</view>
 
-		<button @click="goLogin">手机号一键登录</button>
+		<button @click="goLogin">手机号授权登录</button>
 
 		<view class="my-order">
 			<view class="order-content">
