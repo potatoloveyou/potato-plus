@@ -142,7 +142,7 @@
 	// 删除商品
 	const deleteShoppingCartGoods = async () => {
 		try {
-			新增 / 修改的临时数据;
+			// 新增 / 修改的临时数据;
 			const tempShoppingCart = {
 				userId: '123',
 				goods: [],
@@ -154,6 +154,8 @@
 					selectedAttributes: item.selectedAttributes,
 				});
 			});
+			// console.log(shoppingCartStore.selectedItems);
+
 			const res = await delUserShoppingCart(tempShoppingCart);
 			console.log(res);
 			await getUserShoppingCartData();

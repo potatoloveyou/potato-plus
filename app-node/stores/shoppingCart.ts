@@ -11,6 +11,18 @@ export const useShoppingCartStore = defineStore('shoppingCart', () => {
 		if (item) {
 			item.checked = !item.checked;
 		}
+
+		// 判断是否还有勾选上的商品
+		if (selectedItems.value.length) {
+			uni.setTabBarBadge({
+				index: 2,
+				text: selectedItems.value.length.toString(),
+			});
+		} else {
+			uni.removeTabBarBadge({
+				index: 2,
+			});
+		}
 	};
 
 	// 计算选中的商品
@@ -22,11 +34,22 @@ export const useShoppingCartStore = defineStore('shoppingCart', () => {
 	// 全选
 	const checkAll = (): void => {
 		cartList.value.forEach((item: { checked: boolean }) => (item.checked = true));
+
+		// 显示数字标
+		uni.setTabBarBadge({
+			index: 2,
+			text: selectedItems.value.length.toString(),
+		});
 	};
 
 	// 取消全选
 	const checkNoAll = (): void => {
 		cartList.value.forEach((item: { checked: boolean }) => (item.checked = false));
+
+		//隐藏数字标
+		uni.removeTabBarBadge({
+			index: 2, //tabbar下标
+		});
 	};
 
 	// 切换全选状态

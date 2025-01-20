@@ -1,5 +1,9 @@
 {
 	"dependencies": {
 		"mpvue-citypicker": "^1.0.6"
+	},
+	"name": "getPhoneNumber",
+	"extensions": {
+		"uni-cloud-verify": {}
 	}
 }

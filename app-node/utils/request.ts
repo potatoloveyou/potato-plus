@@ -1,4 +1,4 @@
-const base_url = 'http://192.168.39.19:9229';
+const base_url = 'http://192.168.97.71:9229';
 
 interface Config {
 	url: string;

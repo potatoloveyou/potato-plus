@@ -17,6 +17,9 @@ const user_shipping_addresses = db.collection('user_shipping_addresses');
 
 const shopping_cart = db.collection('shopping_cart');
 
+const user = db.collection('user');
+
+// 订单
 const order = db.collection('order');
 
 module.exports = {
@@ -27,5 +30,6 @@ module.exports = {
 	order_bar,
 	user_shipping_addresses,
 	shopping_cart,
+	user,
 	order,
 };

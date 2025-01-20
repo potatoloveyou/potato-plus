@@ -152,6 +152,12 @@
 				"navigationBarTitleText": "我的订单",
 				"navigationBarBackgroundColor": "#ffffff"
 			}
+		},
+		{
+			"path": "pages/login/login",
+			"style": {
+				"navigationBarTitleText": "登录注册"
+			}
 		}
 	],
 	"tabBar": {

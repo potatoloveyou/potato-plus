@@ -5,14 +5,15 @@
     "configurations" : [
         {
             "app-plus" : {
-                "launchtype" : "local"
+                "launchtype" : "remote"
             },
             "default" : {
                 "launchtype" : "local"
             },
             "mp-weixin" : {
-                "launchtype" : "local"
+                "launchtype" : "remote"
             },
+            "provider" : "aliyun",
             "type" : "uniCloud"
         },
         {

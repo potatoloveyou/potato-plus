@@ -143,3 +143,12 @@ export const updateUserShoppingCart = (data: object) => {
 		data,
 	});
 };
+
+// 获取用户手机号
+export const getUserPhoneNumber = (data: object) => {
+	return request({
+		url: `/user/getPhoneNumber`,
+		method: 'POST',
+		data,
+	});
+};

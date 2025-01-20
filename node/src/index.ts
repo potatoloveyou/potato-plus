@@ -80,5 +80,9 @@ router.use(deleteUserShoppingCart.routes());
 const updateUserShoppingCart = require('./router/shoppingCart/updateUserShoppingCart.ts');
 router.use(updateUserShoppingCart.routes());
 
+// 获取用户手机号并登录
+const getPhoneNumber = require('./router/user/getPhoneNumber.ts');
+router.use(getPhoneNumber.routes());
+
 app.use(router.routes());
 app.listen(9229);
