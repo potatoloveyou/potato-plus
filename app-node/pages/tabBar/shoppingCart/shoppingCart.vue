@@ -22,8 +22,12 @@
 					class="shop-item"
 					v-for="(item, index) in shoppingCartStore.cartList"
 					:key="`${item.goodsDetails._id}+${item.addedAt}`">
-					<label class="radio" @click="toggleItemSelection({ id: item.goodsDetails._id })">
-						<radio value="" color="#49bdfb" :checked="item.checked" />
+					<label class="radio">
+						<radio
+							value=""
+							color="#49bdfb"
+							:checked="item.checked"
+							@click="toggleItemSelection({ id: item.goodsDetails._id })" />
 					</label>
 					<image
 						class="goods-img"
@@ -56,8 +60,8 @@
 		</view>
 
 		<view class="shop-bottom">
-			<label class="radio" @click="checkAllSwitch">
-				<radio value="" color="#49bdfb" :checked="shoppingCartStore.isCheckAll" />
+			<label class="radio">
+				<radio value="" color="#49bdfb" :checked="shoppingCartStore.isCheckAll" @click="checkAllSwitch" />
 				<text>全选</text>
 			</label>
 
@@ -134,10 +138,19 @@
 	const toggleModifyMode = shoppingCartStore.toggleItemSelection;
 
 	// 切换单个商品选中状态
-	const toggleItemSelection = shoppingCartStore.toggleItemSelection;
+	const toggleItemSelection = ({ id }) => {
+		shoppingCartStore.toggleItemSelection({ id });
+		console.log(shoppingCartStore.cartList);
+		console.log(shoppingCartStore.isCheckAll);
+		console.log(shoppingCartStore.selectedItems);
+	};
 
 	// 全选商品
-	const checkAllSwitch = shoppingCartStore.checkAllSwitch;
+	const checkAllSwitch = () => {
+		shoppingCartStore.checkAllSwitch();
+		console.log(shoppingCartStore.isCheckAll);
+		console.log(shoppingCartStore.cartList);
+	};
 
 	// 删除商品
 	const deleteShoppingCartGoods = async () => {
@@ -159,6 +172,9 @@
 			const res = await delUserShoppingCart(tempShoppingCart);
 			console.log(res);
 			await getUserShoppingCartData();
+			uni.removeTabBarBadge({
+				index: 2,
+			});
 		} catch (error) {}
 	};
 

@@ -49,7 +49,6 @@ router.post('/shoppingCart/add', bodyParser(), async (ctx) => {
 				},
 			);
 		} else {
-			console.log('不存在');
 			// 如果商品不存在，插入新商品
 			await shopping_cart.updateOne(
 				{ userId },
