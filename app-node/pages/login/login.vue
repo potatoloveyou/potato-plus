@@ -17,12 +17,6 @@
 	import { onReady } from '@dcloudio/uni-app';
 	import { getPhoneNumberLogin } from '@/api/apis.ts';
 
-	// onReady(() => {
-	// 	// #ifdef APP
-	// 	appLogin();
-	// 	// #endif
-	// });
-
 	// #ifdef APP
 	const appLogin = async () => {
 		uni.login({
@@ -103,13 +97,41 @@
 				// 发送到后端
 				const response = await getPhoneNumberLogin(data);
 				console.log('服务器返回的结果：', response);
+
+				if (response.code !== 0) {
+					console.log('有错，登录不了', response);
+					return;
+				}
+				Object.entries(response.data).forEach(([key, value]) => {
+					uni.setStorage({
+						key,
+						data: value,
+						success: () => {
+							// console.log(`${key} 存储成功`);
+						},
+						fail: (err) => {
+							console.error(`${key} 存储失败:`, err);
+						},
+					});
+				});
+				// 关闭一键登录授权界面
+				uni.closeAuthView();
+				uni.showToast({
+					title: '登录成功',
+					icon: 'none',
+				});
+				uni.switchTab({
+					url: '/pages/tabBar/index/index',
+				});
 			},
 			// 当用户点击自定义按钮时，会触发uni.login的fail回调[点击其他登录方式，可以跳转页面，或执行事件]
 			fail(err) {
-				// 登录失败
-				console.log(res.code);
+				// 登录失败提示
+				uni.showToast({
+					title: '登录失败，请重试',
+					icon: 'none',
+				});
 				console.error('登录失败：', err);
-				console.log(err.code); // 修正变量名
 			},
 		});
 	};

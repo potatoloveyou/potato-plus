@@ -19,6 +19,8 @@ const shopping_cart = db.collection('shopping_cart');
 
 const user = db.collection('user');
 
+const refresh_tokens = db.collection('refresh_tokens');
+
 // 订单
 const order = db.collection('order');
 
@@ -31,5 +33,6 @@ module.exports = {
 	user_shipping_addresses,
 	shopping_cart,
 	user,
+	refresh_tokens,
 	order,
 };
