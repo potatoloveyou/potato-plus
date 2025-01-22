@@ -80,9 +80,13 @@ router.use(deleteUserShoppingCart.routes());
 const updateUserShoppingCart = require('./router/shoppingCart/updateUserShoppingCart.ts');
 router.use(updateUserShoppingCart.routes());
 
-// 获取用户手机号并登录
-const getPhoneNumberLogin = require('./router/user/getPhoneNumberLogin.ts');
-router.use(getPhoneNumberLogin.routes());
+// 获取app用户手机号并登录
+const app_getPhoneNumberLogin = require('./router/user/app_getPhoneNumberLogin.ts');
+router.use(app_getPhoneNumberLogin.routes());
+
+// 获取微信小程序用户手机号并登录
+const weixin_getPhoneNumberLogin = require('./router/user/weixin_getPhoneNumberLogin.ts');
+router.use(weixin_getPhoneNumberLogin.routes());
 
 app.use(router.routes());
 app.listen(9229);

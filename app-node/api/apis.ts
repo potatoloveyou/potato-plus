@@ -144,11 +144,28 @@ export const updateUserShoppingCart = (data: object) => {
 	});
 };
 
-// 获取用户手机号
-export const getPhoneNumberLogin = (data: object) => {
+// 获取app用户手机号登录
+export const app_getPhoneNumberLogin = (data: object) => {
 	return request({
-		url: `/user/getPhoneNumberLogin`,
+		url: `/user/app_getPhoneNumberLogin`,
 		method: 'POST',
 		data,
+	});
+};
+
+// 获取微信小程序用户手机号登录并注册
+export const weixin_getPhoneNumberLogin = (data: object) => {
+	return request({
+		url: `/user/weixin_getPhoneNumberLogin`,
+		method: 'POST',
+		data,
+	});
+};
+
+// 退出登录
+export const appUserLogOut = () => {
+	return request({
+		url: `/user/logout`,
+		method: 'POST',
 	});
 };

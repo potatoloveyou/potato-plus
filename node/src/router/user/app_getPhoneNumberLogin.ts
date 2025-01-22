@@ -1,7 +1,7 @@
 const Router = require('@koa/router');
 const router = new Router();
 
-const { ObjectId, user, refresh_tokens } = require('../../db/mongo.ts');
+const { ObjectId, user, refresh_tokens, user_devices } = require('../../db/mongo.ts');
 
 const bodyParser = require('koa-bodyparser');
 
@@ -21,7 +21,7 @@ const SECRET_KEY_ENCRYPTION = 'potato-encryption-phone-number';
 const ACCESS_TOKEN_EXPIRATION = '2d'; // Access Token 有效期	1天
 const REFRESH_TOKEN_EXPIRATION = 30 * 24 * 60 * 60 * 1000; // Refresh Token 有效期（30天）
 
-router.post('/user/getPhoneNumberLogin', bodyParser(), async (ctx) => {
+router.post('/user/app_getAPhoneNumberLogin', bodyParser(), async (ctx) => {
 	try {
 		const { accessToken, openId, deviceInfo = 'Unknown Device' } = ctx.request.body;
 
@@ -31,87 +31,79 @@ router.post('/user/getPhoneNumberLogin', bodyParser(), async (ctx) => {
 		}
 
 		// Step 1: 获取手机号
-		// 1. 参数排序并拼接签名字符串
 		const params = { access_token: accessToken, openid: openId };
 		const signStr = Object.keys(params)
 			.sort()
 			.map((key) => `${key}=${params[key]}`)
 			.join('&');
-
 		// 2. 生成 HMAC-SHA256 签名
 		const sign = crypto.createHmac('sha256', SECRET_KEY).update(signStr).digest('hex');
-
 		// 3. 请求云函数
 		const cloudUrl = `https://fc-mp-8f95879a-f871-43cc-961f-fa7c3730cf1d.next.bspapp.com/user/getPhoneNumber`;
 		const response = await axios.get(cloudUrl, {
 			params: { ...params, sign },
 		});
-
-		// 判断云函数返回结果
+		// 4. 判断云函数返回结果
 		if (response.data.code !== 0 || !response.data.data.phoneNumber) {
 			ctx.body = { code: 500, message: '云函数调用失败', error: response.data.message || '手机号获取失败' };
 			return;
 		}
-		// 4.	获取完整手机号
+		// 5.	获取完整手机号
 		const fullPhoneNumber = response.data.data.phoneNumber;
 
 		// Step 2: 加密手机号
 		// 生成随机 iv
 		const iv = crypto.randomBytes(16);
 		const ENCRYPTION_KEY = crypto.createHash('sha256').update(SECRET_KEY_ENCRYPTION).digest(); // 生成固定长度密钥
-		const cipher = crypto.createCipheriv('aes-256-cbc', ENCRYPTION_KEY, iv); // 创建加密器
-		const encryptedPhoneNumber = cipher.update(fullPhoneNumber, 'utf8', 'hex') + cipher.final('hex'); // 加密手机号
+		// 创建加密器
+		const cipher = crypto.createCipheriv('aes-256-cbc', ENCRYPTION_KEY, iv);
+		// 加密手机号
+		const encryptedPhoneNumber = cipher.update(fullPhoneNumber, 'utf8', 'hex') + cipher.final('hex');
 
-		// Step 3: 校验手机号是否已被使用
-		const phoneConflict = await user.findOne({ phoneNumber: encryptedPhoneNumber, openId: { $ne: openId } });
-		if (phoneConflict) {
-			ctx.body = { code: 409, message: '手机号已被其他用户使用' };
-			return;
-		}
-
-		// Step 4: 查找或更新用户信息
-		let userRecord = await user.findOne({ openId });
+		// Step 3: 根据手机号查找或创建用户
+		let userRecord = await user.findOne({ phoneNumber: encryptedPhoneNumber });
 		if (!userRecord) {
-			// 如果用户不存在，则创建新用户
+			// 如果用户不存在，创建新用户
 			userRecord = await user.insertOne({
-				openId,
 				phoneNumber: encryptedPhoneNumber,
 				iv: iv.toString('hex'),
 				createTime: new Date(),
 				updateTime: new Date(),
 			});
-		} else {
-			// 如果用户已存在，则更新手机号
-			await user.updateOne(
-				{ _id: new ObjectId(userRecord._id) },
-				{
-					$set: {
-						phoneNumber: encryptedPhoneNumber,
-						iv: iv.toString('hex'),
-						updateTime: new Date(),
-					},
-				},
-			);
 		}
 
-		// Step 5: 生成唯一的 Refresh Token
-		let refreshToken;
-		do {
-			refreshToken = crypto.randomBytes(32).toString('hex');
-		} while (await refresh_tokens.findOne({ token: refreshToken })); // 确保唯一性
+		// Step 4: 保存或更新设备信息到 user_devices 表
+		await user_devices.updateOne(
+			{ userId: userRecord._id, openId }, // 以 userId 和 openId 为唯一标识
+			{
+				$set: {
+					userId: userRecord._id,
+					openId, // 记录 openId
+					deviceInfo, // 记录设备信息
+					lastLogin: new Date(), // 更新登录时间
+				},
+			},
+			{ upsert: true }, // 不存在时插入
+		);
 
-		// Step 6: 保存 Refresh Token 到数据库
-		const refreshExpiration = new Date(Date.now() + REFRESH_TOKEN_EXPIRATION);
-		await refresh_tokens.insertOne({
-			userId: userRecord._id,
-			token: refreshToken,
-			deviceInfo,
-			expiration: refreshExpiration,
-			createTime: new Date(),
-			updateTime: new Date(),
+		// Step 5: 生成并保存 Refresh Token
+		const refreshToken = jwt.sign({ userId: userRecord._id, deviceInfo, encryptedPhoneNumber }, SECRET_KEY, {
+			expiresIn: `${REFRESH_TOKEN_EXPIRATION / 1000}s`,
 		});
 
-		// Step 7: 生成 Access Token
+		await refresh_tokens.updateOne(
+			{ userId: userRecord._id, deviceInfo },
+			{
+				$set: {
+					token: refreshToken,
+					expiration: new Date(Date.now() + REFRESH_TOKEN_EXPIRATION),
+					updateTime: new Date(),
+				},
+			},
+			{ upsert: true },
+		);
+
+		// Step 6: 生成 Access Token
 		const token = jwt.sign({ userId: userRecord._id, encryptedPhone: encryptedPhoneNumber }, SECRET_KEY_ENCRYPTION, {
 			expiresIn: ACCESS_TOKEN_EXPIRATION,
 		});

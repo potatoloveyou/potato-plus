@@ -21,6 +21,8 @@ const user = db.collection('user');
 
 const refresh_tokens = db.collection('refresh_tokens');
 
+const user_devices = db.collection('user_devices');
+
 // 订单
 const order = db.collection('order');
 
@@ -34,5 +36,6 @@ module.exports = {
 	shopping_cart,
 	user,
 	refresh_tokens,
+	user_devices,
 	order,
 };

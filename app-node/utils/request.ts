@@ -1,7 +1,6 @@
 // const base_url = 'http://192.168.39.19:9229';
 const base_url = 'http://192.168.97.71:9229';
 
-
 interface Config {
 	url: string;
 	data?: any;
@@ -25,6 +24,7 @@ export const request = (config: Config) => {
 			header,
 			// 请求成功的回调函数
 			success: (res: any) => {
+				// resolve(res);
 				if (res.statusCode !== 200) {
 					console.log('HTTP 状态码异常:', res.statusCode);
 					// reject(new Error(`HTTP error: ${res.statusCode}`));
