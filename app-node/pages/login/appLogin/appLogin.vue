@@ -1,13 +1,13 @@
 <template>
 	<view class="appLogin">
-
+		<button @click="login">授权登录</button>
 	</view>
 </template>
 
 <script setup>
+	import { appLogin, appUserLogOut } from '@/api/apis.ts';
 
-	// #ifdef APP
-	const appLogin = async () => {
+	const login = async () => {
 		uni.login({
 			provider: 'univerify',
 			univerifyStyle: {
@@ -76,73 +76,75 @@
 					],
 				},
 			},
-			success: async (res) => {
+			success(loginRes) {
 				// 登录成功，获取 openId 和 accessToken
-				const data = {
-					accessToken: res.authResult.access_token,
-					openId: res.authResult.openid,
+				const dataLoginRes = {
+					accessToken: loginRes.authResult.access_token,
+					openId: loginRes.authResult.openid,
 				};
+				// console.log(dataLoginRes);
 
-				// 发送到后端
-				const response = await app_getPhoneNumberLogin(data);
-				console.log('服务器返回的结果：', response);
+				uni.getSystemInfo({
+					async success(res) {
+						const data = {
+							...dataLoginRes,
+							deviceInfo: {
+								// 设备品牌类型
+								deviceName: `${res.deviceBrand} ${res.deviceModel}`,
+								// 操作系统版本
+								osVersion: res.osVersion,
+								// 登录方式
+								provider: `APP-univerify`,
+							},
+						};
 
-				if (response.code !== 0) {
-					console.log('有错，登录不了', response);
-					return;
-				}
-				Object.entries(response.data).forEach(([key, value]) => {
-					uni.setStorage({
-						key,
-						data: value,
-						success: () => {
-							// console.log(`${key} 存储成功`);
-						},
-						fail: (err) => {
-							console.error(`${key} 存储失败:`, err);
-						},
-					});
-				});
-				// 关闭一键登录授权界面
-				uni.closeAuthView();
-				uni.showToast({
-					title: '登录成功',
-					icon: 'none',
-				});
-				uni.switchTab({
-					url: '/pages/tabBar/index/index',
+						// 发送到后端
+						const response = await appLogin(data);
+						console.log('服务器返回的结果：', response);
+
+						if (response.code !== 0) {
+							console.log('有错，登录不了', response);
+							return;
+						}
+
+						// 将服务器返回的数据存储到本地
+						// Object.entries(response.data).forEach(([key, value]) => {
+						// 	uni.setStorage({
+						// 		key,
+						// 		data: value,
+						// 		success: () => {
+						// 			// console.log(`${key} 存储成功`);
+						// 		},
+						// 		fail: (err) => {
+						// 			console.error(`${key} 存储失败:`, err);
+						// 		},
+						// 	});
+						// });
+
+						// // 关闭一键登录授权界面
+						// uni.closeAuthView();
+
+						uni.showToast({
+							title: '登录成功',
+							icon: 'none',
+						});
+						// uni.switchTab({
+						// 	url: '/pages/tabBar/index/index',
+						// });
+					},
 				});
 			},
 			// 当用户点击自定义按钮时，会触发uni.login的fail回调[点击其他登录方式，可以跳转页面，或执行事件]
-			fail(err) {
-				// 登录失败提示
-				uni.showToast({
-					title: '登录失败，请重试',
-					icon: 'none',
-				});
-				console.error('登录失败：', err);
-			},
+			// fail(err) {
+			// 	// 登录失败提示
+			// 	uni.showToast({
+			// 		title: '登录失败，请重试',
+			// 		icon: 'none',
+			// 	});
+			// 	console.error('登录失败：', err);
+			// },
 		});
 	};
-
-	const appLogOut = async () => {
-		const res = await appUserLogOut();
-		if (res.code === 0) {
-			uni.showToast({
-				title: '退出登录成功',
-				icon: 'none',
-			});
-			uni.switchTab({
-				url: '/pages/tabBar/index/index',
-			});
-		} else {
-			uni.showToast({
-				title: '退出登录失败',
-				icon: 'none',
-			});
-		}
-	};
-	// #endif
 </script>
 
 <style lang="scss" scoped></style>

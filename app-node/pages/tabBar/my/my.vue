@@ -11,8 +11,8 @@
 			</view>
 		</view>
 
-		<button @click="goLogin">手机号授权登录</button>
-
+		<button @click="goAppLogin">APP登录注册</button>
+		<button @click="goWeixinLogin">微信登录注册</button>
 		<view class="my-order">
 			<view class="order-content">
 				<view class="order-title">
@@ -71,10 +71,17 @@
 		});
 	};
 
-	// 跳转到登录
-	const goLogin = () => {
+	// 跳转到APP登录注册
+	const goAppLogin = () => {
 		uni.navigateTo({
-			url: '/pages/login/login',
+			url: '/pages/login/appLogin/appLogin',
+		});
+	};
+
+	// 跳转到微信小程序登录注册
+	const goWeixinLogin = () => {
+		uni.navigateTo({
+			url: '/pages/login/weixinLogin/weixinLogin',
 		});
 	};
 </script>

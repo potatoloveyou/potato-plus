@@ -81,12 +81,12 @@ const updateUserShoppingCart = require('./router/shoppingCart/updateUserShopping
 router.use(updateUserShoppingCart.routes());
 
 // 获取app用户手机号并登录
-const app_getPhoneNumberLogin = require('./router/user/app_getPhoneNumberLogin.ts');
-router.use(app_getPhoneNumberLogin.routes());
+const appLogin = require('./router/user/appLogin.ts');
+router.use(appLogin.routes());
 
-// 获取微信小程序用户手机号并登录
-const weixin_getPhoneNumberLogin = require('./router/user/weixin_getPhoneNumberLogin.ts');
-router.use(weixin_getPhoneNumberLogin.routes());
+// 获取微信小程序用户手机号并注册
+const weixin_register = require('./router/user/weixin_register.ts');
+router.use(weixin_register.routes());
 
 app.use(router.routes());
 app.listen(9229);

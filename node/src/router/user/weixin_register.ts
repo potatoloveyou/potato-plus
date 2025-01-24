@@ -5,9 +5,8 @@ const bodyParser = require('koa-bodyparser');
 
 const axios = require('axios');
 
-//
-
-router.post('/user/weixin_getPhoneNumberLogin', bodyParser(), async (ctx) => {
+// 微信小程序注册
+router.post('/user/weixin_register', bodyParser(), async (ctx) => {
 	try {
 		const { code: weixinCode } = ctx.request.body;
 		// console.log(weixinCode);

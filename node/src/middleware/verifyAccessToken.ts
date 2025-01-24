@@ -4,7 +4,7 @@ const { refresh_tokens } = require('../../db/mongo.ts');
 
 const SECRET_KEY_ENCRYPTION = 'potato-encryption-phone-number';
 
-const verifyToken = async (ctx, next) => {
+const verifyAccessToken  = async (ctx, next) => {
 	try {
 		// 从请求头获取 Token
 		const token = ctx.headers.authorization?.split(' ')[1]; // Bearer <token>
@@ -24,8 +24,7 @@ const verifyToken = async (ctx, next) => {
 			return;
 		} catch (error) {
 			// 如果是 Token 过期错误，尝试使用 Refresh Token
-			i
-			f (error.name === 'TokenExpiredError') {
+			if (error.name === 'TokenExpiredError') {
 				const refreshToken = ctx.request.body?.refreshToken;
 				if (!refreshToken) {
 					ctx.status = 401;
@@ -34,7 +33,7 @@ const verifyToken = async (ctx, next) => {
 				}
 
 				// 验证 Refresh Token 的有效性
-				const refreshTokenRecord = await refresh_tokens.findOne({ token: refreshToken });
+				const refreshTokenRecord = await refresh_tokens.findOne({ refreshToken });
 				if (!refreshTokenRecord || refreshTokenRecord.expiration < new Date()) {
 					ctx.status = 401;
 					ctx.body = { code: 401, message: 'Refresh Token 无效或已过期' };
@@ -71,4 +70,4 @@ const verifyToken = async (ctx, next) => {
 	}
 };
 
-module.exports = verifyToken;
+module.exports = verifyAccessToken;

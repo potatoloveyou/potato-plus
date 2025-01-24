@@ -19,6 +19,7 @@ const shopping_cart = db.collection('shopping_cart');
 
 const user = db.collection('user');
 
+// 存储长期token
 const refresh_tokens = db.collection('refresh_tokens');
 
 const user_devices = db.collection('user_devices');
