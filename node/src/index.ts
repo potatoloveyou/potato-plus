@@ -88,5 +88,13 @@ router.use(appLogin.routes());
 const weixin_register = require('./router/user/weixin_register.ts');
 router.use(weixin_register.routes());
 
+// 刷新token
+const refreshToken = require('./router/user/refreshToken.ts');
+router.use(refreshToken.routes());
+
+// 测试token
+const testToken = require('./router/testToken.ts');
+router.use(testToken.routes());
+
 app.use(router.routes());
 app.listen(9229);

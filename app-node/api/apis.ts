@@ -169,3 +169,10 @@ export const appUserLogOut = () => {
 		method: 'POST',
 	});
 };
+
+// 测试token
+export const testToken = () => {
+	return request({
+		url: `/testToken`,
+	});
+};

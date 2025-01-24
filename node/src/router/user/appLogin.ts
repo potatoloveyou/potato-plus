@@ -12,11 +12,12 @@ const axios = require('axios');
 // 生成 Token
 const jwt = require('jsonwebtoken');
 
-// 定义密钥 用于 HMAC 签名
-const SECRET_KEY = 'potato-love-you-get-phone-number';
+// 手机号加密密钥
+const SECRET_KEY_PHONE = 'potato-love-you-encryption-phone';
 
-// 加密完整手机号
-const SECRET_KEY_ENCRYPTION = 'potato-encryption-phone-number';
+// token加密密钥
+const SECRET_KEY_TOKEN = 'potato-love-you-token';
+
 const REFRESH_TOKEN_EXPIRATION = 30 * 24 * 60 * 60 * 1000; // Refresh Token 有效期（30天）
 
 router.post('/user/appLogin', bodyParser(), async (ctx) => {
@@ -54,20 +55,20 @@ router.post('/user/appLogin', bodyParser(), async (ctx) => {
 		const fullPhoneNumber = '18927428970';
 
 		// Step 2: 加密手机号
-		const encryptedPhoneNumber = crypto
+		const encryptedPhone = crypto
 			.createHash('sha256')
-			.update(fullPhoneNumber + SECRET_KEY_ENCRYPTION)
+			.update(fullPhoneNumber + SECRET_KEY_PHONE)
 			.digest('hex');
 
 		// Step 3: 查找用户和设备信息
-		let userRecord = await user.findOne({ phoneNumber: encryptedPhoneNumber, 'devices.openId': openId });
+		let userRecord = await user.findOne({ phoneNumber: encryptedPhone, 'devices.openId': openId });
 
 		// 判断用户和设备信息是否都存在
 		if (userRecord) {
 			// 用户和设备信息存在，更新设备的登录信息
 			await user.updateOne(
 				{
-					phoneNumber: encryptedPhoneNumber,
+					phoneNumber: encryptedPhone,
 					'devices.openId': openId,
 				},
 				{
@@ -82,11 +83,11 @@ router.post('/user/appLogin', bodyParser(), async (ctx) => {
 			// 如果不存在用户或设备信息，插入新的记录
 			await user.updateOne(
 				{
-					phoneNumber: encryptedPhoneNumber,
+					phoneNumber: encryptedPhone,
 				},
 				{
 					$set: {
-						phoneNumber: encryptedPhoneNumber,
+						phoneNumber: encryptedPhone,
 						createTime: new Date(),
 						updateTime: new Date(),
 					},
@@ -107,11 +108,11 @@ router.post('/user/appLogin', bodyParser(), async (ctx) => {
 			{
 				userId: userRecord._id.toString(),
 				openId,
-				encryptedPhone: encryptedPhoneNumber,
+				encryptedPhone,
 			},
-			SECRET_KEY_ENCRYPTION,
+			SECRET_KEY_TOKEN,
 			{
-				expiresIn: '1h',
+				expiresIn: '1m',
 			},
 		);
 
@@ -120,9 +121,9 @@ router.post('/user/appLogin', bodyParser(), async (ctx) => {
 			{
 				userId: userRecord._id.toString(),
 				openId,
-				encryptedPhoneNumber,
+				encryptedPhone,
 			},
-			SECRET_KEY,
+			SECRET_KEY_TOKEN,
 			{
 				// 设置 token 有效期为 30 天
 				expiresIn: `${REFRESH_TOKEN_EXPIRATION / 1000}s`,
@@ -150,9 +151,9 @@ router.post('/user/appLogin', bodyParser(), async (ctx) => {
 
 		// 返回 token 和 refreshToken
 		ctx.body = {
-			code: 0,
+			code: 5,
 			message: '成功',
-			data: {
+			headers: {
 				accessToken: access_token,
 				refreshToken: refresh_token,
 			},
