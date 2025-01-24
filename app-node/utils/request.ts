@@ -1,7 +1,7 @@
 import { setAccessToken, setRefreshToken, getAccessToken, getRefreshToken } from './token.js';
 
-const base_url = 'http://192.168.0.104:9229';
-// const base_url = 'http://192.168.34.71:9229';
+// const base_url = 'http://192.168.0.104:9229';
+const base_url = 'http://192.168.34.71:9229';
 
 interface Config {
 	url: string;
@@ -15,13 +15,14 @@ const requestInterceptors: Array<(config: Config) => Config | Promise<Config>> =
 // 响应拦截器数组
 const responseInterceptors: Array<(response: any) => any> = [];
 
-// 注册响应拦截器;
-export const addResponseInterceptor = (interceptor: (response: any) => any | Promise<any>) => {
-	responseInterceptors.push(interceptor);
-};
 // 注册请求拦截器
 export const addRequestInterceptor = (interceptor: (config: Config) => Config | Promise<Config>) => {
 	requestInterceptors.push(interceptor);
+};
+
+// 注册响应拦截器;
+export const addResponseInterceptor = (interceptor: (response: any) => any | Promise<any>) => {
+	responseInterceptors.push(interceptor);
 };
 
 // 默认请求拦截器：设置基础 URL 和默认头部信息
@@ -45,17 +46,27 @@ addRequestInterceptor((config) => {
 
 // 默认响应拦截器：处理通用的响应情况
 addResponseInterceptor(async (response) => {
-	console.log(response);
+	// console.log('addResponseInterceptor', response);
+	// 如果需要处理 token 过期的情况
+	// 可以在这里刷新 token 或者重定向到登录页面
+	// console.log('response', response);
+
+	if (response.statusCode === 200 && response.data.code === 5) {
+		if (response.data.headers.accessToken) {
+			const accessToken = response.data.headers.accessToken;
+			setAccessToken(`Bearer ${accessToken}`);
+		}
+		if (response.data.headers.refreshToken) {
+			const refreshToken = response.data.headers.refreshToken;
+			setRefreshToken(`${refreshToken}`);
+		}
+	}
 
 	// if (response.statusCode === 401) {
 	// 	// 如果是未授权状态码
 	// 	// 处理 token 过期的情况（如果需要）
 	// 	console.warn('Token may have expired');
 	// 	// 可以在这里尝试刷新 token 或者重定向到登录页面
-	// }
-
-	// if (response.statusCode !== 200) {
-	// 	throw new Error(`HTTP error: ${response.statusCode}`);
 	// }
 
 	return response;
@@ -90,43 +101,11 @@ export const request = async (initialConfig: Config) => {
 		}
 
 		// 根据业务逻辑进一步处理响应数据
-		if (response.data.code === 0) {
+		if (response.data.code === 0 || response.data.code === 5) {
 			return response.data;
 		} else {
 			throw new Error(`Business error: ${response.data.code}`);
 		}
-
-		// return new Promise((resolve, reject) => {
-		// 	uni.request({
-		// 		...config,
-		// 		// 请求成功的回调函数
-		// 		success: (res: any) => {
-		// 			// resolve(res);
-		// 			if (res.statusCode !== 200) {
-		// 				console.log('HTTP 状态码异常:', res.statusCode);
-		// 				// reject(new Error(`HTTP error: ${res.statusCode}`));
-		// 				return resolve(res.data);
-		// 			}
-
-		// 			if (res.data.code === 0) {
-		// 				resolve(res.data);
-		// 				return;
-		// 			}
-
-		// 			if (res.data.code !== 0) {
-		// 				console.log('接口返回非正常 code:', res.data.code);
-		// 				resolve(res.data);
-		// 			}
-		// 		},
-		// 		// 请求失败的回调函数
-		// 		fail: (error) => {
-		// 			console.error('请求失败:', error);
-		// 			reject(error); // 确保 fail 的情况下也触发 reject
-		// 		},
-		// 		// 请求完成时 隐藏 loading
-		// 		complete: () => uni.hideLoading(),
-		// 	});
-		// });
 	} catch (error) {
 		console.error('Request failed:', error);
 		throw error; // 确保失败的情况下也抛出异常

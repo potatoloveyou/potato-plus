@@ -7,6 +7,7 @@
 		</view>
 
 		<view class="phone-register" @click="weixinLogin">手机号登录</view>
+
 	</view>
 </template>
 

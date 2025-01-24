@@ -1,11 +1,14 @@
 <template>
 	<view class="appLogin">
 		<button @click="login">授权登录</button>
+		<button @click="getToken">获取token</button>
 	</view>
 </template>
 
 <script setup>
 	import { appLogin, appUserLogOut } from '@/api/apis.ts';
+
+	import { getAccessToken, getRefreshToken } from '@/utils/token.ts';
 
 	const login = async () => {
 		uni.login({
@@ -102,24 +105,10 @@
 						const response = await appLogin(data);
 						console.log('服务器返回的结果：', response);
 
-						if (response.code !== 0) {
+						if (response.code !== 5) {
 							console.log('有错，登录不了', response);
 							return;
 						}
-
-						// 将服务器返回的数据存储到本地
-						// Object.entries(response.data).forEach(([key, value]) => {
-						// 	uni.setStorage({
-						// 		key,
-						// 		data: value,
-						// 		success: () => {
-						// 			// console.log(`${key} 存储成功`);
-						// 		},
-						// 		fail: (err) => {
-						// 			console.error(`${key} 存储失败:`, err);
-						// 		},
-						// 	});
-						// });
 
 						// // 关闭一键登录授权界面
 						// uni.closeAuthView();
@@ -144,6 +133,11 @@
 			// 	console.error('登录失败：', err);
 			// },
 		});
+	};
+
+	const getToken = () => {
+		console.log('getAccessToken', getAccessToken());
+		console.log('getRefreshToken', getRefreshToken());
 	};
 </script>
 
