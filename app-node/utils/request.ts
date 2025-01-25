@@ -1,7 +1,7 @@
 import { setAccessToken, setRefreshToken, getAccessToken, getRefreshToken } from './token.js';
 
-// const base_url = 'http://192.168.0.104:9229';
-const base_url = 'http://192.168.34.71:9229';
+const base_url = 'http://192.168.0.104:9229';
+// const base_url = 'http://192.168.34.71:9229';
 
 interface Config {
 	url: string;
@@ -51,14 +51,14 @@ addResponseInterceptor(async (response) => {
 	// 可以在这里刷新 token 或者重定向到登录页面
 	// console.log('response', response);
 
+	const { accessToken, refreshToken } = response.data.headers || {};
+
 	if (response.statusCode === 200 && response.data.code === 5) {
-		if (response.data.headers.accessToken) {
-			const accessToken = response.data.headers.accessToken;
+		if (accessToken) {
 			setAccessToken(`Bearer ${accessToken}`);
 		}
-		if (response.data.headers.refreshToken) {
-			const refreshToken = response.data.headers.refreshToken;
-			setRefreshToken(`${refreshToken}`);
+		if (refreshToken) {
+			setRefreshToken(`Bearer ${refreshToken}`);
 		}
 	}
 

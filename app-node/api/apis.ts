@@ -147,16 +147,16 @@ export const updateUserShoppingCart = (data: object) => {
 // 获取app用户手机号登录
 export const appLogin = (data: object) => {
 	return request({
-		url: `/user/appLogin`,
+		url: `/user/app_login`,
 		method: 'POST',
 		data,
 	});
 };
 
 // 获取微信小程序用户手机号登录并注册
-export const weixin_getPhoneNumberLogin = (data: object) => {
+export const weixinLogin = (data: object) => {
 	return request({
-		url: `/user/weixin_getPhoneNumberLogin`,
+		url: `/user/weixin_login`,
 		method: 'POST',
 		data,
 	});

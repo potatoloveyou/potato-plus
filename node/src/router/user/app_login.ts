@@ -20,7 +20,7 @@ const SECRET_KEY_TOKEN = 'potato-love-you-token';
 
 const REFRESH_TOKEN_EXPIRATION = 30 * 24 * 60 * 60 * 1000; // Refresh Token 有效期（30天）
 
-router.post('/user/appLogin', bodyParser(), async (ctx) => {
+router.post('/user/app_login', bodyParser(), async (ctx) => {
 	try {
 		const { accessToken, openId, deviceInfo = 'Unknown Device' } = ctx.request.body;
 

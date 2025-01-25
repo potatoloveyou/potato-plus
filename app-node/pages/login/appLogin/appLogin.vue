@@ -81,21 +81,18 @@
 			},
 			success(loginRes) {
 				// 登录成功，获取 openId 和 accessToken
-				const dataLoginRes = {
-					accessToken: loginRes.authResult.access_token,
-					openId: loginRes.authResult.openid,
-				};
-				// console.log(dataLoginRes);
-
+				const { accessToken, openId } = loginRes.authResult;
 				uni.getSystemInfo({
 					async success(res) {
+						const { deviceBrand, deviceModel, osVersion } = res;
 						const data = {
-							...dataLoginRes,
+							accessToken,
+							openId,
 							deviceInfo: {
 								// 设备品牌类型
-								deviceName: `${res.deviceBrand} ${res.deviceModel}`,
+								deviceName: `${deviceBrand} ${deviceModel}`,
 								// 操作系统版本
-								osVersion: res.osVersion,
+								osVersion,
 								// 登录方式
 								provider: `APP-univerify`,
 							},
@@ -110,28 +107,29 @@
 							return;
 						}
 
-						// // 关闭一键登录授权界面
-						// uni.closeAuthView();
+						// 关闭一键登录授权界面
+						uni.closeAuthView();
 
 						uni.showToast({
 							title: '登录成功',
 							icon: 'none',
 						});
-						// uni.switchTab({
-						// 	url: '/pages/tabBar/index/index',
-						// });
+
+						uni.switchTab({
+							url: '/pages/tabBar/index/index',
+						});
 					},
 				});
 			},
 			// 当用户点击自定义按钮时，会触发uni.login的fail回调[点击其他登录方式，可以跳转页面，或执行事件]
-			// fail(err) {
-			// 	// 登录失败提示
-			// 	uni.showToast({
-			// 		title: '登录失败，请重试',
-			// 		icon: 'none',
-			// 	});
-			// 	console.error('登录失败：', err);
-			// },
+			fail(err) {
+				// 登录失败提示
+				uni.showToast({
+					title: '登录失败，请重试',
+					icon: 'none',
+				});
+				console.error('登录失败：', err);
+			},
 		});
 	};
 
