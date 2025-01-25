@@ -26,7 +26,7 @@ export const useShoppingCartStore = defineStore('shoppingCart', () => {
 	};
 
 	// 计算选中的商品
-	const selectedItems = computed(() => cartList.value.filter((item: any) => item.checked));
+	const selectedItems = computed(() => cartList.value.filter((item: { checked: boolean }) => item.checked));
 
 	// 判断是否全选
 	const isCheckAll = computed(() => selectedItems.value.length === cartList.value.length && cartList.value.length != 0);

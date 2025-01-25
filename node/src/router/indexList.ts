@@ -5,8 +5,6 @@ const router = new Router();
 
 const { ObjectId, goods_search, top_bar } = require('../db/mongo.ts');
 
-// 中间件，解析post请求的参数
-const bodyParser = require('koa-bodyparser');
 
 // 首页推荐
 router.get('/index_list/data', async (ctx, next) => {

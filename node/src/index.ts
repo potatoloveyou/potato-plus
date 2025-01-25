@@ -84,7 +84,11 @@ router.use(updateUserShoppingCart.routes());
 const app_login = require('./router/user/app_login.ts');
 router.use(app_login.routes());
 
-// 获取微信小程序用户手机号并注册
+// 微信小程序获取邮箱验证码
+const sendingVerify = require('./router/user/sendingVerify.ts');
+router.use(sendingVerify.routes());
+
+// 微信小程序获取用户手机号并注册
 const weixin_login = require('./router/user/weixin_login.ts');
 router.use(weixin_login.routes());
 
