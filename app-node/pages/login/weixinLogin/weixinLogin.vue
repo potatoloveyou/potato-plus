@@ -32,14 +32,14 @@
 			<view class="clean-wrapper">
 				<input
 					class="input"
-					v-model="formData.verify"
-					name="verify"
+					v-model="formData.verificationCode"
+					name="verificationCode"
 					type="text"
 					inputmode="text"
 					placeholder="请输入邮箱验证码" />
 				<button :disabled="!validatePhone || !validateEmail" @click="getEmailVerify">获得邮箱验证码</button>
 			</view>
-			<button class="submit" :disabled="!validatePhone || !validateEmail || validateVerify" form-type="submit">
+			<button class="submit" :disabled="!validatePhone || !validateEmail || validateCode" form-type="submit">
 				提交
 			</button>
 		</form>
@@ -53,7 +53,7 @@
 	const formData = ref({
 		phone: '',
 		email: '',
-		verify: '',
+		verificationCode: '',
 	});
 
 	// 是否显示清除图标
@@ -68,7 +68,7 @@
 
 	const validateEmail = computed(() => /^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/.test(formData.value.email));
 
-	const validateVerify = computed(() => !formData.value.verify);
+	const validateCode = computed(() => !formData.value.verificationCode);
 
 	const getEmailVerify = async () => {
 		if (validatePhone.value && validateEmail.value) {
@@ -77,13 +77,32 @@
 		}
 	};
 
-	const formSubmit = async (e) => {
+	const formSubmit = (e) => {
 		uni.login({
 			provider: 'weixin',
-			async success(success) {
+			success(success) {
 				const { code } = success;
-				const res = await weixinLogin({ ...e.detail.value, js_code: code });
-				console.log(res);
+				uni.getSystemInfo({
+					async success(res) {
+						const { deviceBrand, deviceModel, osVersion } = res;
+						const data = {
+							...e.detail.value,
+							js_code: code,
+							deviceInfo: {
+								// 设备品牌类型
+								deviceName: `${deviceBrand} ${deviceModel}`,
+								// 操作系统版本
+								osVersion,
+								// 登录方式
+								provider: `weixin`,
+							},
+						};
+						// console.log('data', data);
+
+						const response = await weixinLogin(data);
+						console.log(response);
+					},
+				});
 			},
 		});
 	};

@@ -81,13 +81,14 @@
 			},
 			success(loginRes) {
 				// 登录成功，获取 openId 和 accessToken
-				const { accessToken, openId } = loginRes.authResult;
+				const { access_token, openid } = loginRes.authResult;
+
 				uni.getSystemInfo({
 					async success(res) {
 						const { deviceBrand, deviceModel, osVersion } = res;
 						const data = {
-							accessToken,
-							openId,
+							accessToken: access_token,
+							openId: openid,
 							deviceInfo: {
 								// 设备品牌类型
 								deviceName: `${deviceBrand} ${deviceModel}`,
@@ -97,8 +98,9 @@
 								provider: `APP-univerify`,
 							},
 						};
+						// console.log(data);
 
-						// 发送到后端
+						// 发送到后端;
 						const response = await appLogin(data);
 						console.log('服务器返回的结果：', response);
 

@@ -1,7 +1,7 @@
 const Router = require('@koa/router');
 const router = new Router();
 
-const { ObjectId, user, refresh_tokens, user_devices } = require('../../db/mongo.ts');
+const { ObjectId, user, refresh_tokens } = require('../../db/mongo.ts');
 
 const bodyParser = require('koa-bodyparser');
 
@@ -28,6 +28,7 @@ router.post('/user/app_login', bodyParser(), async (ctx) => {
 			ctx.body = { code: 400, message: '参数不完整' };
 			return;
 		}
+		console.log(accessToken, openId, deviceInfo);
 
 		// console.log(accessToken, openId);
 		// console.log('deviceInfo', deviceInfo);
@@ -112,7 +113,7 @@ router.post('/user/app_login', bodyParser(), async (ctx) => {
 			},
 			SECRET_KEY_TOKEN,
 			{
-				expiresIn: '1m',
+				expiresIn: '1h',
 			},
 		);
 

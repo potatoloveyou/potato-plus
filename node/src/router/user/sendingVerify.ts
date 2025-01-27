@@ -29,14 +29,6 @@ router.post('/sendingVerify', bodyParser(), async (ctx, next) => {
 		// 生成4位随机验证码
 		const verificationCode = generateRandomCode(6);
 
-		// 将验证码保存到数据库中
-		await verify.insertOne({
-			email,
-			code: verificationCode,
-			// 验证码有效时间，单位为秒
-			expiration: Date.now() + 60 * 1000,
-		});
-
 		const transporter = nodemailer.createTransport({
 			host: 'smtp.qq.com',
 			port: 587,
@@ -58,8 +50,17 @@ router.post('/sendingVerify', bodyParser(), async (ctx, next) => {
 			});
 			// console.log(info);
 		};
+
+		// 将验证码保存到数据库中
+		await verify.insertOne({
+			email,
+			verificationCode,
+			// 验证码有效时间为1分钟
+			expiration: Date.now() + 60 * 1000,
+		});
+
 		// 邮箱发送错误
-		// main().catch(console.error);
+		main().catch(console.error);
 
 		ctx.body = {
 			code: 0,

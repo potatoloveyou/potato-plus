@@ -1,7 +1,7 @@
 import { setAccessToken, setRefreshToken, getAccessToken, getRefreshToken } from './token.js';
 
-const base_url = 'http://192.168.0.104:9229';
-// const base_url = 'http://192.168.34.71:9229';
+// const base_url = 'http://192.168.1.101:9229';
+const base_url = 'http://192.168.34.71:9229';
 
 interface Config {
 	url: string;
@@ -101,7 +101,7 @@ export const request = async (initialConfig: Config) => {
 		}
 
 		// 根据业务逻辑进一步处理响应数据
-		if (response.data.code === 0 || response.data.code === 5) {
+		if (response.data.code === 0 || response.data.code === 5 || response.data.code === 200) {
 			return response.data;
 		} else {
 			throw new Error(`Business error: ${response.data.code}`);
