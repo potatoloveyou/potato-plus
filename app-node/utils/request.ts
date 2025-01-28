@@ -1,7 +1,8 @@
 import { setAccessToken, setRefreshToken, getAccessToken, getRefreshToken } from './token.js';
+import { renovateToken, isRefreshToken } from '../api/apis.ts';
 
-// const base_url = 'http://192.168.1.101:9229';
-const base_url = 'http://192.168.34.71:9229';
+const base_url = 'http://192.168.1.101:9229';
+// const base_url = 'http://192.168.34.71:9229';
 
 interface Config {
 	url: string;
@@ -13,7 +14,7 @@ interface Config {
 // 请求拦截器数组
 const requestInterceptors: Array<(config: Config) => Config | Promise<Config>> = [];
 // 响应拦截器数组
-const responseInterceptors: Array<(response: any) => any> = [];
+const responseInterceptors: Array<(response: any, originalConfig: Config) => any> = [];
 
 // 注册请求拦截器
 export const addRequestInterceptor = (interceptor: (config: Config) => Config | Promise<Config>) => {
@@ -21,7 +22,7 @@ export const addRequestInterceptor = (interceptor: (config: Config) => Config | 
 };
 
 // 注册响应拦截器;
-export const addResponseInterceptor = (interceptor: (response: any) => any | Promise<any>) => {
+export const addResponseInterceptor = (interceptor: (response: any, originalConfig: Config) => any | Promise<any>) => {
 	responseInterceptors.push(interceptor);
 };
 
@@ -38,55 +39,67 @@ addRequestInterceptor((config) => {
 		config.header = {};
 	}
 	config.header = {
-		Authorization: `Bearer ${getAccessToken()}`, // 假设您需要在每个请求中包含授权令牌
 		...config.header, // 确保用户自定义的头部信息不会被覆盖
+		Authorization: `Bearer ${getAccessToken()}`, // 假设您需要在每个请求中包含授权令牌
 	};
 	return config;
 });
 
 // 默认响应拦截器：处理通用的响应情况
-addResponseInterceptor(async (response) => {
-	// console.log('addResponseInterceptor', response);
-	// 如果需要处理 token 过期的情况
-	// 可以在这里刷新 token 或者重定向到登录页面
-	// console.log('response', response);
-
+addResponseInterceptor(async (response, originalConfig) => {
 	const { accessToken, refreshToken } = response.data.headers || {};
 
 	if (response.statusCode === 200 && response.data.code === 5) {
 		if (accessToken) {
-			setAccessToken(`Bearer ${accessToken}`);
+			setAccessToken(`${accessToken}`);
 		}
 		if (refreshToken) {
-			setRefreshToken(`Bearer ${refreshToken}`);
+			setRefreshToken(`${refreshToken}`);
 		}
 	}
 
-	// if (response.statusCode === 401) {
-	// 	// 如果是未授权状态码
-	// 	// 处理 token 过期的情况（如果需要）
-	// 	console.warn('Token may have expired');
-	// 	// 可以在这里尝试刷新 token 或者重定向到登录页面
-	// }
+	// 检查是否需要刷新 Token
+	if (response.data.code === 51 && !isRefreshToken(originalConfig)) {
+		try {
+			const refreshRes = await renovateToken();
+			if (refreshRes.code === 5) {
+				// 更新请求头后重新发起原始请求
+				const retryConfig = {
+					...originalConfig,
+					header: {
+						...originalConfig.header,
+						Authorization: `Bearer ${getAccessToken()}`, // 使用新 Token
+					},
+				};
+				const retryResponse = await request(retryConfig);
+				// console.log('retryResponse', retryResponse);
 
+				// return retryResponse; // 🟢 返回重试后的结果
+				return { ...response, data: retryResponse }; // 确保返回完整结构
+			}
+		} catch (err) {
+			console.error('刷新 Token 失败', err);
+			throw err;
+		}
+	}
 	return response;
 });
 
 export const request = async (initialConfig: Config) => {
 	// 执行所有请求拦截器
 	let config = { ...initialConfig }; // 深拷贝一份 initialConfig，以免直接修改原始对象
-
 	try {
 		// 执行所有请求拦截器，允许拦截器修改配置
 		for (const interceptor of requestInterceptors) {
 			config = await interceptor(config);
 		}
 
-		uni.showLoading({
-			title: '加载中',
-		});
+		if (!isRefreshToken(config)) {
+			uni.showLoading({ title: '加载中' });
+		}
 
-		const response = await new Promise((resolve, reject) => {
+		// 发送请求
+		const rawResponse = await new Promise((resolve, reject) => {
 			uni.request({
 				...config,
 				success: resolve,
@@ -95,19 +108,21 @@ export const request = async (initialConfig: Config) => {
 			});
 		});
 
-		// 执行所有响应拦截器
+		// 初始化处理后的响应
+		let processedResponse = rawResponse;
+		// console.log('123', rawResponse);
+
+		// 执行响应拦截器链式处理
 		for (const interceptor of responseInterceptors) {
-			await interceptor(response);
+			processedResponse = await interceptor(processedResponse, initialConfig); // 🟢 关键：更新响应
+			console.log('for', processedResponse.data);
 		}
 
-		// 根据业务逻辑进一步处理响应数据
-		if (response.data.code === 0 || response.data.code === 5 || response.data.code === 200) {
-			return response.data;
-		} else {
-			throw new Error(`Business error: ${response.data.code}`);
-		}
+		return processedResponse.data;
 	} catch (error) {
-		console.error('Request failed:', error);
-		throw error; // 确保失败的情况下也抛出异常
+		// 全局错误处理
+		console.error('Request error:', error);
+		uni.showToast({ title: error.message, icon: 'none' });
+		throw error;
 	}
 };

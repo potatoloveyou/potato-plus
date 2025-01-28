@@ -127,6 +127,7 @@
 
 	const getIndexData = async () => {
 		const res = await getIndexList();
+
 		topBar.value = res.data.topBar;
 		newTopBar.value = initData(res.data);
 	};

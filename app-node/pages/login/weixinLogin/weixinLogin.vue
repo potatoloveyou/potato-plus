@@ -43,12 +43,19 @@
 				提交
 			</button>
 		</form>
+
+		<button @click="testToken1">测试token</button>
 	</view>
 </template>
 
 <script setup>
 	import { ref, computed } from 'vue';
-	import { getWeixinEmailVerify, weixinLogin } from '@/api/apis.ts';
+	import { getWeixinEmailVerify, weixinLogin, testToken } from '@/api/apis.ts';
+
+	const testToken1 = async () => {
+		const res = await testToken();
+		console.log('testToken1', res);
+	};
 
 	const formData = ref({
 		phone: '',
@@ -72,8 +79,8 @@
 
 	const getEmailVerify = async () => {
 		if (validatePhone.value && validateEmail.value) {
-			uni.showToast({ title: '验证码已发送', icon: 'none' });
 			await getWeixinEmailVerify(formData.value);
+			uni.showToast({ title: '验证码已发送', icon: 'none' });
 		}
 	};
 
@@ -97,10 +104,23 @@
 								provider: `weixin`,
 							},
 						};
-						// console.log('data', data);
 
 						const response = await weixinLogin(data);
-						console.log(response);
+						// console.log(response);
+
+						if (response.code !== 5) {
+							console.log('有错，登录不了', response);
+							return;
+						}
+
+						uni.showToast({
+							title: '登录成功',
+							icon: 'none',
+						});
+
+						uni.switchTab({
+							url: '/pages/tabBar/index/index',
+						});
 					},
 				});
 			},

@@ -1,4 +1,5 @@
 import { request } from '@/utils/request.ts';
+import { getRefreshToken } from '@/utils/token.ts';
 
 // 首页推荐数据
 export const getIndexList = () => {
@@ -171,17 +172,33 @@ export const weixinLogin = (data: object) => {
 	});
 };
 
-// 退出登录
-export const appUserLogOut = () => {
+// 刷新token
+export const renovateToken = () => {
 	return request({
-		url: `/user/logout`,
+		url: `/user/refreshToken`,
 		method: 'POST',
+		header: {
+			refreshtoken: `Beader ${getRefreshToken()}`,
+		},
+		__isRefreshToken: true,
 	});
+};
+
+export const isRefreshToken = (originalConfig) => {
+	return !!originalConfig.__isRefreshToken;
 };
 
 // 测试token
 export const testToken = () => {
 	return request({
 		url: `/testToken`,
+	});
+};
+
+// 退出登录
+export const appUserLogOut = () => {
+	return request({
+		url: `/user/logout`,
+		method: 'POST',
 	});
 };

@@ -135,7 +135,8 @@ router.post('/user/weixin_login', bodyParser(), async (ctx) => {
 			},
 			SECRET_KEY_TOKEN,
 			{
-				expiresIn: '1h',
+				// h小时 m分钟 s秒
+				expiresIn: '20m',
 			},
 		);
 

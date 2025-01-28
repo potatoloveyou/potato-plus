@@ -97,6 +97,8 @@
 	// 获取用户收货地址
 	const getUserAddressData = async () => {
 		const res = await getUserAddress(queryparams.value);
+		console.log('getUserAddressData', res);
+
 		addressManageStore.addressList = res.data;
 	};
 

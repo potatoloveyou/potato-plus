@@ -7,8 +7,8 @@ router.get('/testToken', verifyAccessToken, async (ctx, next) => {
 	const { userId, openId, encryptedPhone } = ctx.state.user;
 	// const decoded = ctx.state.user;
 	ctx.body = {
-		code: 200,
-		message: 'success',
+		code: 0,
+		message: '成功',
 		data: {
 			userId,
 			openId,
