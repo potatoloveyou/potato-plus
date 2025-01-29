@@ -31,6 +31,8 @@
 			</template>
 		</NavBar>
 
+		<view @click="clearCache">清除缓存</view>
+
 		<scroll-view scroll-x="true" :scroll-into-view="scrollIntoIndex" class="scroll-content">
 			<view
 				class="scroll-item"
@@ -223,13 +225,22 @@
 			url: '/pages/search/search',
 		});
 	};
+
+	const clearCache = async () => {
+		await uni.removeStorage({
+			key: 'accessToken',
+		});
+		await uni.removeStorage({
+			key: 'refreshToken',
+		});
+	};
 </script>
 
 <style lang="scss" scoped>
 	.wx-app-index-nav {
 		width: 100%;
 		display: flex;
-
+		align-items: center;
 		& > view {
 			flex: 1;
 		}

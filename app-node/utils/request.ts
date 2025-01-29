@@ -1,8 +1,8 @@
 import { setAccessToken, setRefreshToken, getAccessToken, getRefreshToken } from './token.js';
 import { renovateToken, isRefreshToken } from '../api/apis.ts';
 
-const base_url = 'http://192.168.1.101:9229';
-// const base_url = 'http://192.168.34.71:9229';
+// const base_url = 'http://192.168.1.101:9229';
+const base_url = 'http://192.168.34.71:9229';
 
 interface Config {
 	url: string;

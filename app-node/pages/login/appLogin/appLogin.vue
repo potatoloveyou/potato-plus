@@ -1,17 +1,28 @@
 <template>
 	<view class="appLogin">
+		<NavBar>
+			<template #titleBar-slot>
+				<view class="wx-app-index-nav">
+					<view>
+						<text class="iconfont icon-guanbi" @click="goIndex"></text>
+					</view>
+					<text class="nav-text">登录页</text>
+					<view></view>
+				</view>
+			</template>
+		</NavBar>
+
 		<view class="logo">
 			<image class="logo-img" src="/static/imgs/xxmLogo.png" mode=""></image>
 		</view>
 		<button class="login" @click="login" type="primary">手机授权一键登录</button>
-		<button @click="getToken">获取token</button>
 	</view>
 </template>
 
 <script setup>
-	import { appLogin, appUserLogOut } from '@/api/apis.ts';
+	import NavBar from '@/components/common/NavBar.vue';
 
-	import { getAccessToken, getRefreshToken } from '@/utils/token.ts';
+	import { appLogin, appUserLogOut } from '@/api/apis.ts';
 
 	const login = async () => {
 		uni.login({
@@ -138,9 +149,10 @@
 		});
 	};
 
-	const getToken = () => {
-		console.log('getAccessToken', getAccessToken());
-		console.log('getRefreshToken', getRefreshToken());
+	const goIndex = () => {
+		uni.switchTab({
+			url: '/pages/tabBar/index/index',
+		});
 	};
 </script>
 
@@ -151,6 +163,22 @@
 		justify-content: center;
 	}
 	.appLogin {
+		.wx-app-index-nav {
+			width: 100%;
+			display: flex;
+			align-items: center;
+			& > view {
+				flex: 1;
+			}
+			.iconfont {
+				font-size: 50rpx;
+				margin-left: 40rpx;
+			}
+			.icon-guanbi {
+			}
+			.nav-text {
+			}
+		}
 		.logo {
 			@extend .df-jcc-aic;
 			padding: 120rpx 0;

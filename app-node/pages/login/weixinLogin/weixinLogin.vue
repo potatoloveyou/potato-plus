@@ -1,5 +1,17 @@
 <template>
 	<view class="weixinLogin">
+		<NavBar>
+			<template #titleBar-slot>
+				<view class="wx-app-index-nav">
+					<view>
+						<text class="iconfont icon-guanbi" @click="goIndex"></text>
+					</view>
+					<text class="nav-text">登录页</text>
+					<view></view>
+				</view>
+			</template>
+		</NavBar>
+
 		<view class="logo">
 			<image class="logo-img" src="/static/imgs/xxmLogo.png" mode=""></image>
 		</view>
@@ -60,6 +72,9 @@
 
 <script setup>
 	import { ref, computed } from 'vue';
+
+	import NavBar from '@/components/common/NavBar.vue';
+
 	import { getWeixinEmailVerify, weixinLogin } from '@/api/apis.ts';
 
 	const formData = ref({
@@ -155,6 +170,12 @@
 			},
 		});
 	};
+
+	const goIndex = () => {
+		uni.switchTab({
+			url: '/pages/tabBar/index/index',
+		});
+	};
 </script>
 
 <style lang="scss" scoped>
@@ -165,6 +186,23 @@
 	}
 	.weixinLogin {
 		height: 100vh;
+		.wx-app-index-nav {
+			width: 100%;
+			display: flex;
+			align-items: center;
+			& > view {
+				flex: 1;
+			}
+			.iconfont {
+				font-size: 50rpx;
+				margin-left: 40rpx;
+			}
+			.icon-guanbi {
+			}
+			.nav-text {
+			}
+		}
+
 		.logo {
 			@extend .df-jcc-aic;
 			padding: 100rpx 0;

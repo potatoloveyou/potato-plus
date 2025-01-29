@@ -156,14 +156,15 @@
 		{
 			"path": "pages/login/appLogin/appLogin",
 			"style": {
-				"navigationBarTitleText": "app端登录注册"
+				"navigationBarTitleText": "app端登录注册",
+				"navigationStyle": "custom"
 			}
 		},
 		{
 			"path": "pages/login/weixinLogin/weixinLogin",
 			"style": {
-				"navigationBarTitleText": "微信小程序登录注册"
-				// "navigationStyle": "custom"
+				"navigationBarTitleText": "微信小程序端登录注册",
+				"navigationStyle": "custom"
 			}
 		}
 	],

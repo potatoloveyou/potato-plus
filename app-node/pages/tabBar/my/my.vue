@@ -47,9 +47,24 @@
 	import { onLoad, onShow } from '@dcloudio/uni-app';
 	import MyContentList from '@/components/my/MyContentList.vue';
 
+	import { getAccessToken, getRefreshToken } from '@/utils/token.ts';
+
+	// 定义登录页面
+	let loginPage = '';
+	// #ifdef MP-WEIXIN
+	loginPage = '/pages/login/weixinLogin/weixinLogin';
+	// #endif
+
+	// #ifdef APP
+	loginPage = '/pages/login/appLogin/appLogin';
+	// #endif
+
 	onShow(() => {
-	  
-	})
+		if (!getAccessToken() || !getRefreshToken()) {
+			uni.showToast({ title: '您已掉线请重新登录', icon: 'none' });
+			uni.navigateTo({ url: loginPage });
+		}
+	});
 
 	import { getMyOrderBar, testToken } from '@/api/apis.ts';
 
