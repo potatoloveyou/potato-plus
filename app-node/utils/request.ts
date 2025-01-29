@@ -72,7 +72,6 @@ addResponseInterceptor(async (response, originalConfig) => {
 					},
 				};
 				const retryResponse = await request(retryConfig);
-				// console.log('retryResponse', retryResponse);
 
 				// return retryResponse; // 🟢 返回重试后的结果
 				return { ...response, data: retryResponse }; // 确保返回完整结构
@@ -115,7 +114,7 @@ export const request = async (initialConfig: Config) => {
 		// 执行响应拦截器链式处理
 		for (const interceptor of responseInterceptors) {
 			processedResponse = await interceptor(processedResponse, initialConfig); // 🟢 关键：更新响应
-			console.log('for', processedResponse.data);
+			// console.log('for', processedResponse.data);
 		}
 
 		return processedResponse.data;

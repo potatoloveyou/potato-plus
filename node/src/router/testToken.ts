@@ -13,7 +13,6 @@ router.get('/testToken', verifyAccessToken, async (ctx, next) => {
 			userId,
 			openId,
 			encryptedPhone,
-			// decoded,
 		},
 	};
 });

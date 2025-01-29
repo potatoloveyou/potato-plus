@@ -1,8 +1,8 @@
 <template>
 	<view class="weixinLogin">
-		<!-- <view class="logo">
+		<view class="logo">
 			<image class="logo-img" src="/static/imgs/xxmLogo.png" mode=""></image>
-		</view> -->
+		</view>
 
 		<form class="form" @submit="formSubmit">
 			<view class="clean-wrapper">
@@ -37,25 +37,30 @@
 					type="text"
 					inputmode="text"
 					placeholder="请输入邮箱验证码" />
-				<button :disabled="!validatePhone || !validateEmail" @click="getEmailVerify">获得邮箱验证码</button>
+				<!-- <button class="get-verify" plain="true" :disabled="!validatePhone || !validateEmail" @click="getEmailVerify">
+					获得邮箱验证码
+				</button> -->
+				<view
+					class="get-verify"
+					:class="!validatePhone || !validateEmail || isVerify ? 'none' : 'auto'"
+					@click.stop="getEmailVerify">
+					{{ countMsg }}
+				</view>
 			</view>
-			<button class="submit" :disabled="!validatePhone || !validateEmail || validateCode" form-type="submit">
-				提交
+			<button
+				class="submit"
+				:disabled="!validatePhone || !validateEmail || validateCode"
+				form-type="submit"
+				type="primary">
+				一键登录
 			</button>
 		</form>
-
-		<button @click="testToken1">测试token</button>
 	</view>
 </template>
 
 <script setup>
 	import { ref, computed } from 'vue';
-	import { getWeixinEmailVerify, weixinLogin, testToken } from '@/api/apis.ts';
-
-	const testToken1 = async () => {
-		const res = await testToken();
-		console.log('testToken1', res);
-	};
+	import { getWeixinEmailVerify, weixinLogin } from '@/api/apis.ts';
 
 	const formData = ref({
 		phone: '',
@@ -77,13 +82,37 @@
 
 	const validateCode = computed(() => !formData.value.verificationCode);
 
+	const isVerify = ref(false);
+	const countdown = ref(60);
+	const countMsg = computed(() => {
+		return isVerify.value ? `${countdown.value}s 后重新获取` : '获得邮箱验证码';
+	});
+
+	// 发送邮箱验证码
 	const getEmailVerify = async () => {
-		if (validatePhone.value && validateEmail.value) {
+		if (!validatePhone.value || !validateEmail.value || isVerify.value) return;
+		console.log(123);
+		try {
 			await getWeixinEmailVerify(formData.value);
 			uni.showToast({ title: '验证码已发送', icon: 'none' });
+
+			isVerify.value = true; // 禁用按钮
+
+			const timer = setInterval(() => {
+				countdown.value -= 1;
+
+				if (countdown.value <= 0) {
+					clearInterval(timer);
+					countdown.value = 60; // 重置倒计时
+					isVerify.value = false; // 倒计时结束，启用按钮
+				}
+			}, 1000);
+		} catch (error) {
+			uni.showToast({ title: '发送验证码失败', icon: 'none' });
 		}
 	};
 
+	// 表单提交
 	const formSubmit = (e) => {
 		uni.login({
 			provider: 'weixin',
@@ -129,66 +158,78 @@
 </script>
 
 <style lang="scss" scoped>
-	.df-aic {
+	.df-jcc-aic {
 		display: flex;
 		align-items: center;
+		justify-content: center;
 	}
 	.weixinLogin {
-		.phone-register {
+		height: 100vh;
+		.logo {
+			@extend .df-jcc-aic;
+			padding: 100rpx 0;
+			.logo-img {
+				width: 300rpx;
+				height: 300rpx;
+			}
 		}
+
 		.form {
 			.clean-wrapper {
 				display: flex;
 				align-items: center;
 				background-color: #f0f0f0;
-				margin: 50rpx 0;
+				margin: 0 70rpx 30rpx;
+				border-radius: 50rpx;
+				overflow: hidden;
+				font-size: 28rpx;
 				.input {
 					flex: 1;
-					line-height: 100rpx;
-					height: 100rpx;
+					line-height: 80rpx;
+					height: 80rpx;
+					padding: 0 30rpx;
 				}
 				.uni-icon {
-					width: 100rpx;
-					height: 100rpx;
-					@extend .df-aic;
+					width: 80rpx;
+					height: 80rpx;
+					@extend .df-jcc-aic;
 					justify-content: center;
 				}
-			}
-			.verify {
-				input {
+				.get-verify {
+					padding: 0 20rpx;
+				}
+				.auto {
+					pointer-events: auto;
+					color: #1aad19;
+				}
+				.none {
+					pointer-events: none;
+					opacity: 0.3;
 				}
 			}
-			button {
+			.clean-wrapper {
+				.input {
+				}
+				.uni-icon {
+				}
 			}
-		}
+			.clean-wrapper {
+				.input {
+				}
+				.get-verify {
+				}
+				.none {
+				}
+				.auto {
+				}
+			}
 
-		.weixinLogin-title {
-			width: 100%;
-			height: 100vh;
-			.iconfont {
-				font-size: 60rpx;
-			}
-			.icon-guanbi {
-			}
-			.logo {
-				display: flex;
-				justify-content: center;
-				align-items: center;
-				padding: 120rpx 0;
-				.logo-img {
-					width: 180rpx;
-					height: 180rpx;
-				}
-			}
-			.phone-register {
-				width: 100%;
-				height: 100rpx;
-				line-height: 100rpx;
-				text-align: center;
-				color: #fff;
-				background-color: #49bdfb;
+			.submit {
+				margin: 0 70rpx;
 				border-radius: 50rpx;
 			}
+		}
+		button {
 		}
 	}
 </style>

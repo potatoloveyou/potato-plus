@@ -3,16 +3,20 @@
 		<view class="my-header">
 			<view class="header-main">
 				<view class="iconfont icon-shezhi-copy" @click="goMyConfig"></view>
-				<view class="header-user" @clcik="goLogin">
+
+				<view class="header-user" @click="goLogin">
 					<image class="user-img" src="/static/imgs/xxmLogo.png" mode=""></image>
 					<view class="user-name">用户名称</view>
 				</view>
+
 				<view class="iconfont icon-xiaoxi"></view>
 			</view>
 		</view>
 
 		<button @click="goAppLogin">APP登录注册</button>
 		<button @click="goWeixinLogin">微信登录注册</button>
+		<button @click="testToken1">测试token</button>
+
 		<view class="my-order">
 			<view class="order-content">
 				<view class="order-title">
@@ -40,10 +44,19 @@
 
 <script setup>
 	import { ref } from 'vue';
-	import { onLoad } from '@dcloudio/uni-app';
+	import { onLoad, onShow } from '@dcloudio/uni-app';
 	import MyContentList from '@/components/my/MyContentList.vue';
 
-	import { getMyOrderBar } from '@/api/apis.ts';
+	onShow(() => {
+	  
+	})
+
+	import { getMyOrderBar, testToken } from '@/api/apis.ts';
+
+	const testToken1 = async () => {
+		const res = await testToken();
+		console.log('testToken1', res);
+	};
 
 	// 顶部tab
 	const orderBar = ref([]);
@@ -69,6 +82,20 @@
 		uni.navigateTo({
 			url: '/pages/my/myOrder/myOrder',
 		});
+	};
+
+	const goLogin = () => {
+		// #ifdef APP
+		uni.navigateTo({
+			url: '/pages/login/appLogin/appLogin',
+		});
+		// #endif
+
+		// #ifdef MP-WEIXIN
+		uni.navigateTo({
+			url: '/pages/login/weixinLogin/weixinLogin',
+		});
+		// #endif
 	};
 
 	// 跳转到APP登录注册

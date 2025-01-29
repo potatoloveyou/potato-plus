@@ -4,8 +4,6 @@ const SECRET_KEY_TOKEN = 'potato-love-you-token';
 
 const verifyAccessToken = async (ctx, next) => {
 	try {
-		// console.log('验证 Access Token');
-
 		// 从请求头获取 Token
 		const access_token = ctx.headers.authorization?.split(' ')[1]; // Bearer <token>
 		// console.log(access_token);
@@ -20,8 +18,7 @@ const verifyAccessToken = async (ctx, next) => {
 		// 验证 Access Token
 		const decoded = jwt.verify(access_token, SECRET_KEY_TOKEN);
 		ctx.state.user = decoded; // 将解码后的信息存储到上下文
-		await next();
-		return;
+		return await next();
 	} catch (error) {
 		if (error.name === 'TokenExpiredError') {
 			// ctx.status = 401;

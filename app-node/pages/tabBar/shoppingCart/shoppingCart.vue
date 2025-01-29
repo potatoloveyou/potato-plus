@@ -86,7 +86,7 @@
 
 <script setup>
 	import { ref } from 'vue';
-	import { onLoad, onReady } from '@dcloudio/uni-app';
+	import { onLoad, onReady, onShow } from '@dcloudio/uni-app';
 	import NavBar from '@/components/common/NavBar.vue';
 
 	import { useShoppingCartStore } from '@/stores/shoppingCart';

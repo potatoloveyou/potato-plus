@@ -1,6 +1,9 @@
 <template>
 	<view class="appLogin">
-		<button @click="login">授权登录</button>
+		<view class="logo">
+			<image class="logo-img" src="/static/imgs/xxmLogo.png" mode=""></image>
+		</view>
+		<button class="login" @click="login" type="primary">手机授权一键登录</button>
 		<button @click="getToken">获取token</button>
 	</view>
 </template>
@@ -141,4 +144,26 @@
 	};
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+	.df-jcc-aic {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	}
+	.appLogin {
+		.logo {
+			@extend .df-jcc-aic;
+			padding: 120rpx 0;
+			.logo-img {
+				width: 300rpx;
+				height: 300rpx;
+			}
+		}
+		.login {
+			margin: 0 70rpx;
+			border-radius: 50rpx;
+		}
+		button {
+		}
+	}
+</style>
