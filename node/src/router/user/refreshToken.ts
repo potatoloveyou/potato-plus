@@ -59,7 +59,7 @@ router.post('/user/refreshToken', bodyParser(), async (ctx) => {
 				encryptedPhone: decoded.encryptedPhone,
 			},
 			SECRET_KEY_TOKEN,
-			{ expiresIn: '20m' },
+			{ expiresIn: '10m' },
 		);
 		// // 判断是否需要更新 Refresh Token
 		if (refreshTokenRecord.expiresIn.getTime() < Date.now() + REFRESH_THRESHOLD) {

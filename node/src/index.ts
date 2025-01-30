@@ -44,9 +44,9 @@ router.use(goodsList.routes());
 const goodsDetail = require('./router/goodsDetail.ts');
 router.use(goodsDetail.routes());
 
-// 订单导航栏
-const orderBar = require('./router/orderBar.ts');
-router.use(orderBar.routes());
+// 各种导航栏
+const variousBar = require('./router/variousBar.ts');
+router.use(variousBar.routes());
 
 // 获取用户收货地址
 const getUserAddress = require('./router/address/getUserAddress.ts');

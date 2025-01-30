@@ -16,7 +16,7 @@
 			</template>
 		</NavBar>
 
-		<view class="shop-list bg-active-color">
+		<view class="shop-list">
 			<scroll-view scroll-y :style="`height:${clentHeight}px;`">
 				<view
 					class="shop-item"
@@ -243,6 +243,8 @@
 				& > view {
 					padding-left: 40rpx;
 				}
+				.icon-xiaoxi {
+				}
 				.iconfont {
 					font-size: 50rpx;
 					// padding-left: 50rpx;
@@ -260,7 +262,6 @@
 		}
 
 		.shop-list {
-			// background-color: #f3f3f3;
 			.shop-item {
 				display: flex;
 				align-items: center;
@@ -281,6 +282,8 @@
 						padding-bottom: 10rpx;
 					}
 					.goods-name {
+					}
+					.f-color {
 					}
 					.goods-color {
 						font-size: 24rpx;
@@ -344,6 +347,8 @@
 					background-color: #49bdfb;
 					@extend .bottom-button;
 				}
+			}
+			.active {
 			}
 			.shopping-edit {
 				display: flex;

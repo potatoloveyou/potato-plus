@@ -28,7 +28,7 @@
 				</view>
 
 				<view class="order-list">
-					<view class="order-item" v-for="item in orderBar.slice(1)" :key="item._id">
+					<view class="order-item" v-for="item in variousBarStore.variousBar[0]?.order_bar.slice(1)" :key="item.id">
 						<view class="iconfont" :class="item.class"></view>
 						<view class="item-text">{{ item.name }}</view>
 					</view>
@@ -46,6 +46,9 @@
 	import { ref } from 'vue';
 	import { onLoad, onShow } from '@dcloudio/uni-app';
 	import MyContentList from '@/components/my/MyContentList.vue';
+
+	import { useVariousBarStore } from '@/stores/variousBar';
+	const variousBarStore = useVariousBarStore();
 
 	import { getAccessToken, getRefreshToken } from '@/utils/token.ts';
 
@@ -66,24 +69,14 @@
 		}
 	});
 
-	import { getMyOrderBar, testToken } from '@/api/apis.ts';
+	import { testToken } from '@/api/apis.ts';
 
 	const testToken1 = async () => {
 		const res = await testToken();
 		console.log('testToken1', res);
 	};
 
-	// 顶部tab
-	const orderBar = ref([]);
-
-	const getMyOrderBarData = async () => {
-		const res = await getMyOrderBar();
-		orderBar.value = res.orderBar;
-	};
-
-	onLoad(() => {
-		getMyOrderBarData();
-	});
+	onLoad(() => {});
 
 	// 跳转到我的设置
 	const goMyConfig = () => {

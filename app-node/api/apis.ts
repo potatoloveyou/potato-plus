@@ -28,7 +28,6 @@ const mapQueryParams = (params: any) => {
 		...rest, // 其他参数保持不变
 	};
 };
-
 // 商品搜索
 interface ShopData {
 	keyword: string;
@@ -63,10 +62,10 @@ export const getGoodsDetail = (data: string) => {
 	});
 };
 
-// 订单导航栏
-export const getMyOrderBar = () => {
+// 获取各种bar
+export const getVariousBar = () => {
 	return request({
-		url: `/orderBar`,
+		url: `/variousBar`,
 	});
 };
 
@@ -183,7 +182,6 @@ export const renovateToken = () => {
 		__isRefreshToken: true,
 	});
 };
-
 export const isRefreshToken = (originalConfig) => {
 	return !!originalConfig.__isRefreshToken;
 };

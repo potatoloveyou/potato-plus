@@ -106,7 +106,6 @@
 	// 发送邮箱验证码
 	const getEmailVerify = async () => {
 		if (!validatePhone.value || !validateEmail.value || isVerify.value) return;
-		console.log(123);
 		try {
 			await getWeixinEmailVerify(formData.value);
 			uni.showToast({ title: '验证码已发送', icon: 'none' });

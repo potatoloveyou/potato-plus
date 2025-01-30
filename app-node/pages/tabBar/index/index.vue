@@ -1,21 +1,5 @@
 <template>
 	<view class="index">
-		<!-- 推荐模板 -->
-		<!-- <IndexSwiper /> -->
-		<!-- <Recommend /> -->
-		<!-- <Card cardName="猜你喜欢" /> -->
-		<!-- <CommodityList /> -->
-
-		<!-- 其他模板 -->
-		<!-- <Banner /> -->
-		<!-- <Icons /> -->
-		<!-- <Card cardName="热销爆品" /> -->
-		<!-- <Hot /> -->
-		<!-- <Card cardName="推荐店铺" /> -->
-		<!-- <Shop /> -->
-		<!-- <Card cardName="为您推荐" /> -->
-		<!-- <CommodityList /> -->
-
 		<NavBar>
 			<template #titleBar-slot>
 				<view class="wx-app-index-nav">
@@ -31,7 +15,21 @@
 			</template>
 		</NavBar>
 
-		<view @click="clearCache">清除缓存</view>
+		<!-- 推荐模板 -->
+		<!-- <IndexSwiper /> -->
+		<!-- <Recommend /> -->
+		<!-- <Card cardName="猜你喜欢" /> -->
+		<!-- <CommodityList /> -->
+
+		<!-- 其他模板 -->
+		<!-- <Banner /> -->
+		<!-- <Icons /> -->
+		<!-- <Card cardName="热销爆品" /> -->
+		<!-- <Hot /> -->
+		<!-- <Card cardName="推荐店铺" /> -->
+		<!-- <Shop /> -->
+		<!-- <Card cardName="为您推荐" /> -->
+		<!-- <CommodityList /> -->
 
 		<scroll-view scroll-x="true" :scroll-into-view="scrollIntoIndex" class="scroll-content">
 			<view
@@ -96,11 +94,14 @@
 	import Shop from '@/components/index/Outdoors/Shop.vue';
 	import NavBar from '@/components/common/NavBar.vue';
 
+	import { useVariousBarStore } from '@/stores/variousBar';
+	const variousBarStore = useVariousBarStore();
+
 	import { useShoppingCartStore } from '@/stores/shoppingCart';
 	const shoppingCartStore = useShoppingCartStore();
 
 	import { getNavBarHeight } from '@/utils/system.ts';
-	import { getIndexList, getIndexClassify, getUserShoppingCart } from '@/api/apis.ts';
+	import { getIndexList, getIndexClassify, getVariousBar, getUserShoppingCart } from '@/api/apis.ts';
 
 	// 内容块的高度值
 	const clentHeight = ref(0);
@@ -129,9 +130,14 @@
 
 	const getIndexData = async () => {
 		const res = await getIndexList();
-
 		topBar.value = res.data.topBar;
 		newTopBar.value = initData(res.data);
+	};
+
+	// 获取各种bar
+	const getVariousBarData = async () => {
+		const res = await getVariousBar();
+		variousBarStore.variousBar = res.data;
 	};
 
 	// 获取购物车数据
@@ -153,6 +159,7 @@
 
 	onLoad(() => {
 		getIndexData();
+		getVariousBarData();
 		getUserShoppingCartData();
 	});
 

@@ -1,13 +1,13 @@
 <template>
 	<view class="my-order">
-		<Lines />
+		<!-- <Lines /> -->
 
 		<scroll-view scroll-x="true" :scroll-into-view="scrollIntoIndex" class="scroll-content">
 			<view
 				class="scroll-item"
 				:id="'top' + index"
-				v-for="(item, index) in orderBar"
-				:key="item._id"
+				v-for="(item, index) in variousBarStore.variousBar[0]?.order_bar"
+				:key="item.id"
 				@click="changeTab(index)">
 				<text :class="topBarIndex == index ? 'f-active-color' : 'f-color'">{{ item.name }}</text>
 			</view>
@@ -15,54 +15,13 @@
 		<Lines />
 
 		<swiper @change="onChangeTab" :current="topBarIndex" :style="`height:${clentHeight}px;`">
-			<swiper-item v-for="(item, index) in newTopBar" :key="item._id">
+			<swiper-item v-for="(item, index) in variousBarStore.variousBar[0]?.order_bar" :key="item.id">
 				<scroll-view
 					scroll-y
 					:style="`height:${clentHeight}px;`"
 					@scrolltolower="loadMore(index)"
 					class="bg-active-color">
-					<view class="order-content">
-						<view class="order-item" v-for="item in 5" :key="item">
-							<view class="item-top">
-								<view class="order-status f-active-color">待买家支付</view>
-							</view>
-							<view class="item-content">
-								<image class="goods-img" src="../../../static/imgs/xxmLogo.png" mode="" />
-								<view class="goods-">
-									<view class="goods-details">
-										<view class="goods-name">毛衣</view>
-										<view class="goods-color f-color">颜色分类：黑色</view>
-										<view class="refund f-active-color">7天无理由退换</view>
-									</view>
-
-									<view class="goods-condition">
-										<view class="goods-price"
-											>￥
-											<view class="price">299.99</view>
-										</view>
-										<view class="goods-num">x 1</view>
-									</view>
-								</view>
-							</view>
-
-							<view class="item-amounts">
-								<view class="amounts"
-									>实付款￥
-									<view class="price">299.99</view>
-								</view>
-							</view>
-
-							<view class="item-bottom-button">
-								<view class="more">更多</view>
-								<view class="bottom-button">
-									<view class="add-cart">查看物流</view>
-									<view class="add-cart">加入购物车</view>
-									<view class="again-payment">再来一单</view>
-								</view>
-							</view>
-						</view>
-					</view>
-
+					<OrderContent />
 					<!-- <view class="no-order">
 						<view>你还没有订单</view>
 						<view class="no-order-home" @click="goHome">去首页逛逛吧</view>
@@ -78,9 +37,12 @@
 	import { onLoad, onReady } from '@dcloudio/uni-app';
 
 	import Lines from '@/components/common/Lines.vue';
+	import OrderContent from '@/components/common/OrderContent.vue';
+
+	import { useVariousBarStore } from '@/stores/variousBar';
+	const variousBarStore = useVariousBarStore();
 
 	import { getNavBarHeight } from '@/utils/system.ts';
-	import { getMyOrderBar } from '@/api/apis.ts';
 
 	// 内容块的高度值
 	const clentHeight = ref(0);
@@ -97,17 +59,6 @@
 	const orderBar = ref([]);
 	// 滑块数据
 	const newTopBar = ref([]);
-
-	const getMyOrderBarData = async () => {
-		const res = await getMyOrderBar();
-		orderBar.value = res.orderBar;
-		newTopBar.value = res.orderBar;
-		console.log(res);
-	};
-
-	onLoad(() => {
-		getMyOrderBarData();
-	});
 
 	// 选中索引
 	const topBarIndex = ref(0);
@@ -168,113 +119,6 @@
 			}
 		}
 
-		.order-content {
-			.order-item {
-				background-color: #fff;
-				margin-bottom: 20rpx;
-				.item-top {
-					display: flex;
-					justify-content: flex-end;
-					align-items: center;
-					padding: 10rpx 30rpx;
-					.order-store {
-						font-weight: bold;
-						font-size: 35rpx;
-					}
-					.order-status {
-					}
-					.f-active-color {
-					}
-				}
-				.item-content {
-					display: flex;
-					.goods-img {
-						width: 180rpx;
-						height: 180rpx;
-						padding-left: 30rpx;
-					}
-					.goods- {
-						flex: 1;
-						display: flex;
-						justify-content: space-between;
-						padding: 10rpx 30rpx;
-						.goods-details {
-							.goods-name {
-							}
-							.goods-color {
-								@extend .fs-25rpx;
-							}
-							.f-color {
-							}
-							.refund {
-								@extend .fs-25rpx;
-							}
-							.f-active-color {
-							}
-						}
-						.goods-condition {
-							.goods-price {
-								@extend .fs-25rpx;
-								display: flex;
-								align-items: center;
-								.price {
-									font-weight: bold;
-									font-size: 36rpx;
-								}
-							}
-							.goods-num {
-								@extend .fs-25rpx;
-
-								display: flex;
-								justify-content: flex-end;
-							}
-						}
-					}
-				}
-
-				.item-amounts {
-					padding: 10rpx 30rpx;
-					display: flex;
-					justify-content: flex-end;
-					.amounts {
-						@extend .fs-25rpx;
-						display: flex;
-						align-items: center;
-						.price {
-							font-weight: bold;
-							font-size: 36rpx;
-						}
-					}
-				}
-				.item-bottom-button {
-					padding: 10rpx 0 20rpx;
-					margin-right: 10rpx;
-					display: flex;
-					align-items: center;
-					justify-content: space-between;
-					.more {
-						padding-left: 20rpx;
-					}
-					.bottom-button {
-						display: flex;
-						// justify-content: flex-end;
-						& > view {
-							padding: 15rpx 20rpx;
-							margin: 0 10rpx;
-							background-color: #f3f3f3;
-						}
-						.add-cart {
-						}
-						.again-payment {
-						}
-						.again {
-							background-color: #49bdfb;
-							color: #fff;
-						}
-					}
-				}
-			}
-		}
 		.no-order {
 			display: flex;
 			justify-content: center;

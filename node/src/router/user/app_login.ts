@@ -113,7 +113,7 @@ router.post('/user/app_login', bodyParser(), async (ctx) => {
 			},
 			SECRET_KEY_TOKEN,
 			{
-				expiresIn: '1h',
+				expiresIn: '10m',
 			},
 		);
 
