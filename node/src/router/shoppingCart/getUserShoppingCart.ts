@@ -1,12 +1,13 @@
 const Router = require('@koa/router');
 const router = new Router();
 
+const verifyAccessToken = require('../../middleware/verifyAccessToken.ts');
+
 const { ObjectId, shopping_cart, goods_search } = require('../../db/mongo.ts');
 
-router.get('/shoppingCart/get/:userId', async (ctx) => {
+router.get('/shoppingCart/get', verifyAccessToken, async (ctx) => {
 	try {
-		// 获取用户 ID
-		const userId = ctx.params.userId;
+		const { userId } = ctx.state.user;
 
 		if (!userId) {
 			ctx.status = 400; // Bad Request

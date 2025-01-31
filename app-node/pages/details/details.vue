@@ -118,7 +118,7 @@
 
 	// 获取购物车数据
 	const getUserShoppingCartData = async () => {
-		const res = await getUserShoppingCart('123');
+		const res = await getUserShoppingCart();
 
 		// 如果接口返回的数据中包含商品列表
 		if (res?.data) {
@@ -221,7 +221,6 @@
 	const shoppingCartAdd = async () => {
 		// 新增/修改的临时数据
 		const tempShoppingCart = {
-			userId: '123',
 			goodsId: goodsDetail.value._id,
 			quantity: goodsNum.value,
 			selectedAttributes: {

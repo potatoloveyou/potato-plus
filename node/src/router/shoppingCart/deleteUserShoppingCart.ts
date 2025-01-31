@@ -5,9 +5,12 @@ const { shopping_cart } = require('../../db/mongo.ts');
 
 const bodyParser = require('koa-bodyparser');
 
-router.delete('/shoppingCart/delete', bodyParser(), async (ctx) => {
+const verifyAccessToken = require('../../middleware/verifyAccessToken.ts');
+
+router.delete('/shoppingCart/delete', verifyAccessToken, bodyParser(), async (ctx) => {
 	try {
-		const { userId, goods } = ctx.request.body;
+		const { userId } = ctx.state.user;
+		const { goods } = ctx.request.body;
 
 		// 验证请求体参数
 		if (!userId || !Array.isArray(goods) || goods.length === 0) {

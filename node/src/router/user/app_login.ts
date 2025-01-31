@@ -80,6 +80,8 @@ router.post('/user/app_login', bodyParser(), async (ctx) => {
 					},
 				},
 			);
+			//  查找用户和设备信息
+			userRecord = await user.findOne({ phoneNumber: encryptedPhone, 'devices.openId': openId.data.openid });
 		} else {
 			// 如果不存在用户或设备信息，插入新的记录
 			await user.updateOne(
@@ -102,6 +104,8 @@ router.post('/user/app_login', bodyParser(), async (ctx) => {
 				},
 				{ upsert: true },
 			);
+			//  查找用户和设备信息
+			userRecord = await user.findOne({ phoneNumber: encryptedPhone, 'devices.openId': openId.data.openid });
 		}
 
 		// Step 4: 生成Access Token

@@ -4,14 +4,17 @@ const router = new Router();
 // 中间件，解析post请求的参数
 const bodyParser = require('koa-bodyparser');
 
+const verifyAccessToken = require('../../middleware/verifyAccessToken.ts');
+
 const { user_shipping_addresses } = require('../../db/mongo.ts');
 
-router.post('/address/add', bodyParser(), async (ctx, next) => {
+router.post('/address/add', verifyAccessToken, bodyParser(), async (ctx, next) => {
 	// console.log(ctx.request.body);
 
 	try {
+		const { userId } = ctx.state.user;
 		// 解构请求体
-		const { userId, isDefault, recipient, phone, addressCity, address } = ctx.request.body;
+		const { isDefault, recipient, phone, addressCity, address } = ctx.request.body;
 
 		// 校验必要字段
 		if (!userId || !recipient || !phone || !addressCity || !address) {

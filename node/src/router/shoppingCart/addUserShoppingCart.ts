@@ -4,9 +4,12 @@ const router = new Router();
 const { shopping_cart } = require('../../db/mongo.ts');
 const bodyParser = require('koa-bodyparser');
 
-router.post('/shoppingCart/add', bodyParser(), async (ctx) => {
+const verifyAccessToken = require('../../middleware/verifyAccessToken.ts');
+
+router.post('/shoppingCart/add', verifyAccessToken, bodyParser(), async (ctx) => {
 	try {
-		const { userId, goodsId, quantity, selectedAttributes } = ctx.request.body;
+		const { userId } = ctx.state.user;
+		const { goodsId, quantity, selectedAttributes } = ctx.request.body;
 
 		// 校验参数
 		if (!userId || !goodsId || typeof quantity !== 'number' || !selectedAttributes) {

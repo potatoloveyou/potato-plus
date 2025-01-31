@@ -167,7 +167,6 @@
 		try {
 			// 新增 / 修改的临时数据;
 			const tempShoppingCart = {
-				userId: '123',
 				goods: [],
 			};
 
@@ -192,7 +191,6 @@
 	const updateShoppingCart = async ({ value, item }) => {
 		// 新增 / 修改的临时数据;
 		const tempShoppingCart = {
-			userId: '123',
 			goodsId: item.goodsDetails._id,
 			quantity: value,
 			selectedAttributes: {

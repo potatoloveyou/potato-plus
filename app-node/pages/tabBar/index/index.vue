@@ -35,8 +35,8 @@
 			<view
 				class="scroll-item"
 				:id="'top' + index"
-				v-for="(item, index) in topBar"
-				:key="item._id"
+				v-for="(item, index) in variousBarStore.variousBar[1].top_bar"
+				:key="item.id"
 				@click="changeTab(index)">
 				<text :class="topBarIndex == index ? 'f-active-color' : 'f-color'">{{ item.name }}</text>
 			</view>
@@ -132,12 +132,14 @@
 		const res = await getIndexList();
 		topBar.value = res.data.topBar;
 		newTopBar.value = initData(res.data);
+		console.log('newTopBar', newTopBar.value);
 	};
 
 	// 获取各种bar
 	const getVariousBarData = async () => {
 		const res = await getVariousBar();
 		variousBarStore.variousBar = res.data;
+		console.log(variousBarStore.variousBar[1].top_bar);
 	};
 
 	// 获取购物车数据
@@ -158,9 +160,10 @@
 	};
 
 	onLoad(() => {
-		getIndexData();
-		getVariousBarData();
-		getUserShoppingCartData();
+		// getIndexData();
+		// getVariousBarData();
+		// getUserShoppingCartData();
+		Promise.all([getIndexData(), getVariousBarData(), getUserShoppingCartData()]);
 	});
 
 	// 选中索引
@@ -182,9 +185,9 @@
 		}
 	};
 
-	// 滑动内容
-	const onChangeTab = (event) => {
-		changeTab(event.detail.current);
+	// 滑动swiper
+	const onChangeTab = (e) => {
+		changeTab(e.detail.current);
 	};
 
 	// 查询参数
@@ -230,15 +233,6 @@
 	const goSearch = () => {
 		uni.navigateTo({
 			url: '/pages/search/search',
-		});
-	};
-
-	const clearCache = async () => {
-		await uni.removeStorage({
-			key: 'accessToken',
-		});
-		await uni.removeStorage({
-			key: 'refreshToken',
 		});
 	};
 </script>

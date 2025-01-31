@@ -4,9 +4,12 @@ const router = new Router();
 const { ObjectId, user_shipping_addresses } = require('../../db/mongo.ts');
 
 const bodyParser = require('koa-bodyparser');
+const verifyAccessToken = require('../../middleware/verifyAccessToken.ts');
 
-router.put('/address/update/:id', bodyParser(), async (ctx) => {
+router.put('/address/update/:id', verifyAccessToken, bodyParser(), async (ctx) => {
 	try {
+		const { userId } = ctx.state.user;
+
 		// 获取路径参数和请求体
 		const addressId = ctx.params.id;
 		const updatedData = ctx.request.body;
@@ -46,7 +49,7 @@ router.put('/address/update/:id', bodyParser(), async (ctx) => {
 			}
 
 			// 将该用户的所有地址的 isDefault 设置为 false
-			await user_shipping_addresses.updateMany({ userId: addressToUpdate.userId }, { $set: { isDefault: false } });
+			await user_shipping_addresses.updateMany({ userId }, { $set: { isDefault: false } });
 		}
 
 		// 执行数据库更新操作

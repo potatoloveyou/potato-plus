@@ -1,11 +1,15 @@
 const Router = require('@koa/router');
 const router = new Router();
 
+const verifyAccessToken = require('../../middleware/verifyAccessToken.ts');
+
 const { ObjectId, user_shipping_addresses } = require('../../db/mongo.ts');
 
 // DELETE 请求，删除地址
-router.delete('/address/delete/:id', async (ctx, next) => {
+router.delete('/address/delete/:id', verifyAccessToken, async (ctx, next) => {
 	try {
+		const { userId } = ctx.state.user;
+
 		// 获取路径参数中的地址 ID
 		const addressId = ctx.params.id;
 
@@ -17,7 +21,6 @@ router.delete('/address/delete/:id', async (ctx, next) => {
 
 		// 查询地址以获取用户 ID
 		const addressToDelete = await user_shipping_addresses.findOne({ _id: new ObjectId(addressId) });
-		// console.log(addressToDelete.userId);
 
 		if (!addressToDelete) {
 			ctx.status = 404;
@@ -34,7 +37,7 @@ router.delete('/address/delete/:id', async (ctx, next) => {
 		if (result.deletedCount === 1) {
 			// 检查剩余地址数量
 			const remainingAddresses = await user_shipping_addresses
-				.find({ userId: addressToDelete.userId })
+				.find({ userId })
 				.sort({ createdAt: -1 }) // 按 createdAt 时间倒序排序
 				.toArray();
 

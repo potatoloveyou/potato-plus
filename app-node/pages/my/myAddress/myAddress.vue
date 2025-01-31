@@ -25,7 +25,7 @@
 					<view class="select" v-if="item.isDefault">默认</view>
 				</view>
 				<view class="manage-module" v-if="isManage">
-					<label class="radio" @click="toggleDefaultAddress(item._id)">
+					<label class="radio" @click="updateDefault(item)">
 						<radio value="" color="#49bdfb" :checked="item.isDefault" />
 						<text>默认</text>
 					</label>
@@ -89,7 +89,6 @@
 
 	// 查询参数
 	const queryparams = ref({
-		userId: '123',
 		offset: 0,
 		limit: 10,
 	});
@@ -97,8 +96,6 @@
 	// 获取用户收货地址
 	const getUserAddressData = async () => {
 		const res = await getUserAddress(queryparams.value);
-		console.log('getUserAddressData', res);
-
 		addressManageStore.addressList = res.data;
 	};
 
@@ -116,7 +113,6 @@
 	const deleteAddress = async (addressId) => {
 		try {
 			const res = await delUserAddress(addressId);
-			console.log(res);
 			if (res.code === 0) {
 				// 更新地址列表
 				await getUserAddressData();
@@ -151,10 +147,7 @@
 			return; // 校验未通过，直接退出
 		}
 		try {
-			const res = await addUserAddress({
-				userId: queryparams.value.userId,
-				...tempAddress.value,
-			});
+			const res = await addUserAddress(tempAddress.value);
 			if (res.code === 0) {
 				// 关闭弹窗
 				collectPopupClose();
@@ -179,7 +172,6 @@
 
 		try {
 			const res = await updateUserAddress({ addressId, data: tempAddress.value });
-			console.log(res);
 
 			if (res.code == 0) {
 				// 关闭弹窗
@@ -193,6 +185,16 @@
 		} catch (error) {
 			console.error(error);
 		}
+	};
+
+	// 设置默认地址
+	const updateDefault = async (address) => {
+		// console.log(address);
+		const { _id, ...addressData } = { ...address }; // 深拷贝并删除 _id
+		tempAddress.value = addressData; // 将删除了 _id 的数据赋值给 tempAddress
+		tempAddress.value.isDefault = true; // 设置为默认地址
+		// 修改地址
+		await updateAddress(address._id);
 	};
 
 	// 是否为编辑模式（true：新增，false：修改）
@@ -215,6 +217,8 @@
 	const editingAddressId = ref(null); // 用于存储正在编辑的地址的 _id
 	// 点击修改地址打开弹窗
 	const updateCollectPopupOpen = (item) => {
+		console.log(item);
+
 		editingAddressId.value = item._id;
 		isEditing.value = false; // 修改模式
 		const { _id, ...addressData } = { ...item }; // 深拷贝并删除 _id

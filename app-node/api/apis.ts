@@ -70,13 +70,12 @@ export const getVariousBar = () => {
 };
 
 // 获取用户地址列表
-export const getUserAddress = (data: { userId: any; offset?: number | undefined; limit?: number | undefined }) => {
-	let { userId, offset = 0, limit = 10 } = data;
+export const getUserAddress = (data: any) => {
+	let { offset = 0, limit = 10 } = data;
 	return request({
 		url: `/address/get`,
 		method: 'POST',
 		data: {
-			userId,
 			offset,
 			limit,
 		},
@@ -111,9 +110,9 @@ export const updateUserAddress = (update: any) => {
 };
 
 // 获取购物车列表
-export const getUserShoppingCart = (userId: string) => {
+export const getUserShoppingCart = () => {
 	return request({
-		url: `/shoppingCart/get/${userId}`,
+		url: `/shoppingCart/get`,
 	});
 };
 

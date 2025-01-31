@@ -149,7 +149,7 @@
 						};
 
 						const response = await weixinLogin(data);
-						// console.log(response);
+						// console.log('response', response);
 
 						if (response.code !== 5) {
 							console.log('有错，登录不了', response);

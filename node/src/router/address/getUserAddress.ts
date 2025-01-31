@@ -6,26 +6,22 @@ const { user_shipping_addresses } = require('../../db/mongo.ts');
 // 中间件，解析请求参数
 const bodyParser = require('koa-bodyparser');
 
-// 获取用户地址接口
-router.post('/address/get', bodyParser(), async (ctx, next) => {
-	try {
-		// 从请求参数中获取 userId、offset 和 limit
-		const { userId, offset = 0, limit = 10 } = ctx.request.body;
+const verifyAccessToken = require('../../middleware/verifyAccessToken.ts');
 
-		// 校验 userId 是否存在
-		if (!userId) {
-			ctx.body = {
-				code: 1,
-				error: '缺少必填字段: userId',
-			};
-			return;
-		}
+// 获取用户地址接口
+router.post('/address/get', verifyAccessToken, bodyParser(), async (ctx, next) => {
+	try {
+		const { userId } = ctx.state.user;
+
+		// 从请求参数中获取 userId、offset 和 limit
+		const { offset = 0, limit = 10 } = ctx.request.body;
 
 		// 查询数据库
 		const query = { userId };
 		const options = {
 			skip: parseInt(offset), // 从第 offset 条记录开始
 			limit: parseInt(limit), // 只取 limit 条记录
+			sort: { createdAt: -1 }, // 按 createdAt 降序排列
 		};
 
 		const data = await user_shipping_addresses.find(query, options).toArray();
