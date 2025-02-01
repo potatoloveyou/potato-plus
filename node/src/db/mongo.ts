@@ -9,7 +9,7 @@ const db = client.db('app_node');
 
 const various_bar = db.collection('various_bar');
 
-const top_bar = db.collection('top_bar');
+const index_swiper_imgs = db.collection('index_swiper_imgs');
 
 const goods_search = db.collection('goods_search');
 
@@ -32,7 +32,7 @@ module.exports = {
 	ObjectId,
 	client,
 	various_bar,
-	top_bar,
+	index_swiper_imgs,
 	goods_search,
 	user_shipping_addresses,
 	shopping_cart,

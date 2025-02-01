@@ -29,8 +29,8 @@ const indexList = require('./router/indexList.ts');
 router.use(indexList.routes());
 
 // 首页分类多页
-const indexClassify = require('./router/indexClassify.ts');
-router.use(indexClassify.routes());
+const indexSwiperList = require('./router/indexSwiperList.ts');
+router.use(indexSwiperList.routes());
 
 // 商品搜索
 const goodsSearch = require('./router/goodsSearch.ts');

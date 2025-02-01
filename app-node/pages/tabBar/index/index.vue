@@ -35,7 +35,7 @@
 			<view
 				class="scroll-item"
 				:id="'top' + index"
-				v-for="(item, index) in variousBarStore.variousBar[1].top_bar"
+				v-for="(item, index) in topBar"
 				:key="item.id"
 				@click="changeTab(index)">
 				<text :class="topBarIndex == index ? 'f-active-color' : 'f-color'">{{ item.name }}</text>
@@ -45,33 +45,32 @@
 		<swiper @change="onChangeTab" :current="topBarIndex" :style="`height:${clentHeight}px;`">
 			<swiper-item v-for="(item, index) in newTopBar" :key="index">
 				<scroll-view scroll-y :style="`height:${clentHeight}px;`" @scrolltolower="loadMore(index)">
-					<block v-if="item.data.length > 0">
-						<block v-for="(k, i) in item.data" :key="i">
-							<!-- 首页推荐 -->
-							<IndexSwiper v-if="k.type == 'swiperList'" :dataList="k.data" />
-							<template v-if="k.type == 'recommendList'">
-								<Recommend :dataList="k.data" />
-								<Card cardName="猜你喜欢" />
-							</template>
+					<block v-for="(k, i) in item.data" :key="i" v-if="item.data.length > 0">
+						<!-- 首页推荐 -->
+						<IndexSwiper v-if="k.type == 'swiperList'" :dataList="k.data" />
+						<template v-if="k.type == 'recommendList'">
+							<Recommend :dataList="k.data" />
+							<Card cardName="猜你喜欢" />
+						</template>
 
-							<!-- 除推荐外 -->
-							<Banner v-if="k.type == 'bannerList'" :dataList="k.imgUrl" />
-							<template v-if="k.type == 'iconsList'">
-								<Icons :dataList="k.data" />
-								<Card cardName="热销爆品" />
-							</template>
-							<template v-if="k.type == 'hotList'">
-								<Hot :dataList="k.data" />
-								<Card cardName="推荐店铺" />
-							</template>
-							<template v-if="k.type == 'shopList'">
-								<Shop :dataList="k.data" />
-								<Card cardName="为您推荐" />
-							</template>
+						<!-- 除推荐外 -->
+						<Banner v-if="k.type == 'bannerList'" :dataList="k.imgUrl" />
+						<template v-if="k.type == 'iconsList'">
+							<Icons :dataList="k.data" />
+							<Card cardName="热销爆品" />
+						</template>
+						<template v-if="k.type == 'hotLi st'">
+							<Hot :dataList="k.data" />
+							<Card cardName="推荐店铺" />
+						</template>
+						<template v-if="k.type == 'shopList'">
+							<Shop :dataList="k.data" />
+							<Card cardName="为您推荐" />
+						</template>
 
-							<CommodityList v-if="k.type == 'commodityList'" :dataList="k.data" />
-						</block>
+						<CommodityList v-if="k.type == 'commodityList'" :dataList="k.data" />
 					</block>
+
 					<view v-else>暂无数据</view>
 					<view class="load-text">{{ item.loadText }}</view>
 				</scroll-view>
@@ -101,7 +100,7 @@
 	const shoppingCartStore = useShoppingCartStore();
 
 	import { getNavBarHeight } from '@/utils/system.ts';
-	import { getIndexList, getIndexClassify, getVariousBar, getUserShoppingCart } from '@/api/apis.ts';
+	import { getIndexList, getIndexSwiperList, getVariousBar, getUserShoppingCart } from '@/api/apis.ts';
 
 	// 内容块的高度值
 	const clentHeight = ref(0);
@@ -115,31 +114,33 @@
 
 	// 顶部topBar内容
 	const topBar = ref([]);
-	// 承载数据
-	const newTopBar = ref([]);
-
-	const initData = (res) => {
-		return topBar.value.map((_, index) => ({
-			data: index === 0 ? res.data : [],
-			load: 'first',
-
-			loadText: '上拉加载更多...',
-			length: res.data.length,
-		}));
-	};
-
-	const getIndexData = async () => {
-		const res = await getIndexList();
-		topBar.value = res.data.topBar;
-		newTopBar.value = initData(res.data);
-		console.log('newTopBar', newTopBar.value);
-	};
-
 	// 获取各种bar
 	const getVariousBarData = async () => {
 		const res = await getVariousBar();
 		variousBarStore.variousBar = res.data;
-		console.log(variousBarStore.variousBar[1].top_bar);
+		topBar.value = res.data[1].index_bar;
+		// console.log(topBar.value);
+	};
+
+	// 承载数据
+	const newTopBar = ref([]);
+	// 初始化数据
+	const initData = (res) => {
+		return topBar.value.map((_, index) => ({
+			data: index === 0 ? res.data : [],
+			load: index === 0 ? true : false,
+
+			loadText: '上拉加载更多...',
+			length: res.data.length,
+			limit: 4,
+			offset: index === 0 ? 1 : 0,
+		}));
+	};
+	// 获取首页数据
+	const getIndexData = async () => {
+		const res = await getIndexList();
+		newTopBar.value = initData(res.data);
+		console.log('newTopBar', newTopBar.value);
 	};
 
 	// 获取购物车数据
@@ -159,11 +160,11 @@
 		}
 	};
 
-	onLoad(() => {
-		// getIndexData();
-		// getVariousBarData();
-		// getUserShoppingCartData();
-		Promise.all([getIndexData(), getVariousBarData(), getUserShoppingCartData()]);
+	onLoad(async () => {
+		await getVariousBarData();
+		await getIndexData();
+		await getUserShoppingCartData();
+		// Promise.all([getIndexData(), getVariousBarData(), getUserShoppingCartData()]);
 	});
 
 	// 选中索引
@@ -179,8 +180,10 @@
 		topBarIndex.value = index;
 		scrollIntoIndex.value = 'top' + index;
 
-		// 首次滑动
-		if (newTopBar.value[topBarIndex.value].load == 'first') {
+		console.log(topBarIndex.value, scrollIntoIndex.value);
+
+		// 如果是滑块第一次加载，则请求数据
+		if (newTopBar.value[topBarIndex.value].load == false) {
 			addData();
 		}
 	};
@@ -190,35 +193,56 @@
 		changeTab(e.detail.current);
 	};
 
-	// 查询参数
-	const queryparams = ref({
-		index: 1,
-		limit: 4,
-		offset: 10,
-	});
-
-	// 对应显示不同数据
+	// // 查询参数
+	// const queryparams = ref({
+	// 	index: 1,
+	// 	limit: 4,
+	// 	offset: 0,
+	// });
+	// 加载更多数据
 	const addData = async () => {
+		const queryparams = {
+			index: 1,
+			limit: 4,
+			offset: 0,
+			load: false,
+		};
+
+		// 获取当前topBar的索引
 		let index = topBarIndex.value;
-		// console.log(index);
-
-		// 切换到那个就存储哪个的id
+		// 获取当前topBar的id
 		let id = topBar.value[index].id;
-		// 对应topBar的id存储到queryparams的index中
-		queryparams.value.index = id;
 
-		const page = newTopBar.value[index].data.length - newTopBar.value[index].length + 1;
-		queryparams.value.offset = Math.ceil(page * queryparams.value.limit);
-		// console.log(queryparams.value);
-		// console.log(page);
+		// 获取当前topBar的id
+		queryparams.index = id;
+		// 获取当前topBar的偏移量
+		queryparams.offset = newTopBar.value[index].offset * newTopBar.value[index].limit;
+		// 获取当前topBar的加载状态
+		queryparams.load = newTopBar.value[index].load;
 
 		// 上拉加载更多时请求数据
-		let res = await getIndexClassify(queryparams.value);
-		newTopBar.value[index].data = [...newTopBar.value[index].data, ...res.data];
-		// console.log(res);
+		let res = await getIndexSwiperList(queryparams);
 
-		// 记录已滑动过的
-		newTopBar.value[index].load = 'last';
+		newTopBar.value[index].offset++;
+
+		if (newTopBar.value[index].data.length !== 0) {
+			// console.log('!0');
+
+			newTopBar.value[index].data.forEach((item) => {
+				res.data.forEach((item2) => {
+					if (item.type == item2.type) {
+						item.data = [...item.data, ...item2.data];
+					}
+				});
+			});
+		}
+
+		if (newTopBar.value[index].data.length == 0) {
+			newTopBar.value[index].data = [...res.data.data];
+		}
+
+		// 已经加载过的swiper，则不再加载
+		newTopBar.value[index].load = true;
 
 		newTopBar.value[index].loadText = '上拉加载更多...';
 	};

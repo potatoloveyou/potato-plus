@@ -17,10 +17,10 @@
 		<swiper @change="onChangeTab" :current="topBarIndex" :style="`height:${clentHeight}px;`">
 			<swiper-item v-for="(item, index) in variousBarStore.variousBar[0]?.order_bar" :key="item.id">
 				<scroll-view
+					class="bg-active-color"
 					scroll-y
 					:style="`height:${clentHeight}px;`"
-					@scrolltolower="loadMore(index)"
-					class="bg-active-color">
+					@scrolltolower="loadMore(index)">
 					<OrderContent />
 					<!-- <view class="no-order">
 						<view>你还没有订单</view>

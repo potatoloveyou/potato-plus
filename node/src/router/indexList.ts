@@ -5,12 +5,9 @@ const router = new Router();
 
 const { ObjectId, goods_search, top_bar } = require('../db/mongo.ts');
 
-
 // 首页推荐
 router.get('/index_list/data', async (ctx, next) => {
 	try {
-		const topBar = await top_bar.find().toArray();
-
 		let query = {};
 		const options = {
 			skip: Number(0), // 从第 offset 条记录开始
@@ -22,7 +19,6 @@ router.get('/index_list/data', async (ctx, next) => {
 		ctx.body = {
 			code: 0,
 			data: {
-				topBar: topBar,
 				data: [
 					{
 						type: 'swiperList',

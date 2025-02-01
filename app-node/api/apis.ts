@@ -8,16 +8,10 @@ export const getIndexList = () => {
 	});
 };
 
-// 首页分类
-interface IndexData {
-	index: number | string;
-	limit: number | string;
-	offset: number | string;
-}
-export const getIndexClassify = (data: IndexData) => {
-	let { index = 1, limit = 4, offset = 4 } = data;
+export const getIndexSwiperList = (data: any) => {
+	let { index = 1, limit = 4, offset = 4, load = false } = data;
 	return request({
-		url: `/index_list/data/${index}/${offset}/${limit}`,
+		url: `/index_swiper_list/${index}/${offset}/${limit}?load=${load}`,
 	});
 };
 
