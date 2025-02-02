@@ -119,7 +119,6 @@
 	// 获取购物车数据
 	const getUserShoppingCartData = async () => {
 		const res = await getUserShoppingCart();
-
 		// 如果接口返回的数据中包含商品列表
 		if (res?.data) {
 			// 为每个商品添加 checked 属性，并存储到 Pinia

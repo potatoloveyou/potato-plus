@@ -17,6 +17,8 @@ const user_shipping_addresses = db.collection('user_shipping_addresses');
 
 const shopping_cart = db.collection('shopping_cart');
 
+const shopping_cart_item = db.collection('shopping_cart_item');
+
 const user = db.collection('user');
 
 // 存储长期token
@@ -36,6 +38,7 @@ module.exports = {
 	goods_search,
 	user_shipping_addresses,
 	shopping_cart,
+	shopping_cart_item,
 	user,
 	refresh_tokens,
 	verify,

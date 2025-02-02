@@ -3,51 +3,45 @@ const router = new Router();
 
 const verifyAccessToken = require('../../middleware/verifyAccessToken.ts');
 
-const { ObjectId, shopping_cart, goods_search } = require('../../db/mongo.ts');
+const { ObjectId, shopping_cart, goods_search, shopping_cart_item } = require('../../db/mongo.ts');
 
 router.get('/shoppingCart/get', verifyAccessToken, async (ctx) => {
 	try {
 		const { userId } = ctx.state.user;
 
-		if (!userId) {
-			ctx.status = 400; // Bad Request
-			ctx.body = { code: 400, message: '用户 ID 缺失' };
-			return;
-		}
-		// console.log(userId);
-
 		// 查询购物车数据
 		const cartData = await shopping_cart.findOne({ userId });
-		// console.log(cartData);
 
-		if (!cartData) {
-			ctx.status = 200; // Not Found
-			ctx.body = {
-				code: 0,
-				message: '购物车为空',
-			};
+		if (!cartData || !cartData.cartItemIds || cartData.cartItemIds.length === 0) {
+			ctx.status = 200;
+			ctx.body = { code: 0, message: '购物车为空', data: [] };
 			return;
 		}
 
-		// 使用 aggregate 进行关联查询
-		const cartItems = await shopping_cart
+		const cartItems = await shopping_cart_item
 			.aggregate([
-				{ $match: { userId } }, // 匹配用户 ID
-				{ $unwind: '$goods' }, // 拆分 goods 数组
+				{ $match: { userId } }, // 确保 userId 是 ObjectId
+				{
+					$addFields: {
+						goodsIdObj: { $toObjectId: '$goodsId' }, // 将 goodsId 转换为 ObjectId
+					},
+				},
 				{
 					$lookup: {
-						from: 'goods_search', // 关联 goods_search 集合
-						let: { goodsId: '$goods.id' }, // 提取每个商品的 id
-						pipeline: [{ $match: { $expr: { $eq: ['$_id', { $toObjectId: '$$goodsId' }] } } }],
+						from: 'goods_search',
+						localField: 'goodsIdObj', // 使用转换后的字段
+						foreignField: '_id',
 						as: 'goodsDetails',
 					},
 				},
-				{ $unwind: '$goodsDetails' }, // 展开 goodsDetails 数组
+				{ $unwind: '$goodsDetails' },
 				{
 					$project: {
-						_id: 0,
-						quantity: '$goods.quantity',
-						selectedAttributes: '$goods.selectedAttributes',
+						_id: 1,
+						quantity: 1,
+						selectedAttributes: 1,
+						addedAt: 1,
+						updatedAt: 1,
 						'goodsDetails._id': 1,
 						'goodsDetails.name': 1,
 						'goodsDetails.imgUrl': 1,
@@ -55,7 +49,6 @@ router.get('/shoppingCart/get', verifyAccessToken, async (ctx) => {
 						'goodsDetails.discount': 1,
 						'goodsDetails.oprice': 1,
 						'goodsDetails.attributes': 1,
-						addedAt: '$goods.addedAt',
 					},
 				},
 			])

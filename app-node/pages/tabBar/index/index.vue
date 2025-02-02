@@ -140,12 +140,13 @@
 	const getIndexData = async () => {
 		const res = await getIndexList();
 		newTopBar.value = initData(res.data);
-		console.log('newTopBar', newTopBar.value);
+		// console.log('newTopBar', newTopBar.value);
 	};
 
 	// 获取购物车数据
 	const getUserShoppingCartData = async () => {
-		const res = await getUserShoppingCart('123');
+		const res = await getUserShoppingCart();
+		console.log(res);
 
 		// 如果接口返回的数据中包含商品列表
 		if (res?.data) {

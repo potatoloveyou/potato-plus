@@ -18,10 +18,7 @@
 
 		<view class="shop-list">
 			<scroll-view scroll-y :style="`height:${clentHeight}px;`">
-				<view
-					class="shop-item"
-					v-for="(item, index) in shoppingCartStore.cartList"
-					:key="`${item.goodsDetails._id}+${item.addedAt}`">
+				<view class="shop-item" v-for="(item, index) in shoppingCartStore.cartList" :key="item._id">
 					<label class="radio">
 						<radio
 							value=""
@@ -144,6 +141,7 @@
 
 	onLoad(() => {
 		// getUserShoppingCartData();
+		console.log(shoppingCartStore.cartList);
 	});
 
 	// 编辑按钮状态
@@ -167,19 +165,15 @@
 		try {
 			// 新增 / 修改的临时数据;
 			const tempShoppingCart = {
-				goods: [],
+				shoppingCartItemIds: [],
 			};
 
 			shoppingCartStore.selectedItems.forEach((item) => {
-				tempShoppingCart.goods.push({
-					goodsId: item.goodsDetails._id,
-					selectedAttributes: item.selectedAttributes,
-				});
+				tempShoppingCart.shoppingCartItemIds.push(item._id);
 			});
-			// console.log(shoppingCartStore.selectedItems);
+			// console.log(tempShoppingCart);
 
 			const res = await delUserShoppingCart(tempShoppingCart);
-			console.log(res);
 			await getUserShoppingCartData();
 			uni.removeTabBarBadge({
 				index: 2,
@@ -191,13 +185,11 @@
 	const updateShoppingCart = async ({ value, item }) => {
 		// 新增 / 修改的临时数据;
 		const tempShoppingCart = {
-			goodsId: item.goodsDetails._id,
+			shoppingCartItemId: item._id,
 			quantity: value,
-			selectedAttributes: {
-				color: '红色',
-				size: 'XL',
-			},
 		};
+
+		console.log(tempShoppingCart);
 
 		const res = await updateUserShoppingCart(tempShoppingCart);
 		console.log(res);

@@ -1,7 +1,7 @@
 const Router = require('@koa/router');
 const router = new Router();
 
-const { shopping_cart } = require('../../db/mongo.ts');
+const { ObjectId, shopping_cart, shopping_cart_item } = require('../../db/mongo.ts');
 
 const bodyParser = require('koa-bodyparser');
 
@@ -10,63 +10,45 @@ const verifyAccessToken = require('../../middleware/verifyAccessToken.ts');
 router.delete('/shoppingCart/delete', verifyAccessToken, bodyParser(), async (ctx) => {
 	try {
 		const { userId } = ctx.state.user;
-		const { goods } = ctx.request.body;
+		const { shoppingCartItemIds } = ctx.request.body;
 
 		// 验证请求体参数
-		if (!userId || !Array.isArray(goods) || goods.length === 0) {
+		if (!shoppingCartItemIds || shoppingCartItemIds.length === 0) {
 			ctx.status = 400;
 			ctx.body = {
 				code: 400,
-				message: '请求体中缺少 userId 或 goods 格式错误。',
+				message: '缺少商品ID参数',
+			};
+			return;
+		}
+		// 删除购物车中的商品
+		const deleteResult = await shopping_cart_item.deleteMany({
+			userId, // 确保只能删除当前用户的商品
+			_id: { $in: shoppingCartItemIds.map((id) => new ObjectId(id)) },
+		});
+
+		// 检查是否成功删除
+		if (deleteResult.deletedCount === 0) {
+			ctx.status = 404;
+			ctx.body = {
+				code: 404,
+				message: '未找到要删除的商品',
 			};
 			return;
 		}
 
-		// 构造删除条件
-		const conditions = goods.map((item) => ({
-			id: item.goodsId,
-			selectedAttributes: item.selectedAttributes,
-		}));
-
-		// 使用 $pull 删除多个商品
-		const result = await shopping_cart.updateOne(
-			{ userId },
-			{
-				$pull: {
-					goods: { $or: conditions },
-				},
-			},
-		);
-
-		// 检查更新结果
-		if (result.modifiedCount > 0) {
-			// // 如果购物车为空，则删除整个购物车文档
-			// const cart = await shopping_cart.findOne({ userId });
-			// if (cart && cart.goods.length === 0) {
-			// 	await shopping_cart.deleteOne({ userId });
-			// }
-
-			ctx.status = 200;
-			ctx.body = {
-				code: 0,
-				success: true,
-				message: '指定商品已成功从购物车中移除。',
-			};
-		} else {
-			ctx.status = 404;
-			ctx.body = {
-				code: 404,
-				success: false,
-				message: '未找到匹配的商品或商品已被移除。',
-			};
-		}
+		// 返回成功响应
+		ctx.status = 200;
+		ctx.body = {
+			code: 0,
+			message: '删除成功',
+		};
 	} catch (error) {
-		console.error('删除购物车商品时出错:', error);
+		console.error('删除购物车商品失败:', error);
 		ctx.status = 500;
 		ctx.body = {
 			code: 500,
-			success: false,
-			message: '服务器内部错误。',
+			message: '删除购物车商品失败',
 			error: error.message,
 		};
 	}
