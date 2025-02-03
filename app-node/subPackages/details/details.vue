@@ -256,7 +256,7 @@
 				break;
 			case 'cart':
 				uni.switchTab({
-					url: '/pages/tabBar/shoppingCart/shoppingCart',
+					url: '/pages/shoppingCart/shoppingCart',
 				});
 				break;
 			default:
@@ -294,7 +294,7 @@
 	onShareAppMessage(() => {
 		return {
 			title: goodsDetail.value.name,
-			path: `/pages/details/details?id=${goodsDetail.value._id}`,
+			path: `/subPackages/details/details?id=${goodsDetail.value._id}`,
 		};
 	});
 
@@ -302,7 +302,7 @@
 	onShareTimeline(() => {
 		return {
 			title: goodsDetail.value.name,
-			path: `/pages/details/details?id=${goodsDetail.value._id}`,
+			path: `/subPackages/details/details?id=${goodsDetail.value._id}`,
 		};
 	});
 
@@ -313,7 +313,7 @@
 				type: 0,
 				scene: 'WXSceneSession',
 				title: goodsDetail.value.name,
-				href: `/pages/details/details?id=${goodsDetail.value._id}`,
+				href: `/subPackages/details/details?id=${goodsDetail.value._id}`,
 				imageUrl: goodsDetail.value.imgUrl,
 
 				success(res) {

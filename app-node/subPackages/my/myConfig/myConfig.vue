@@ -85,7 +85,7 @@
 
 	const goMyAddress = () => {
 		uni.navigateTo({
-			url: '/pages/my/myAddress/myAddress',
+			url: '/subPackages/my/myAddress/myAddress',
 		});
 	};
 </script>

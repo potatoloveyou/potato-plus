@@ -71,7 +71,11 @@
 		},
 		"usingComponents": true,
 		// 组件按需注入
-		"lazyCodeLoading": "requiredComponents"
+		"lazyCodeLoading": "requiredComponents",
+		// 分包
+		"optimization": {
+			"subPackages": true
+		}
 	},
 	"mp-alipay": {
 		"usingComponents": true

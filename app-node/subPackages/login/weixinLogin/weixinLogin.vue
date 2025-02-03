@@ -162,7 +162,7 @@
 						});
 
 						uni.switchTab({
-							url: '/pages/tabBar/index/index',
+							url: '/pages/index/index',
 						});
 					},
 				});
@@ -172,7 +172,7 @@
 
 	const goIndex = () => {
 		uni.switchTab({
-			url: '/pages/tabBar/index/index',
+			url: '/pages/index/index',
 		});
 	};
 </script>

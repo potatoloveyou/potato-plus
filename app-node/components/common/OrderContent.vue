@@ -38,6 +38,7 @@
 					<view class="again-payment">再来一单</view>
 				</view>
 			</view>
+			<button>支付</button>
 		</view>
 	</view>
 </template>

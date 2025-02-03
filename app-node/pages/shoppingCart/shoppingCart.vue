@@ -46,8 +46,7 @@
 									<uni-number-box
 										:min="1"
 										v-model="item.quantity"
-										@change="updateShoppingCart({ value: $event, item })"
-										@blur="blur" />
+										@change="updateShoppingCart({ value: $event, item })" />
 								</view>
 							</view>
 						</view>
@@ -67,7 +66,7 @@
 					合计:
 					<text class="amounts-num">￥{{ shoppingCartStore.amounts }}</text>
 				</view>
-				<view class="settlement">
+				<view class="settlement" @click="settlement">
 					结算
 					<text v-if="shoppingCartStore.selectedItems.length">({{ shoppingCartStore.selectedItems.length }})</text>
 				</view>
@@ -91,11 +90,11 @@
 	// 定义登录页面
 	let loginPage = '';
 	// #ifdef MP-WEIXIN
-	loginPage = '/pages/login/weixinLogin/weixinLogin';
+	loginPage = '/subPackages/login/weixinLogin/weixinLogin';
 	// #endif
 
 	// #ifdef APP
-	loginPage = '/pages/login/appLogin/appLogin';
+	loginPage = '/subPackages/login/appLogin/appLogin';
 	// #endif
 
 	onShow(() => {
@@ -141,7 +140,6 @@
 
 	onLoad(() => {
 		// getUserShoppingCartData();
-		console.log(shoppingCartStore.cartList);
 	});
 
 	// 编辑按钮状态
@@ -189,21 +187,26 @@
 			quantity: value,
 		};
 
-		console.log(tempShoppingCart);
-
 		const res = await updateUserShoppingCart(tempShoppingCart);
-		console.log(res);
+		// console.log(res);
 	};
 
-	const blur = (e) => {
-		console.log(e);
+	// 结算
+	const settlement = () => {
+		// console.log(shoppingCartStore.selectedItems);
+		if (shoppingCartStore.selectedItems.length) {
+			// console.log(123);
+			
+			return;
+		}
+		uni.showToast({ title: '你还没有选择商品哦~', icon: 'none' });
 	};
 
 	// 跳转到商品详情页
 	const goDetails = (id) => {
 		// console.log(id);
 		uni.navigateTo({
-			url: `/pages/details/details?id=${id}`,
+			url: `/subPackages/details/details?id=${id}`,
 		});
 	};
 </script>

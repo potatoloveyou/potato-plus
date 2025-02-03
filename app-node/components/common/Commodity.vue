@@ -51,7 +51,7 @@ const props = defineProps({
 const goDetails = (id) => {
 	// console.log(id);
 	uni.navigateTo({
-		url: `/pages/details/details?id=${id}`,
+		url: `/subPackages/details/details?id=${id}`,
 	});
 };
 </script>

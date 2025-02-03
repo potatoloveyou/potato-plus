@@ -55,11 +55,11 @@
 	// 定义登录页面
 	let loginPage = '';
 	// #ifdef MP-WEIXIN
-	loginPage = '/pages/login/weixinLogin/weixinLogin';
+	loginPage = '/subPackages/login/weixinLogin/weixinLogin';
 	// #endif
 
 	// #ifdef APP
-	loginPage = '/pages/login/appLogin/appLogin';
+	loginPage = '/subPackages/login/appLogin/appLogin';
 	// #endif
 
 	onShow(() => {
@@ -81,27 +81,27 @@
 	// 跳转到我的设置
 	const goMyConfig = () => {
 		uni.navigateTo({
-			url: '/pages/my/myConfig/myConfig',
+			url: '/subPackages/my/myConfig/myConfig',
 		});
 	};
 
 	// 跳转到我的订单
 	const goMyOrder = () => {
 		uni.navigateTo({
-			url: '/pages/my/myOrder/myOrder',
+			url: '/subPackages/my/myOrder/myOrder',
 		});
 	};
 
 	const goLogin = () => {
 		// #ifdef APP
 		uni.navigateTo({
-			url: '/pages/login/appLogin/appLogin',
+			url: '/subPackages/login/appLogin/appLogin',
 		});
 		// #endif
 
 		// #ifdef MP-WEIXIN
 		uni.navigateTo({
-			url: '/pages/login/weixinLogin/weixinLogin',
+			url: '/subPackages/login/weixinLogin/weixinLogin',
 		});
 		// #endif
 	};
@@ -109,14 +109,14 @@
 	// 跳转到APP登录注册
 	const goAppLogin = () => {
 		uni.navigateTo({
-			url: '/pages/login/appLogin/appLogin',
+			url: '/subPackages/login/appLogin/appLogin',
 		});
 	};
 
 	// 跳转到微信小程序登录注册
 	const goWeixinLogin = () => {
 		uni.navigateTo({
-			url: '/pages/login/weixinLogin/weixinLogin',
+			url: '/subPackages/login/weixinLogin/weixinLogin',
 		});
 	};
 </script>

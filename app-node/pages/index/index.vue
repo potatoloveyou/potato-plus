@@ -106,7 +106,7 @@
 	const clentHeight = ref(0);
 	onReady(() => {
 		uni.getSystemInfo({
-			success: (res) => {
+			success(res) {
 				clentHeight.value = res.windowHeight - uni.upx2px(80) - getNavBarHeight.value;
 			},
 		});
@@ -146,7 +146,7 @@
 	// 获取购物车数据
 	const getUserShoppingCartData = async () => {
 		const res = await getUserShoppingCart();
-		console.log(res);
+		// console.log(res);
 
 		// 如果接口返回的数据中包含商品列表
 		if (res?.data) {
@@ -227,8 +227,6 @@
 		newTopBar.value[index].offset++;
 
 		if (newTopBar.value[index].data.length !== 0) {
-			// console.log('!0');
-
 			newTopBar.value[index].data.forEach((item) => {
 				res.data.forEach((item2) => {
 					if (item.type == item2.type) {
@@ -257,7 +255,7 @@
 	// 跳转到搜索页面
 	const goSearch = () => {
 		uni.navigateTo({
-			url: '/pages/search/search',
+			url: '/subPackages/search/search',
 		});
 	};
 </script>

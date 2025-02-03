@@ -8,19 +8,19 @@ import { getAccessToken, getRefreshToken } from './token';
 
 //不需要登录的页面,白名单
 let whiteList = [
-	'/pages/tabBar/index/index',
-	'/pages/tabBar/classify/classify',
-	'/pages/login/appLogin/appLogin',
-	'/pages/login/weixinLogin/weixinLogin',
+	'/pages/index/index',
+	'/pages/classify/classify',
+	'/subPackages/login/appLogin/appLogin',
+	'/subPackages/login/weixinLogin/weixinLogin',
 ];
 // 定义登录页面
 let loginPage = '';
 // #ifdef MP-WEIXIN
-loginPage = '/pages/login/weixinLogin/weixinLogin';
+loginPage = '/subPackages/login/weixinLogin/weixinLogin';
 // #endif
 
 // #ifdef APP
-loginPage = '/pages/login/appLogin/appLogin';
+loginPage = '/subPackages/login/appLogin/appLogin';
 // #endif
 
 export default async function () {
