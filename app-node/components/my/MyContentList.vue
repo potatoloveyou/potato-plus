@@ -1,115 +1,114 @@
 <template>
-	<view class="my-content-list">
-		<view class="my-content-item">
-			<view class="item-left">
-				<view class="iconfont icon-shoucang"></view>
-				<view class="item-name">我的收藏</view>
-			</view>
-			<view class="item-right">
-				<view class="item-num">1</view>
-				<view class="iconfont icon-xialajiantou1-copy"></view>
-			</view>
-		</view>
-		<view class="my-content-item">
-			<view class="item-left">
-				<view class="iconfont icon-youhuijuan"></view>
-				<view class="item-name">我的优惠卷</view>
-			</view>
-			<view class="item-right">
-				<view class="item-num">0</view>
-				<view class="iconfont icon-xialajiantou1-copy"></view>
-			</view>
-		</view>
-		<view class="my-content-item mb-30rpx">
-			<view class="item-left">
-				<view class="iconfont icon-jifen"></view>
-				<view class="item-name">我的积分</view>
-			</view>
-			<view class="item-right">
-				<view class="item-num">1</view>
-				<view class="iconfont icon-xialajiantou1-copy"></view>
-			</view>
-		</view>
-		<view class="my-content-item mb-30rpx">
-			<view class="item-left">
-				<view class="iconfont icon-VIP"></view>
-				<view class="item-name">加入超级VIP</view>
-			</view>
-			<view class="item-right">
-				<view class="item-num">1</view>
-				<view class="iconfont icon-xialajiantou1-copy"></view>
-			</view>
-		</view>
-		<view class="my-content-item">
-			<view class="item-left">
-				<view class="iconfont icon-bangzhu"></view>
-				<view class="item-name">帮助中心</view>
-			</view>
-			<view class="item-right">
-				<view class="item-num">1</view>
-				<view class="iconfont icon-xialajiantou1-copy"></view>
-			</view>
-		</view>
-		<view class="my-content-item">
-			<view class="item-left">
-				<view class="iconfont icon-kefu"></view>
-				<view class="item-name">联系客服</view>
-			</view>
-			<view class="item-right">
-				<view class="item-num">1</view>
-				<view class="iconfont icon-xialajiantou1-copy"></view>
-			</view>
-		</view>
-		<view class="my-content-item">
-			<view class="item-left">
-				<view class="iconfont icon-shangjia"></view>
-				<view class="item-name">商家入驻</view>
-			</view>
-			<view class="item-right">
-				<view class="item-num">1</view>
-				<view class="iconfont icon-xialajiantou1-copy"></view>
-			</view>
-		</view>
-	</view>
+	<uni-list class="my-content-list">
+		<uni-list-item class="my-content-item" showArrow @click="change" link>
+			<template v-slot:header>
+				<uni-icons class="iconfont" fontFamily="CustomFont" :size="26">{{ '&#xe6de;' }}</uni-icons>
+			</template>
+			<template v-slot:body>
+				<text class="slot-box slot-text">我的收藏</text>
+			</template>
+			<template v-slot:footer>
+				<text class="slot-box">1</text>
+			</template>
+		</uni-list-item>
+
+		<uni-list-item class="my-content-item" showArrow @click="change" link>
+			<template v-slot:header>
+				<uni-icons class="iconfont" fontFamily="CustomFont" :size="26">{{ '&#xe605;' }}</uni-icons>
+			</template>
+			<template v-slot:body>
+				<text class="slot-box slot-text">我的优惠卷</text>
+			</template>
+			<template v-slot:footer>
+				<text class="slot-box">1</text>
+			</template>
+		</uni-list-item>
+
+		<uni-list-item class="my-content-item" showArrow @click="change" link>
+			<template v-slot:header>
+				<uni-icons class="iconfont" fontFamily="CustomFont" :size="26">{{ '&#xe60f;' }}</uni-icons>
+			</template>
+			<template v-slot:body>
+				<text class="slot-box slot-text">我的积分</text>
+			</template>
+			<template v-slot:footer>
+				<text class="slot-box">1</text>
+			</template>
+		</uni-list-item>
+
+		<view class="mb-30rpx"></view>
+
+		<uni-list-item class="my-content-item" showArrow @click="change" link>
+			<template v-slot:header>
+				<uni-icons class="iconfont" fontFamily="CustomFont" :size="26">{{ '&#xe83d;' }}</uni-icons>
+			</template>
+			<template v-slot:body>
+				<text class="slot-box slot-text">加入超级VIP</text>
+			</template>
+			<template v-slot:footer>
+				<text class="slot-box">1</text>
+			</template>
+		</uni-list-item>
+
+		<uni-list-item class="my-content-item" showArrow @click="change" link>
+			<template v-slot:header>
+				<uni-icons class="iconfont" fontFamily="CustomFont" :size="26">{{ '&#xe8ac;' }}</uni-icons>
+			</template>
+			<template v-slot:body>
+				<text class="slot-box slot-text">帮助中心</text>
+			</template>
+			<template v-slot:footer>
+				<text class="slot-box">1</text>
+			</template>
+		</uni-list-item>
+
+		<uni-list-item class="my-content-item" showArrow @click="change" link>
+			<template v-slot:header>
+				<uni-icons class="iconfont" fontFamily="CustomFont" :size="26">{{ '&#xec2e;' }}</uni-icons>
+			</template>
+			<template v-slot:body>
+				<text class="slot-box slot-text">联系客服</text>
+			</template>
+			<template v-slot:footer>
+				<text class="slot-box">1</text>
+			</template>
+		</uni-list-item>
+	</uni-list>
 </template>
 
-<script setup></script>
+<script setup>
+	const change = () => {
+		console.log('change');
+	};
+</script>
 
 <style lang="scss" scoped>
-.df-aic {
-	display: flex;
-	align-items: center;
-}
-.mb-30rpx {
-	margin-bottom: 30rpx;
-}
-.my-content-item {
-	@extend .df-aic;
-	justify-content: space-between;
-	background-color: #fff;
-	padding: 24rpx 30rpx;
-	border-bottom: 2rpx solid #e0e0e0;
-	.item-left {
-		@extend .df-aic;
-		.iconfont {
-			font-size: 50rpx;
-			padding-right: 25rpx;
-		}
-		.item-name {
-			font-weight: bold;
-			font-size: 32rpx;
+	@font-face {
+		font-family: CustomFont;
+		src: url('../../static/iconfont.ttf');
+	}
+	.df-aic {
+		display: flex;
+		align-items: center;
+	}
+	.mb-30rpx {
+		padding-bottom: 30rpx;
+	}
+	.my-content-list {
+		margin-bottom: 100px;
+		// background-color: #f6f6f6;
+		// height: 100vh;
+		.my-content-item {
+			.iconfont {
+				padding-right: 24rpx;
+			}
+			.slot-box {
+				display: flex;
+				align-items: center;
+			}
+			.slot-text {
+				flex: 1;
+			}
 		}
 	}
-	.item-right {
-		@extend .df-aic;
-		.item-num {
-			font-size: 32rpx;
-			padding: 0 20rpx;
-		}
-		.iconfont {
-			font-size: 44rpx;
-			opacity: 0.5;
-		}
-	}
-}
 </style>

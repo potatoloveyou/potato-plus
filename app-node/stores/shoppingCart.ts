@@ -2,8 +2,11 @@ import { ref, computed } from 'vue';
 import { defineStore } from 'pinia';
 
 export const useShoppingCartStore = defineStore('shoppingCart', () => {
-	// 响应式购物车列表
+	// 购物车列表
 	const cartList = ref([]);
+
+	// 确认订单列表
+	const confirmOrderList = ref([]);
 
 	// 切换单个商品选中状态
 	const toggleItemSelection = ({ id }: { id: string }): void => {
@@ -28,13 +31,9 @@ export const useShoppingCartStore = defineStore('shoppingCart', () => {
 	// 计算选中的商品
 	const selectedItems = computed(() => cartList.value.filter((item: { checked: boolean }) => item.checked));
 
-	// 判断是否全选
-	const isCheckAll = computed(() => selectedItems.value.length === cartList.value.length && cartList.value.length != 0);
-
 	// 全选
 	const checkAll = (): void => {
 		cartList.value.forEach((item: { checked: boolean }) => (item.checked = true));
-
 		// 显示数字标
 		uni.setTabBarBadge({
 			index: 2,
@@ -45,12 +44,14 @@ export const useShoppingCartStore = defineStore('shoppingCart', () => {
 	// 取消全选
 	const checkNoAll = (): void => {
 		cartList.value.forEach((item: { checked: boolean }) => (item.checked = false));
-
 		//隐藏数字标
 		uni.removeTabBarBadge({
 			index: 2, //tabbar下标
 		});
 	};
+
+	// 判断是否全选
+	const isCheckAll = computed(() => selectedItems.value.length === cartList.value.length && cartList.value.length != 0);
 
 	// 切换全选状态
 	const checkAllSwitch = (): void => {
@@ -67,6 +68,16 @@ export const useShoppingCartStore = defineStore('shoppingCart', () => {
 		);
 	});
 
+	// 计算确认订单商品总金额
+	const totalPrice = computed(() => {
+		return confirmOrderList.value.reduce(
+			(sum: number, item: { goodsDetails: { pprice: number }; quantity: number }) => {
+				return sum + item.goodsDetails.pprice * item.quantity;
+			},
+			0,
+		);
+	});
+
 	// 获取指定商品数量
 	const getCartItemQuantity = (itemId: string): number => {
 		const item = cartList.value.find(
@@ -77,11 +88,13 @@ export const useShoppingCartStore = defineStore('shoppingCart', () => {
 
 	return {
 		cartList,
+		confirmOrderList,
 		selectedItems,
 		toggleItemSelection,
 		isCheckAll,
 		checkAllSwitch,
 		amounts,
+		totalPrice,
 		getCartItemQuantity,
 	};
 });

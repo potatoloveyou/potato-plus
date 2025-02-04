@@ -7,8 +7,13 @@
 			</view>
 			<view class="add-address" v-if="!isManage" @click="addCollectPopupOpen">新增地址</view>
 		</view>
+
 		<view class="address-list">
-			<view class="address-item" v-for="(item, index) in addressManageStore.addressList" :key="item._id">
+			<view
+				class="address-item"
+				v-for="(item, index) in addressManageStore.addressList"
+				:key="item._id"
+				@click="selectAddress(item)">
 				<view class="item-top">
 					<view class="top-left">
 						<view class="recipient">{{ item.recipient }}</view>
@@ -82,7 +87,7 @@
 	import { ref } from 'vue';
 	import { onLoad } from '@dcloudio/uni-app';
 
-	import { useAddressManageStore } from '@/stores/addressManage.ts';
+	import { useAddressManageStore } from '@/stores/addressManage';
 	const addressManageStore = useAddressManageStore();
 
 	import { getUserAddress, addUserAddress, delUserAddress, updateUserAddress } from '@/api/apis.ts';
@@ -93,14 +98,11 @@
 		limit: 10,
 	});
 
-	// 获取用户收货地址
-	const getUserAddressData = async () => {
-		const res = await getUserAddress(queryparams.value);
-		addressManageStore.addressList = res.data;
-	};
-
-	onLoad(() => {
-		getUserAddressData();
+	// 路径参数
+	const routeParams = ref({});
+	onLoad((options) => {
+		addressManageStore.getUserAddressData(queryparams.value);
+		routeParams.value = options;
 	});
 
 	// 管理状态
@@ -115,7 +117,7 @@
 			const res = await delUserAddress(addressId);
 			if (res.code === 0) {
 				// 更新地址列表
-				await getUserAddressData();
+				await addressManageStore.getUserAddressData(queryparams.value);
 				uni.showToast({ title: '删除成功', icon: 'success' });
 			}
 		} catch (error) {}
@@ -152,7 +154,7 @@
 				// 关闭弹窗
 				collectPopupClose();
 				// 更新地址列表
-				await getUserAddressData();
+				await addressManageStore.getUserAddressData(queryparams.value);
 				uni.showToast({ title: '地址添加成功', icon: 'success' });
 			} else {
 				uni.showToast({ title: '地址添加失败', icon: 'none' });
@@ -177,7 +179,7 @@
 				// 关闭弹窗
 				collectPopupClose();
 				// 更新地址列表
-				await getUserAddressData();
+				await addressManageStore.getUserAddressData(queryparams.value);
 				uni.showToast({ title: '地址更新成功', icon: 'success' });
 			} else {
 				uni.showToast({ title: '地址更新失败', icon: 'none' });
@@ -234,6 +236,14 @@
 		} else {
 			// 修改地址
 			await updateAddress(editingAddressId.value);
+		}
+	};
+
+	// 选择地址
+	const selectAddress = (item) => {
+		if (routeParams.value?.from) {
+			addressManageStore.selectAddress = item;
+			uni.navigateBack({ delta: 1 });
 		}
 	};
 </script>

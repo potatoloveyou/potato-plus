@@ -1,5 +1,6 @@
 import { ref, computed } from 'vue';
 import { defineStore } from 'pinia';
+import { getUserAddress } from '@/api/apis.ts';
 
 export const useAddressManageStore = defineStore('addressManage', () => {
 	const addressList = ref([]);
@@ -12,7 +13,6 @@ export const useAddressManageStore = defineStore('addressManage', () => {
 		addressCity: string;
 		address: string;
 	}
-
 	// 验证地址格式
 	const validateAddress = (address: AddressItem): boolean => {
 		if (!address.addressCity) {
@@ -35,8 +35,25 @@ export const useAddressManageStore = defineStore('addressManage', () => {
 		return true;
 	};
 
+	// 获取用户收货地址
+	const getUserAddressData = async (queryparams: object) => {
+		const res = await getUserAddress(queryparams);
+		addressList.value = res.data;
+	};
+
+	// 计算默认地址
+	const defaultAddress = computed(() => {
+		return addressList.value.find((item: { isDefault: boolean }) => item.isDefault);
+	});
+
+	// 选择地址
+	const selectAddress = ref({});
+
 	return {
 		addressList,
 		validateAddress,
+		getUserAddressData,
+		defaultAddress,
+		selectAddress,
 	};
 });

@@ -38,8 +38,7 @@
 	import { ref } from 'vue';
 	import { onLoad, onReady } from '@dcloudio/uni-app';
 
-	import Lines from '@/components/common/Lines.vue';
-	import OrderContent from '@/components/common/OrderContent.vue';
+	import OrderContent from '@/components/order/OrderContent.vue';
 
 	import { useVariousBarStore } from '@/stores/variousBar';
 	const variousBarStore = useVariousBarStore();

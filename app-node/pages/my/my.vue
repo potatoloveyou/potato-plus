@@ -15,7 +15,6 @@
 
 		<button @click="goAppLogin">APP登录注册</button>
 		<button @click="goWeixinLogin">微信登录注册</button>
-		<button @click="testToken1">测试token</button>
 
 		<view class="my-order">
 			<view class="order-content">
@@ -36,9 +35,7 @@
 			</view>
 		</view>
 
-		<view class="my-content">
-			<MyContentList />
-		</view>
+		<MyContentList />
 	</view>
 </template>
 
@@ -68,15 +65,6 @@
 			uni.navigateTo({ url: loginPage });
 		}
 	});
-
-	import { testToken } from '@/api/apis.ts';
-
-	const testToken1 = async () => {
-		const res = await testToken();
-		console.log('testToken1', res);
-	};
-
-	onLoad(() => {});
 
 	// 跳转到我的设置
 	const goMyConfig = () => {

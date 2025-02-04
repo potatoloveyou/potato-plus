@@ -176,14 +176,7 @@ export const renovateToken = () => {
 	});
 };
 export const isRefreshToken = (originalConfig) => {
-	return !!originalConfig.__isRefreshToken;
-};
-
-// 测试token
-export const testToken = () => {
-	return request({
-		url: `/testToken`,
-	});
+	return !!originalConfig?.__isRefreshToken;
 };
 
 // 退出登录

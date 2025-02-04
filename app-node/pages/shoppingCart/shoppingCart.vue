@@ -196,7 +196,9 @@
 		// console.log(shoppingCartStore.selectedItems);
 		if (shoppingCartStore.selectedItems.length) {
 			// console.log(123);
-			
+			uni.navigateTo({
+				url: '/subPackages/confirmOrder/confirmOrder',
+			});
 			return;
 		}
 		uni.showToast({ title: '你还没有选择商品哦~', icon: 'none' });
@@ -277,12 +279,13 @@
 					.goods-name {
 					}
 					.f-color {
+						font-size: 24rpx;
 					}
 					.goods-color {
-						font-size: 24rpx;
+						// font-size: 24rpx;
 					}
 					.goods-size {
-						font-size: 24rpx;
+						// font-size: 24rpx;
 					}
 					.goods-condition {
 						display: flex;

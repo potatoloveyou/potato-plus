@@ -1,15 +1,12 @@
 {
-  "id": "uni-list",
-  "displayName": "uni-list 列表",
-  "version": "1.2.15",
-  "description": "List 组件 ，帮助使用者快速构建列表。",
+  "id": "uni-section",
+  "displayName": "uni-section 标题栏",
+  "version": "0.0.1",
+  "description": "标题栏组件",
   "keywords": [
-    "",
     "uni-ui",
     "uniui",
-    "列表",
-    "",
-    "list"
+    "标题栏"
 ],
   "repository": "https://github.com/dcloudio/uni-ui",
   "engines": {
@@ -18,7 +15,11 @@
   "directories": {
     "example": "../../temps/example_temps"
   },
-"dcloudext": {
+  "dcloudext": {
+    "category": [
+      "前端组件",
+      "通用组件"
+    ],
     "sale": {
       "regular": {
         "price": "0.00"
@@ -35,27 +36,22 @@
       "data": "无",
       "permissions": "无"
     },
-    "npmurl": "https://www.npmjs.com/package/@dcloudio/uni-ui",
-    "type": "component-vue"
+    "npmurl": "https://www.npmjs.com/package/@dcloudio/uni-ui"
   },
   "uni_modules": {
     "dependencies": [
-      "uni-badge",
-      "uni-icons"
+      "uni-scss"
     ],
     "encrypt": [],
     "platforms": {
       "cloud": {
         "tcb": "y",
-        "aliyun": "y",
-        "alipay": "n"
+        "aliyun": "y"
       },
       "client": {
         "App": {
-            "app-vue": "y",
-            "app-nvue": "y",
-            "app-harmony": "u",
-            "app-uvue": "u"
+          "app-vue": "y",
+          "app-nvue": "y"
         },
         "H5-mobile": {
           "Safari": "y",
