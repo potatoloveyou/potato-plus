@@ -17,8 +17,28 @@
 				</view>
 			</view>
 
-			<uni-list class="item-bottom">
-				<uni-list-item title="列表文字" showArrow showExtraIcon :extraIcon="{ type: 'location' }"></uni-list-item>
+			<uni-list class="uni-list">
+				<uni-list-item class="uni-list-item" showArrow>
+					<template v-slot:body>
+						<text class="slot-box slot-text fs-28rpx">配送</text>
+					</template>
+					<template v-slot:footer>
+						<view class="item-text fs-28rpx">
+							<text>快递 包邮</text>
+							<text>48小时内发货</text>
+						</view>
+					</template>
+				</uni-list-item>
+				<uni-list-item class="uni-list-item" showArrow>
+					<template v-slot:body>
+						<text class="slot-box slot-text fs-28rpx">备注</text>
+					</template>
+					<template v-slot:footer>
+						<view class="item-text fs-28rpx">
+							<text class="notes">无备注</text>
+						</view>
+					</template>
+				</uni-list-item>
 			</uni-list>
 		</view>
 	</view>
@@ -37,9 +57,16 @@
 </script>
 
 <style lang="scss" scoped>
-	.df-aic {
+	.df {
 		display: flex;
+	}
+	.df-aic {
+		@extend .df;
 		align-items: center;
+	}
+	.df-fdc {
+		@extend .df;
+		flex-direction: column;
 	}
 	.confirm-order-list {
 		margin-top: 20rpx;
@@ -48,7 +75,7 @@
 			margin-bottom: 20rpx;
 			padding: 0 20rpx;
 			.item-top {
-				display: flex;
+				@extend .df;
 				.goods-img {
 					width: 180rpx;
 					height: 180rpx;
@@ -57,24 +84,22 @@
 					flex: 1;
 					padding-left: 20rpx;
 					.goods-name {
-						font-size: 32rpx;
+						font-size: 30rpx;
 						font-weight: bold;
 					}
 					.goods-color {
 					}
 					.f-color {
-						font-size: 26rpx;
+						font-size: 24rpx;
 					}
 					.goods-size {
 					}
 				}
 				.goods-condition {
-					display: flex;
-					flex-direction: column;
+					@extend .df-fdc;
 					justify-content: space-between;
 					.goods-price {
-						display: flex;
-						flex-direction: column;
+						@extend .df-fdc;
 						align-items: flex-end;
 						.goods-pprice {
 							font-size: 36rpx;
@@ -85,6 +110,37 @@
 							font-size: 26rpx;
 						}
 						.f-color {
+						}
+					}
+				}
+			}
+			.uni-list {
+				.uni-list-item {
+					// padding: 5rpx 0;
+					.fs-28rpx {
+						font-size: 28rpx;
+					}
+					.slot-box {
+						@extend .df-aic;
+					}
+					.slot-text {
+						flex: 1;
+					}
+					.item-text {
+						@extend .df-fdc;
+						align-items: flex-end;
+					}
+				}
+				.uni-list-item {
+					.slot-box {
+					}
+					.slot-text {
+					}
+					.fs-28rpx {
+					}
+					.item-text {
+						.notes {
+							color: #999;
 						}
 					}
 				}

@@ -186,3 +186,12 @@ export const appUserLogOut = () => {
 		method: 'POST',
 	});
 };
+
+// 添加订单
+export const addUserOrder = (data: object) => {
+	return request({
+		url: `/order/add`,
+		method: 'POST',
+		data,
+	});
+};

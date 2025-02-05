@@ -1,8 +1,8 @@
 <template>
 	<view class="confirm-order bg-active-color">
-		<uni-list>
+		<uni-list class="uni-list">
 			<uni-list-item
-				class="order-top"
+				class="uni-list-item"
 				:title="`${addressManageStore.selectAddress?.addressCity} ${addressManageStore.selectAddress?.address}`"
 				:note="`${addressManageStore.selectAddress?.recipient} ${addressManageStore.selectAddress?.phone}`"
 				showArrow
@@ -16,7 +16,7 @@
 		<ConfirmOrderList />
 
 		<view class="order-bottom">
-			<view class="bottom-text bg-color">立刻支付￥{{ shoppingCartStore.totalPrice }}</view>
+			<view class="bottom-text bg-color" @click="submitOrder">立刻支付￥{{ shoppingCartStore.totalPrice }}</view>
 			<view class="safe-area-inset-bottom"></view>
 		</view>
 	</view>
@@ -34,6 +34,8 @@
 	import { useAddressManageStore } from '@/stores/addressManage';
 	const addressManageStore = useAddressManageStore();
 
+	import { addUserOrder } from '@/api/apis.ts';
+
 	// 查询参数
 	const queryparams = ref({
 		offset: 0,
@@ -45,6 +47,24 @@
 		await addressManageStore.getUserAddressData(queryparams.value);
 		addressManageStore.selectAddress = addressManageStore.defaultAddress;
 	});
+
+	// 提交订单
+	const submitOrder = async () => {
+		const temporaryData = {
+			shoppingIds: [],
+			addressId: addressManageStore.selectAddress._id,
+		};
+		shoppingCartStore.confirmOrderList.forEach((item) => {
+			temporaryData.shoppingIds.push({
+				shoppingId: item._id,
+				quantity: item.quantity,
+			});
+		});
+		// console.log(shoppingCartStore.confirmOrderList);
+		// console.log(addressManageStore.selectAddress._id);
+		const res = await addUserOrder(temporaryData);
+		console.log(res);
+	};
 </script>
 
 <style lang="scss" scoped>
@@ -56,10 +76,15 @@
 	}
 	.confirm-order {
 		height: 100vh;
-		.order-top {
-			.uni-list-item__content-title {
-				font-size: 32rpx;
-				color: red;
+		.uni-list {
+			.uni-list-item {
+				::v-deep .uni-list-item__content-title {
+					font-size: 32rpx;
+					font-weight: bold;
+				}
+				::v-deep .uni-list-item__content-note {
+					font-size: 28rpx;
+				}
 			}
 		}
 		.order-bottom {

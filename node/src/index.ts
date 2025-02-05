@@ -96,9 +96,9 @@ router.use(weixin_login.routes());
 const refreshToken = require('./router/user/refreshToken.ts');
 router.use(refreshToken.routes());
 
-// 测试token
-const testToken = require('./router/testToken.ts');
-router.use(testToken.routes());
+// 添加用户订单
+const addUserOrder = require('./router/order/addUserOrder.ts');
+router.use(addUserOrder.routes());
 
 app.use(router.routes());
 app.listen(9229);
