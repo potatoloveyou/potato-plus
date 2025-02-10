@@ -64,13 +64,13 @@ router.use(deleteUserAddress.routes());
 const updateUserAddress = require('./router/address/updateUserAddress.ts');
 router.use(updateUserAddress.routes());
 
-// 获取用户购物车
-const getUserShoppingCart = require('./router/shoppingCart/getUserShoppingCart.ts');
-router.use(getUserShoppingCart.routes());
-
 // 添加商品到购物车
 const addUserShoppingCart = require('./router/shoppingCart/addUserShoppingCart.ts');
 router.use(addUserShoppingCart.routes());
+
+// 获取用户购物车
+const getUserShoppingCart = require('./router/shoppingCart/getUserShoppingCart.ts');
+router.use(getUserShoppingCart.routes());
 
 // 删除用户购物车商品
 const deleteUserShoppingCart = require('./router/shoppingCart/deleteUserShoppingCart.ts');
@@ -99,6 +99,10 @@ router.use(refreshToken.routes());
 // 添加用户订单
 const addUserOrder = require('./router/order/addUserOrder.ts');
 router.use(addUserOrder.routes());
+
+// 获取用户订单
+const getUserOrder = require('./router/order/getUserOrder.ts');
+router.use(getUserOrder.routes());
 
 app.use(router.routes());
 app.listen(9229);

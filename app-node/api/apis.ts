@@ -195,3 +195,11 @@ export const addUserOrder = (data: object) => {
 		data,
 	});
 };
+
+// 获取订单列表
+export const getUserOrder = (data: any) => {
+	let { status = '00', limit = 10, offset = 0 } = data;
+	return request({
+		url: `/order/get/${status}/${offset}/${limit}`,
+	});
+};

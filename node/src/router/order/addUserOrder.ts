@@ -13,30 +13,22 @@ router.post('/order/add', verifyAccessToken, bodyParser(), async (ctx, next) => 
 		const { userId } = ctx.state.user;
 		const { shoppingIds, addressId } = ctx.request.body;
 
-		// 将 shoppingIds 转换为 Map，便于快速查找
+		// 构造 Map，方便查找 quantity
 		const shoppingIdMap = new Map(shoppingIds.map((item) => [item.shoppingId, item.quantity]));
 
-		// 查询购物车中要购买的商品信息
-		const cartItems = await shopping_cart_item
-			.find({
-				_id: { $in: shoppingIds.map((item) => new ObjectId(item.shoppingId)) },
-				userId,
-			})
-			.toArray();
+		// 查询购物车中的商品
+		const shoppingIdList = shoppingIds.map((item) => new ObjectId(item.shoppingId));
+		const cartItems = await shopping_cart_item.find({ _id: { $in: shoppingIdList }, userId }).toArray();
 
-		// 重新构造 updatedShoppingIds，结合前端传来的 quantity
-		const updatedShoppingIds = cartItems.map((cartItem) => {
-			// 从 shoppingIdMap 中直接获取 quantity
-			const quantity = shoppingIdMap.get(cartItem._id.toString()) || cartItem.quantity;
-			return {
-				goodsId: cartItem.goodsId, // 数据库中的 goodsId
-				selectedAttributes: cartItem.selectedAttributes, // 数据库中的 selectedAttributes
-				quantity, // 使用 shoppingIdMap 中的 quantity，如果没有则使用数据库中的
-			};
-		});
+		// 构造订单商品列表
+		const updatedShoppingIds = cartItems.map((cartItem) => ({
+			goodsId: cartItem.goodsId,
+			selectedAttributes: cartItem.selectedAttributes,
+			quantity: shoppingIdMap.get(cartItem._id.toString()) || cartItem.quantity,
+		}));
 
 		/**
-		 * 数字	状态含义	说明
+		 * status	状态含义	说明
 		 * 0	待支付	订单已创建，等待用户支付。
 		 * 01	已取消	订单被取消(未付款)。
 		 * 011 支付超时：用户未在规定时间内支付，订单自动取消。
@@ -68,7 +60,7 @@ router.post('/order/add', verifyAccessToken, bodyParser(), async (ctx, next) => 
 			userId,
 			addressId,
 			shoppingItems: updatedShoppingIds,
-			status: 0,
+			status: '0',
 			createdAt: new Date(),
 			expiresIn: new Date(Date.now() + 1000 * 60 * 15), // 15 分钟后订单失效
 		});

@@ -59,7 +59,7 @@
 							<Icons :dataList="k.data" />
 							<Card cardName="热销爆品" />
 						</template>
-						<template v-if="k.type == 'hotLi st'">
+						<template v-if="k.type == 'hotList'">
 							<Hot :dataList="k.data" />
 							<Card cardName="推荐店铺" />
 						</template>
@@ -120,7 +120,7 @@
 		const res = await getVariousBar();
 		variousBarStore.variousBar = res.data;
 		topBar.value = res.data[1].index_bar;
-		// console.log(topBar.value);
+		console.log(topBar.value);
 	};
 
 	// 承载数据
@@ -197,12 +197,6 @@
 		changeTab(e.detail.current);
 	};
 
-	// // 查询参数
-	// const queryparams = ref({
-	// 	index: 1,
-	// 	limit: 4,
-	// 	offset: 0,
-	// });
 	// 加载更多数据
 	const addData = async () => {
 		const queryparams = {

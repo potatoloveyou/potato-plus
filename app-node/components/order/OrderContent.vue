@@ -1,24 +1,25 @@
 <template>
 	<view class="order-content">
-		<view class="order-item" v-for="item in 5" :key="item">
+		<view class="order-item" v-for="item in orderList" :key="item._id">
 			<view class="item-top">
 				<view class="order-status f-active-color">待买家支付</view>
 			</view>
-			<view class="item-content">
-				<image class="goods-img" src="../../static/imgs/xxmLogo.png" mode="" />
+			<view class="item-content" v-for="good in item.shoppingItems" :key="good.goodsDetails._id">
+				<image class="goods-img" :src="good.goodsDetails.imgUrl" mode="" />
 				<view class="goods-">
 					<view class="goods-details">
-						<view class="goods-name">毛衣</view>
-						<view class="goods-color f-color">颜色分类：黑色</view>
+						<view class="goods-name">{{ good.goodsDetails.name }}</view>
+						<view class="goods-color f-color">颜色分类：{{ good.selectedAttributes.color }}</view>
+						<view class="goods-size f-color">大小：{{ good.selectedAttributes.size }}</view>
 						<view class="refund f-active-color">7天无理由退换</view>
 					</view>
 
 					<view class="goods-condition">
 						<view class="goods-price"
 							>￥
-							<view class="price">299.99</view>
+							<view class="pprice">{{ good.goodsDetails.pprice }}</view>
 						</view>
-						<view class="goods-num">x 1</view>
+						<view class="goods-num">x {{ good.quantity }}</view>
 					</view>
 				</view>
 			</view>
@@ -38,12 +39,18 @@
 					<view class="again-payment">再来一单</view>
 				</view>
 			</view>
-			<button>支付</button>
+			<!-- <button>支付</button> -->
 		</view>
 	</view>
 </template>
 
-<script setup></script>
+<script setup>
+	import { ref, defineProps } from 'vue';
+
+	const props = defineProps({
+		orderList: Array,
+	});
+</script>
 
 <style lang="scss" scoped>
 	.fs-25rpx {
@@ -52,7 +59,7 @@
 	.order-content {
 		.order-item {
 			background-color: #fff;
-			margin-bottom: 20rpx;
+			margin-bottom: 40rpx;
 			.item-top {
 				display: flex;
 				justify-content: flex-end;
@@ -69,6 +76,8 @@
 			}
 			.item-content {
 				display: flex;
+				margin-bottom: 10rpx;
+
 				.goods-img {
 					width: 180rpx;
 					height: 180rpx;
@@ -83,9 +92,11 @@
 						.goods-name {
 						}
 						.goods-color {
-							@extend .fs-25rpx;
 						}
 						.f-color {
+							@extend .fs-25rpx;
+						}
+						.goods-size {
 						}
 						.refund {
 							@extend .fs-25rpx;
@@ -98,7 +109,7 @@
 							@extend .fs-25rpx;
 							display: flex;
 							align-items: center;
-							.price {
+							.pprice {
 								font-weight: bold;
 								font-size: 36rpx;
 							}

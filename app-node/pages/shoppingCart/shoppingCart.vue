@@ -126,7 +126,7 @@
 
 	// 获取购物车数据
 	const getUserShoppingCartData = async () => {
-		const res = await getUserShoppingCart('123');
+		const res = await getUserShoppingCart();
 
 		// 如果接口返回的数据中包含商品列表
 		if (res?.data) {

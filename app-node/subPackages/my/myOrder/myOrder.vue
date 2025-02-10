@@ -1,7 +1,5 @@
 <template>
 	<view class="my-order">
-		<!-- <Lines /> -->
-
 		<scroll-view scroll-x="true" :scroll-into-view="scrollIntoIndex" class="scroll-content">
 			<view
 				class="scroll-item"
@@ -12,7 +10,6 @@
 				<text :class="topBarIndex == index ? 'f-active-color' : 'f-color'">{{ item.name }}</text>
 			</view>
 		</scroll-view>
-		<!-- <Lines /> -->
 
 		<swiper @change="onChangeTab" :current="topBarIndex" :style="`height:${clentHeight}px;`">
 			<swiper-item v-for="(item, index) in variousBarStore.variousBar[0]?.order_bar" :key="item.id">
@@ -21,12 +18,11 @@
 					scroll-y
 					:style="`height:${clentHeight}px;`"
 					@scrolltolower="loadMore(index)">
-					<!-- <view v-for="(item, index) in 50" :key="item">{{ item }}</view> -->
-					<OrderContent v-if="isData" />
+					<OrderContent v-if="newTopBar[index]?.data.length" :orderList="newTopBar[index]?.data" />
 
 					<view class="no-order" v-else>
-						<view>你还没有订单</view>
-						<view class="no-order-home" @click="goHome">去首页逛逛吧</view>
+						<view>你还没有相关订单</view>
+						<view class="no-order-home" @click="goHome" v-if="index == 0">去首页逛逛吧</view>
 					</view>
 				</scroll-view>
 			</swiper-item>
@@ -56,20 +52,45 @@
 		});
 	});
 
-	// 顶部tab
-	const orderBar = ref([]);
+	import { getUserOrder } from '@/api/apis.ts';
+
 	// 滑块数据
 	const newTopBar = ref([]);
+	// 初始化数据
+	const initData = (res) => {
+		return topBar.value.map((_, index) => ({
+			data: index === 0 ? res.data : [],
+			loadText: '上拉加载更多...',
+			limit: 10,
+			offset: index === 0 ? 1 : 0,
+		}));
+	};
+	// 获取用户订单数据
+	const getUserOrderData = async () => {
+		const queryparams = {
+			status: '00',
+			offset: 0,
+			limit: 10,
+		};
+		const res = await getUserOrder(queryparams);
+		console.log(res);
+		newTopBar.value = initData(res);
+		console.log('newTopBar', newTopBar.value);
+	};
 
-	const state = ref('');
-	const isData = ref(true);
+	// 顶部tab
+	const topBar = ref([]);
+	onLoad(() => {
+		getUserOrderData();
+		topBar.value = variousBarStore.variousBar[0]?.order_bar;
+	});
 
 	// 选中索引
 	const topBarIndex = ref(0);
 	// 顶部tab跟随索引
 	const scrollIntoIndex = ref('top0');
 	// 点击顶部tab
-	const changeTab = (index) => {
+	const changeTab = async (index) => {
 		if (topBarIndex.value == index) {
 			return;
 		}
@@ -77,12 +98,7 @@
 
 		scrollIntoIndex.value = 'top' + index;
 
-		console.log(topBarIndex.value, scrollIntoIndex.value);
-
-		// // 首次滑动
-		// if (newTopBar.value[topBarIndex.value].load == 'first') {
-		// 	addData();
-		// }
+		addData(index);
 	};
 
 	// 滑动swiper
@@ -90,10 +106,47 @@
 		changeTab(e.detail.current);
 	};
 
+	const addData = async (index) => {
+		// console.log(topBarIndex.value, scrollIntoIndex.value);
+		// console.log(variousBarStore.variousBar[0]?.order_bar?.[index]?.id);
+		// console.log(newTopBar.value[index].offset);
+		// console.log(newTopBar.value[index].limit);
+
+		// 获取当前订单类型的 ID
+		const statusId = variousBarStore.variousBar[0]?.order_bar?.[index]?.id.toString();
+		const currentTab = newTopBar.value[index];
+
+		// 计算 offset
+		const offset = currentTab.data.length >= 10 ? currentTab.offset * currentTab.limit : 0;
+
+		const queryparams = {
+			status: statusId,
+			offset,
+			limit: currentTab.limit,
+		};
+
+		// 请求订单数据
+		const res = await getUserOrder(queryparams);
+		// console.log(res);
+
+		if (res?.data?.length) {
+			// **每次请求都覆盖旧数据，防止超时订单残留**
+			currentTab.data = res.data;
+			currentTab.offset++;
+
+			// **如果返回的数据不足 limit，说明没有更多了**
+			currentTab.loadText = res.data.length < currentTab.limit ? '没有更多数据了' : '上拉加载更多...';
+		} else {
+			// **无数据时，清空当前数据**
+			currentTab.data = [];
+			currentTab.loadText = '没有更多数据了';
+		}
+	};
+
 	// 上拉加载更多
 	const loadMore = (index) => {
-		// newTopBar.value[index].loadText = '加载中...';
-		// addData();
+		newTopBar.value[index].loadText = '加载中...';
+		addData(index);
 	};
 
 	// 跳转到首页
@@ -126,7 +179,10 @@
 			}
 		}
 		.bg-active-color {
-			// background-color: red;
+			.no-order {
+				.no-order-home {
+				}
+			}
 		}
 
 		.no-order {
