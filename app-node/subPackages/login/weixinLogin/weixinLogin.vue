@@ -72,10 +72,15 @@
 
 <script setup>
 	import { ref, computed } from 'vue';
+	import { onShow } from '@dcloudio/uni-app';
 
 	import NavBar from '@/components/common/NavBar.vue';
 
 	import { getWeixinEmailVerify, weixinLogin } from '@/api/apis.ts';
+
+	onShow(() => {
+		uni.showToast({ title: '您已掉线请重新登录', icon: 'none' });
+	});
 
 	const formData = ref({
 		phone: '',

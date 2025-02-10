@@ -100,6 +100,7 @@
 	const shoppingCartStore = useShoppingCartStore();
 
 	import { getNavBarHeight } from '@/utils/system.ts';
+	import { getRefreshToken } from '@/utils/token.ts';
 	import { getIndexList, getIndexSwiperList, getVariousBar, getUserShoppingCart } from '@/api/apis.ts';
 
 	// 内容块的高度值
@@ -164,7 +165,9 @@
 	onLoad(async () => {
 		await getVariousBarData();
 		await getIndexData();
-		await getUserShoppingCartData();
+		if (getRefreshToken()) {
+			await getUserShoppingCartData();
+		}
 		// Promise.all([getIndexData(), getVariousBarData(), getUserShoppingCartData()]);
 	});
 

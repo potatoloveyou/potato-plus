@@ -59,11 +59,14 @@
 	loginPage = '/subPackages/login/appLogin/appLogin';
 	// #endif
 
-	onShow(() => {
+	const checkLogin = () => {
 		if (!getAccessToken() || !getRefreshToken()) {
-			uni.showToast({ title: '您已掉线请重新登录', icon: 'none' });
-			uni.navigateTo({ url: loginPage });
+			uni.reLaunch({ url: loginPage }); // 确保跳转生效
 		}
+	};
+
+	onShow(() => {
+		checkLogin();
 	});
 
 	// 跳转到我的设置

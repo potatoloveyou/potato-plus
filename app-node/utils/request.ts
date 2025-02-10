@@ -1,7 +1,7 @@
 import { setAccessToken, setRefreshToken, getAccessToken, getRefreshToken } from './token.js';
 import { renovateToken, isRefreshToken } from '../api/apis.ts';
 
-const base_url = 'http://192.168.1.101:9229';
+const base_url = 'http://192.168.39.11:9229';
 // const base_url = 'http://192.168.34.71:9229';
 
 interface Config {
@@ -117,7 +117,7 @@ export const request = async (initialConfig: Config) => {
 			// console.log('for', processedResponse.data);
 		}
 
-		return processedResponse.data;
+		return processedResponse?.data;
 	} catch (error) {
 		// 全局错误处理
 		console.error('Request error:', error);
