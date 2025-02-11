@@ -17,15 +17,6 @@ router.post('/shoppingCart/add', verifyAccessToken, bodyParser(), async (ctx) =>
 			ctx.body = { code: 400, message: '缺少必要参数: 用户 ID, 商品 ID, 数量或选择的属性' };
 			return;
 		}
-		ctx.body = {
-			code: 0,
-			data: {
-				userId,
-				goodsId,
-				quantity,
-				selectedAttributes,
-			},
-		};
 
 		let cartItem;
 		// 检查购物车中是否已存在该商品及其属性

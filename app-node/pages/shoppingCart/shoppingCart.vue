@@ -110,6 +110,9 @@
 	import { useShoppingCartStore } from '@/stores/shoppingCart';
 	const shoppingCartStore = useShoppingCartStore();
 
+	import { useOrderManageStore } from '@/stores/orderManage';
+	const orderManageStore = useOrderManageStore();
+
 	import { getUserShoppingCart, delUserShoppingCart, updateUserShoppingCart } from '@/api/apis.ts';
 
 	import { getNavBarHeight } from '@/utils/system.ts';
@@ -197,9 +200,10 @@
 	// 结算
 	const settlement = () => {
 		if (shoppingCartStore.selectedItems.length) {
-			shoppingCartStore.confirmOrderList = shoppingCartStore.selectedItems;
+			orderManageStore.confirmOrderList = shoppingCartStore.selectedItems;
+
 			uni.navigateTo({
-				url: '/subPackages/confirmOrder/confirmOrder',
+				url: '/subPackages/order/confirmOrder/confirmOrder',
 			});
 			return;
 		}

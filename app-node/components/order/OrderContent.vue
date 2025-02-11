@@ -41,8 +41,8 @@
 
 				<view class="bottom-button" v-else>
 					<view class="add-cart">加入购物车</view>
-					<view class="again-payment">修改信息</view>
-					<view class="continue-payment f-active-color" @click="goOrderContent(order)">继续付款</view>
+					<view class="again-payment" @click="goContinuePayOrder(order)">修改信息</view>
+					<view class="continue-payment f-active-color">继续付款</view>
 				</view>
 			</view>
 		</view>
@@ -50,10 +50,10 @@
 </template>
 
 <script setup>
-	import { ref, defineProps } from 'vue';
+	import { ref } from 'vue';
 
-	import { useShoppingCartStore } from '@/stores/shoppingCart';
-	const shoppingCartStore = useShoppingCartStore();
+	import { useOrderManageStore } from '@/stores/orderManage';
+	const orderManageStore = useOrderManageStore();
 
 	import { getAppointOrder } from '@/api/apis';
 
@@ -62,11 +62,12 @@
 	});
 
 	// 需要继续付款的订单
-	const goOrderContent = async (order) => {
+	const goContinuePayOrder = async (order) => {
 		const res = await getAppointOrder(order._id);
-		shoppingCartStore.confirmOrderList = res.data.shoppingItems;
+		// orderManageStore.confirmOrderList = res.data.shoppingItems;
+		console.log(res);
 		uni.navigateTo({
-			url: '/subPackages/confirmOrder/confirmOrder',
+			url: '/subPackages/order/continuePayOrder/continuePayOrder',
 		});
 	};
 </script>

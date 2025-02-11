@@ -237,15 +237,20 @@
 				}
 			]
 		},
-		// subPackages/confirmOrder
+		// subPackages/order
 		{
-			"root": "subPackages/confirmOrder",
+			"root": "subPackages/order",
 			"pages": [
 				{
-					"path": "confirmOrder",
+					"path": "confirmOrder/confirmOrder",
 					"style": {
 						"navigationBarTitleText": "确认订单"
-
+					}
+				},
+				{
+					"path": "continuePayOrder/continuePayOrder",
+					"style": {
+						"navigationBarTitleText": "继续支付"
 					}
 				}
 			]

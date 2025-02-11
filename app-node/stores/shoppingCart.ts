@@ -1,12 +1,12 @@
 import { ref, computed } from 'vue';
 import { defineStore } from 'pinia';
 
+import { useOrderManageStore } from '@/stores/orderManage';
+const orderManageStore = useOrderManageStore();
+
 export const useShoppingCartStore = defineStore('shoppingCart', () => {
 	// 购物车列表
 	const cartList = ref([]);
-
-	// 确认订单列表
-	const confirmOrderList = ref([]);
 
 	// 切换单个商品选中状态
 	const toggleItemSelection = ({ id }: { id: string }): void => {
@@ -68,16 +68,6 @@ export const useShoppingCartStore = defineStore('shoppingCart', () => {
 		);
 	});
 
-	// 计算确认订单商品总金额
-	const totalPrice = computed(() => {
-		return confirmOrderList.value.reduce(
-			(sum: number, item: { goodsDetails: { pprice: number }; quantity: number }) => {
-				return sum + item.goodsDetails.pprice * item.quantity;
-			},
-			0,
-		);
-	});
-
 	// 获取指定商品数量
 	const getCartItemQuantity = (itemId: string): number => {
 		const item = cartList.value.find(
@@ -88,13 +78,11 @@ export const useShoppingCartStore = defineStore('shoppingCart', () => {
 
 	return {
 		cartList,
-		confirmOrderList,
 		selectedItems,
 		toggleItemSelection,
 		isCheckAll,
 		checkAllSwitch,
 		amounts,
-		totalPrice,
 		getCartItemQuantity,
 	};
 });

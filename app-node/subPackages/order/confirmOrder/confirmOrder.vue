@@ -27,7 +27,7 @@
 		<ConfirmOrderList />
 
 		<view class="order-bottom">
-			<view class="bottom-text bg-color" @click="submitOrder">立刻支付￥{{ shoppingCartStore.totalPrice }}</view>
+			<view class="bottom-text bg-color" @click="submitOrder">立刻支付￥{{ orderManageStore.totalPrice }}</view>
 			<view class="safe-area-inset-bottom"></view>
 		</view>
 
@@ -46,6 +46,9 @@
 
 	import { useAddressManageStore } from '@/stores/addressManage';
 	const addressManageStore = useAddressManageStore();
+
+	import { useOrderManageStore } from '@/stores/orderManage';
+	const orderManageStore = useOrderManageStore();
 
 	import { addUserOrder } from '@/api/apis.ts';
 
@@ -80,7 +83,7 @@
 			shoppingIds: [],
 			addressId: addressManageStore.selectAddress._id,
 		};
-		shoppingCartStore.confirmOrderList.forEach((item) => {
+		orderManageStore.confirmOrderList.forEach((item) => {
 			temporaryData.shoppingIds.push({
 				shoppingId: item._id,
 				quantity: item.quantity,

@@ -26,7 +26,7 @@ router.put('/shoppingCart/update', verifyAccessToken, bodyParser(), async (ctx, 
 			},
 			{
 				$set: {
-					quantity: quantity,
+					quantity,
 					updatedAt: new Date(),
 				},
 			},
