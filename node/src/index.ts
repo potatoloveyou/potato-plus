@@ -104,5 +104,9 @@ router.use(addUserOrder.routes());
 const getUserOrder = require('./router/order/getUserOrder.ts');
 router.use(getUserOrder.routes());
 
+// 获取指定用户订单
+const getAppointOrder = require('./router/order/getAppointOrder.ts');
+router.use(getAppointOrder.routes());
+
 app.use(router.routes());
 app.listen(9229);

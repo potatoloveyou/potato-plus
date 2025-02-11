@@ -62,7 +62,7 @@ router.post('/order/add', verifyAccessToken, bodyParser(), async (ctx, next) => 
 			shoppingItems: updatedShoppingIds,
 			status: '0',
 			createdAt: new Date(),
-			expiresIn: new Date(Date.now() + 1000 * 60 * 15), // 15 分钟后订单失效
+			expiresIn: new Date(Date.now() + 1000 * 60 * 60 * 24), // 24小时后过期
 		});
 
 		ctx.body = {

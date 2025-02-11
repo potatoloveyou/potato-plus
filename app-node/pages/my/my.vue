@@ -28,7 +28,6 @@
 
 				<view class="order-list">
 					<view class="order-item" v-for="item in variousBarStore.variousBar[0]?.order_bar.slice(1)" :key="item.id">
-						{{ item.id }}
 						<view class="iconfont" :class="item.class"></view>
 						<view class="item-text">{{ item.name }}</view>
 					</view>

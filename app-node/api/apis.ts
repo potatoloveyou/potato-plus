@@ -203,3 +203,10 @@ export const getUserOrder = (data: any) => {
 		url: `/order/get/${status}/${offset}/${limit}`,
 	});
 };
+
+// 获取指定用户订单
+export const getAppointOrder = (orderId: string) => {
+	return request({
+		url: `/order/get/${orderId}`,
+	});
+};

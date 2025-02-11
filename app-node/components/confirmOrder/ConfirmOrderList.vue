@@ -50,10 +50,6 @@
 
 	import { useShoppingCartStore } from '@/stores/shoppingCart';
 	const shoppingCartStore = useShoppingCartStore();
-
-	onLoad(() => {
-		shoppingCartStore.confirmOrderList = shoppingCartStore.selectedItems;
-	});
 </script>
 
 <style lang="scss" scoped>

@@ -196,9 +196,8 @@
 
 	// 结算
 	const settlement = () => {
-		// console.log(shoppingCartStore.selectedItems);
 		if (shoppingCartStore.selectedItems.length) {
-			// console.log(123);
+			shoppingCartStore.confirmOrderList = shoppingCartStore.selectedItems;
 			uni.navigateTo({
 				url: '/subPackages/confirmOrder/confirmOrder',
 			});

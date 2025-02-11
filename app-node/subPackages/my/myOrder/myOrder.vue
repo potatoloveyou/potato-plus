@@ -73,9 +73,8 @@
 			limit: 10,
 		};
 		const res = await getUserOrder(queryparams);
-		console.log(res);
 		newTopBar.value = initData(res);
-		console.log('newTopBar', newTopBar.value);
+		// console.log('newTopBar', newTopBar.value);
 	};
 
 	// 顶部tab
@@ -174,8 +173,6 @@
 					padding: 10rpx 0;
 					border-bottom: 6rpx solid #49bdfb;
 				}
-			}
-			#top {
 			}
 		}
 		.bg-active-color {

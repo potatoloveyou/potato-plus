@@ -1,12 +1,10 @@
 const Router = require('@koa/router');
-// https://github.com/koajs/router
 const router = new Router();
 
 const verifyAccessToken = require('../../middleware/verifyAccessToken.ts');
 
 const { ObjectId, order, goods_search } = require('../../db/mongo.ts');
 
-// 首页滑块列表
 router.get('/order/get/:status/:offset/:limit', verifyAccessToken, async (ctx, next) => {
 	try {
 		const { userId } = ctx.state.user;
@@ -80,12 +78,43 @@ router.get('/order/get/:status/:offset/:limit', verifyAccessToken, async (ctx, n
 				},
 				{ $unset: 'shoppingItems.goodsId' }, // 6️⃣ 删除 goodsId
 				{
+					$addFields: {
+						statusDescription: {
+							$switch: {
+								branches: [
+									{ case: { $eq: ['$status', '00'] }, then: '全部订单' },
+									{ case: { $eq: ['$status', '0'] }, then: '待买家支付' },
+									{ case: { $eq: ['$status', '01'] }, then: '已取消' },
+									{ case: { $eq: ['$status', '011'] }, then: '支付超时' },
+									{ case: { $eq: ['$status', '02'] }, then: '退款中' },
+									{ case: { $eq: ['$status', '03'] }, then: '已退款' },
+									{ case: { $eq: ['$status', '1'] }, then: '待发货' },
+									{ case: { $eq: ['$status', '2'] }, then: '待收货' },
+									{ case: { $eq: ['$status', '21'] }, then: '退货中' },
+									{ case: { $eq: ['$status', '22'] }, then: '已退货' },
+									{ case: { $eq: ['$status', '23'] }, then: '换货中' },
+									{ case: { $eq: ['$status', '24'] }, then: '已换货' },
+									{ case: { $eq: ['$status', '3'] }, then: '已完成' },
+									{ case: { $eq: ['$status', '4'] }, then: '待评价' },
+									{ case: { $eq: ['$status', '41'] }, then: '已评价' },
+									{ case: { $eq: ['$status', '5'] }, then: '异常订单' },
+									{ case: { $eq: ['$status', '51'] }, then: '物流异常' },
+									{ case: { $eq: ['$status', '52'] }, then: '库存异常' },
+									{ case: { $eq: ['$status', '53'] }, then: '用户信息异常' },
+								],
+								default: '未知状态',
+							},
+						},
+					},
+				},
+				{
 					$group: {
 						_id: '$_id',
 						userId: { $first: '$userId' },
 						addressId: { $first: '$addressId' },
 						shoppingItems: { $push: '$shoppingItems' }, // 重新组合 shoppingItems 数组
 						status: { $first: '$status' },
+						statusDescription: { $first: '$statusDescription' }, // 这里返回转换后的状态
 						createdAt: { $first: '$createdAt' },
 						expiresIn: { $first: '$expiresIn' },
 					},

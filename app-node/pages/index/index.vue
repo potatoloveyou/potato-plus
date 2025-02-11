@@ -120,7 +120,7 @@
 		const res = await getVariousBar();
 		variousBarStore.variousBar = res.data;
 		topBar.value = res.data[1].index_bar;
-		console.log(topBar.value);
+		// console.log(topBar.value);
 	};
 
 	// 承载数据
@@ -184,7 +184,7 @@
 		topBarIndex.value = index;
 		scrollIntoIndex.value = 'top' + index;
 
-		console.log(topBarIndex.value, scrollIntoIndex.value);
+		// console.log(topBarIndex.value, scrollIntoIndex.value);
 
 		// 如果是滑块第一次加载，则请求数据
 		if (newTopBar.value[topBarIndex.value].load == false) {
