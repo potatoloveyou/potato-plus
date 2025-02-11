@@ -34,7 +34,7 @@
 	import { ref } from 'vue';
 	import { onLoad, onReady } from '@dcloudio/uni-app';
 
-	import OrderContent from '@/components/order/OrderContent.vue';
+	import OrderContent from '@/components/order/OrderContent/OrderContent.vue';
 
 	import { useVariousBarStore } from '@/stores/variousBar';
 	const variousBarStore = useVariousBarStore();
@@ -106,11 +106,6 @@
 	};
 
 	const addData = async (index) => {
-		// console.log(topBarIndex.value, scrollIntoIndex.value);
-		// console.log(variousBarStore.variousBar[0]?.order_bar?.[index]?.id);
-		// console.log(newTopBar.value[index].offset);
-		// console.log(newTopBar.value[index].limit);
-
 		// 获取当前订单类型的 ID
 		const statusId = variousBarStore.variousBar[0]?.order_bar?.[index]?.id.toString();
 		const currentTab = newTopBar.value[index];

@@ -55,19 +55,15 @@
 	import { useOrderManageStore } from '@/stores/orderManage';
 	const orderManageStore = useOrderManageStore();
 
-	import { getAppointOrder } from '@/api/apis';
 
 	const props = defineProps({
 		orderList: Array,
 	});
 
-	// 需要继续付款的订单
+	// 跳转到继续支付订单页面
 	const goContinuePayOrder = async (order) => {
-		const res = await getAppointOrder(order._id);
-		// orderManageStore.confirmOrderList = res.data.shoppingItems;
-		console.log(res);
 		uni.navigateTo({
-			url: '/subPackages/order/continuePayOrder/continuePayOrder',
+			url: `/subPackages/order/continuePayOrder/continuePayOrder?orderId=${order._id}`,
 		});
 	};
 </script>

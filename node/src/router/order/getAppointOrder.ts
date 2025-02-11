@@ -3,7 +3,7 @@ const router = new Router();
 
 const verifyAccessToken = require('../../middleware/verifyAccessToken.ts');
 
-const { ObjectId, order, goods_search } = require('../../db/mongo.ts');
+const { ObjectId, order, goods_search, user_shipping_addresses } = require('../../db/mongo.ts');
 
 // 获取指定用户订单
 router.get('/order/get/:orderId', verifyAccessToken, async (ctx, next) => {
@@ -11,26 +11,15 @@ router.get('/order/get/:orderId', verifyAccessToken, async (ctx, next) => {
 		const { userId } = ctx.state.user;
 		let { orderId } = ctx.request.params; // 获取路径参数
 
-		// const result = await order.findOne({ _id: new ObjectId(orderId), userId });
-		// if (result) {
-		// 	ctx.body = {
-		// 		code: 0,
-		// 		data: result,
-		// 	};
-		// } else {
-		// 	ctx.body = {
-		// 		code: 1,
-		// 		message: '订单不存在',
-		// 	};
-		// }
-
-		const ordersWithGoodsDetails = await order
+		const ordersWithDetails = await order
 			.aggregate([
 				{ $match: { _id: new ObjectId(orderId), userId } },
-				{ $unwind: '$shoppingItems' }, // 2️⃣ 拆分 shoppingItems 数组
+
+				// 1️⃣ 处理购物车商品信息
+				{ $unwind: { path: '$shoppingItems', preserveNullAndEmptyArrays: true } },
 				{
 					$set: {
-						'shoppingItems.goodsId': { $toObjectId: '$shoppingItems.goodsId' }, // 3️⃣ 转换 goodsId 为 ObjectId
+						'shoppingItems.goodsId': { $toObjectId: '$shoppingItems.goodsId' },
 					},
 				},
 				{
@@ -38,12 +27,14 @@ router.get('/order/get/:orderId', verifyAccessToken, async (ctx, next) => {
 						from: 'goods_search',
 						localField: 'shoppingItems.goodsId',
 						foreignField: '_id',
-						as: 'shoppingItems.goodsDetails', // 4️⃣ 关联商品信息
+						as: 'shoppingItems.goodsDetails',
 					},
 				},
 				{
 					$set: {
-						'shoppingItems.goodsDetails': { $arrayElemAt: ['$shoppingItems.goodsDetails', 0] }, // 5️⃣ 取数组第一个元素，变成对象
+						'shoppingItems.goodsDetails': {
+							$ifNull: [{ $arrayElemAt: ['$shoppingItems.goodsDetails', 0] }, {}],
+						},
 					},
 				},
 				{
@@ -54,25 +45,52 @@ router.get('/order/get/:orderId', verifyAccessToken, async (ctx, next) => {
 						'shoppingItems.goodsDetails.stock': 0,
 					},
 				},
-				{ $unset: 'shoppingItems.goodsId' }, // 6️⃣ 删除 goodsId
+				{ $unset: 'shoppingItems.goodsId' },
+				{
+					$set: {
+						addressId: { $toObjectId: '$addressId' },
+					},
+				},
+				// 2️⃣ 关联地址信息
+				{
+					$lookup: {
+						from: 'user_shipping_addresses',
+						localField: 'addressId',
+						foreignField: '_id',
+						as: 'addressDetails',
+					},
+				},
+				{
+					$set: {
+						addressDetails: { $ifNull: [{ $arrayElemAt: ['$addressDetails', 0] }, {}] },
+					},
+				},
+				{ $unset: 'addressId' }, // 避免返回冗余的 addressId
+
+				// 3️⃣ 重新组合数据
 				{
 					$group: {
 						_id: '$_id',
 						userId: { $first: '$userId' },
-						addressId: { $first: '$addressId' },
-						shoppingItems: { $push: '$shoppingItems' }, // 重新组合 shoppingItems 数组
+						addressDetails: { $first: '$addressDetails' }, // 新增的地址信息
+						shoppingItems: { $push: '$shoppingItems' },
 						status: { $first: '$status' },
-						statusDescription: { $first: '$statusDescription' }, // 这里返回转换后的状态
 						createdAt: { $first: '$createdAt' },
-						expiresIn: { $first: '$expiresIn' },
+						expiresIn: { $first: '$expiresIn' }, // 新增的过期时间
 					},
 				},
 			])
 			.toArray();
 
+		// 订单不存在的情况
+		if (!ordersWithDetails.length) {
+			ctx.body = { code: 1, message: '订单不存在' };
+			return;
+		}
+
 		ctx.body = {
 			code: 0,
-			data: ordersWithGoodsDetails[0],
+			data: ordersWithDetails[0],
 		};
 	} catch (error) {
 		ctx.body = {
