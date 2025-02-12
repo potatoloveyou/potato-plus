@@ -15,7 +15,6 @@ router.get('/order/get/:orderId', verifyAccessToken, async (ctx, next) => {
 			.aggregate([
 				{ $match: { _id: new ObjectId(orderId), userId } },
 
-				// 1️⃣ 处理购物车商品信息
 				{ $unwind: { path: '$shoppingItems', preserveNullAndEmptyArrays: true } },
 				{
 					$set: {
@@ -38,6 +37,16 @@ router.get('/order/get/:orderId', verifyAccessToken, async (ctx, next) => {
 					},
 				},
 				{
+					$set: {
+						'shoppingItems.goodsDetails.discountAmount': {
+							$subtract: [
+								{ $toDouble: '$shoppingItems.goodsDetails.oprice' },
+								{ $toDouble: '$shoppingItems.goodsDetails.pprice' },
+							],
+						},
+					},
+				},
+				{
 					$project: {
 						'shoppingItems.goodsDetails.attributes': 0,
 						'shoppingItems.goodsDetails.createdAt': 0,
@@ -46,12 +55,12 @@ router.get('/order/get/:orderId', verifyAccessToken, async (ctx, next) => {
 					},
 				},
 				{ $unset: 'shoppingItems.goodsId' },
+
 				{
 					$set: {
 						addressId: { $toObjectId: '$addressId' },
 					},
 				},
-				// 2️⃣ 关联地址信息
 				{
 					$lookup: {
 						from: 'user_shipping_addresses',
@@ -65,18 +74,23 @@ router.get('/order/get/:orderId', verifyAccessToken, async (ctx, next) => {
 						addressDetails: { $ifNull: [{ $arrayElemAt: ['$addressDetails', 0] }, {}] },
 					},
 				},
-				{ $unset: 'addressId' }, // 避免返回冗余的 addressId
+				{ $unset: 'addressId' },
 
-				// 3️⃣ 重新组合数据
 				{
 					$group: {
 						_id: '$_id',
 						userId: { $first: '$userId' },
-						addressDetails: { $first: '$addressDetails' }, // 新增的地址信息
+						addressDetails: { $first: '$addressDetails' },
 						shoppingItems: { $push: '$shoppingItems' },
 						status: { $first: '$status' },
+						statusDescription: { $first: '$statusDescription' },
 						createdAt: { $first: '$createdAt' },
-						expiresIn: { $first: '$expiresIn' }, // 新增的过期时间
+						expiresIn: { $first: '$expiresIn' },
+						totalPrice: { $sum: { $multiply: ['$shoppingItems.goodsDetails.pprice', '$shoppingItems.quantity'] } },
+						totalDiscount: {
+							$sum: { $multiply: ['$shoppingItems.goodsDetails.discountAmount', '$shoppingItems.quantity'] },
+						},
+						totalQuantity: { $sum: '$shoppingItems.quantity' },
 					},
 				},
 			])

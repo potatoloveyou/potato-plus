@@ -27,7 +27,7 @@
 			<view class="item-amounts">
 				<view class="amounts"
 					>实付款￥
-					<view class="price">299.99</view>
+					<view class="price">{{ order.totalPrice }}</view>
 				</view>
 			</view>
 
@@ -54,7 +54,6 @@
 
 	import { useOrderManageStore } from '@/stores/orderManage';
 	const orderManageStore = useOrderManageStore();
-
 
 	const props = defineProps({
 		orderList: Array,

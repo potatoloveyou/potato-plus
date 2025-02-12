@@ -210,3 +210,11 @@ export const getAppointOrder = (orderId: string) => {
 		url: `/order/get/${orderId}`,
 	});
 };
+
+// 删除订单
+export const delUserOrder = (orderId: string) => {
+	return request({
+		url: `/order/delete/${orderId}`,
+		method: 'DELETE',
+	});
+};

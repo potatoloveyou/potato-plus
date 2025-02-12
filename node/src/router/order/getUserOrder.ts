@@ -117,6 +117,8 @@ router.get('/order/get/:status/:offset/:limit', verifyAccessToken, async (ctx, n
 						statusDescription: { $first: '$statusDescription' }, // 这里返回转换后的状态
 						createdAt: { $first: '$createdAt' },
 						expiresIn: { $first: '$expiresIn' },
+						// **计算 totalPrice**
+						totalPrice: { $sum: { $multiply: ['$shoppingItems.goodsDetails.pprice', '$shoppingItems.quantity'] } },
 					},
 				},
 				{ $skip: Number(offset) },

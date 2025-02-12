@@ -11,7 +11,8 @@
 				// "app-plus": {
 				// 	// "scrollIndicator": "none",
 				// 	"titleNView": {
-				// 		"buttons": [{
+				// 		"buttons": [
+				// 			{
 				// 				"float": "left",
 				// 				"fontSrc": "static/font/iconfont.ttf",
 				// 				"text": "\ue623"

@@ -32,7 +32,7 @@
 
 <script setup>
 	import { ref } from 'vue';
-	import { onLoad, onReady } from '@dcloudio/uni-app';
+	import { onLoad, onReady, onShow } from '@dcloudio/uni-app';
 
 	import OrderContent from '@/components/order/OrderContent/OrderContent.vue';
 
@@ -74,7 +74,7 @@
 		};
 		const res = await getUserOrder(queryparams);
 		newTopBar.value = initData(res);
-		// console.log('newTopBar', newTopBar.value);
+		console.log('newTopBar', newTopBar.value);
 	};
 
 	// 顶部tab
@@ -82,6 +82,15 @@
 	onLoad(() => {
 		getUserOrderData();
 		topBar.value = variousBarStore.variousBar[0]?.order_bar;
+	});
+
+	const isFirstLoad = ref(true);
+	onShow(() => {
+		if (isFirstLoad.value) {
+			isFirstLoad.value = false; // 首次进入后标记为 false，防止重复请求
+		} else {
+			getUserOrderData(); // 仅在 navigateBack 返回时调用
+		}
 	});
 
 	// 选中索引

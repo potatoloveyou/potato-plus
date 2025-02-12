@@ -108,5 +108,9 @@ router.use(getUserOrder.routes());
 const getAppointOrder = require('./router/order/getAppointOrder.ts');
 router.use(getAppointOrder.routes());
 
+// 删除用户订单
+const deleteUserOrder = require('./router/order/deleteUserOrder.ts');
+router.use(deleteUserOrder.routes());
+
 app.use(router.routes());
 app.listen(9229);

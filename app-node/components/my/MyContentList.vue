@@ -83,10 +83,6 @@
 </script>
 
 <style lang="scss" scoped>
-	@font-face {
-		font-family: CustomFont;
-		src: url('../../static/iconfont.ttf');
-	}
 	.df-aic {
 		display: flex;
 		align-items: center;

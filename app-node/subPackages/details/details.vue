@@ -28,19 +28,6 @@
 			<CommodityList :dataList="dataList" />
 		</view>
 
-		<!-- 		<view class="details-foot" :class="!isPopup ? 'active' : ''">
-			<view class="foot-content">
-				<view class="iconfont icon-xiaoxi"></view>
-				<view class="iconfont icon-gouwuche" @click="goShoppingCart"></view>
-
-				<uni-icons class="iconfont" type="chat" size="30"></uni-icons>
-				<uni-icons class="iconfont" type="cart" size="30" @click="goShoppingCart"></uni-icons>
-				<view class="content-text add-shopcart" @click="openCollectPopup">加入购物车</view>
-				<view class="content-text purchase">立即购买</view>
-			</view>
-			<view class="safe-area-inset-bottom"></view>
-		</view> -->
-
 		<view class="details-foot" :class="!isPopup ? 'active' : ''">
 			<uni-goods-nav
 				:fill="true"

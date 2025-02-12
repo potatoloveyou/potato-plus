@@ -22,5 +22,9 @@
 	@import '@/common/css/uni.css';
 	@import '@/common/css/common.scss';
 	@import '@/common/css/iconfont.css';
-	/* @import '@/static/iconfont.css'; */
+	@font-face {
+		font-family: CustomFont;
+		/* src: url('../../static/iconfont.ttf'); */
+		src: url('./static/iconfont.ttf');
+	}
 </style>
