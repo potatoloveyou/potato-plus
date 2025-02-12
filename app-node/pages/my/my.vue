@@ -84,6 +84,9 @@
 	};
 
 	const goLogin = () => {
+		if (getAccessToken() && getRefreshToken()) {
+			return;
+		}
 		// #ifdef APP
 		uni.navigateTo({
 			url: '/subPackages/login/appLogin/appLogin',

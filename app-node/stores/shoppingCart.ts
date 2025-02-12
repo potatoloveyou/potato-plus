@@ -1,9 +1,6 @@
 import { ref, computed } from 'vue';
 import { defineStore } from 'pinia';
 
-import { useOrderManageStore } from '@/stores/orderManage';
-const orderManageStore = useOrderManageStore();
-
 export const useShoppingCartStore = defineStore('shoppingCart', () => {
 	// 购物车列表
 	const cartList = ref([]);

@@ -9,6 +9,9 @@ const crypto = require('crypto');
 
 const axios = require('axios');
 
+// 获取手机号安全密钥
+const SECRET_KEY = 'potato-love-you-get-phone-number';
+
 // 生成 Token
 const jwt = require('jsonwebtoken');
 
@@ -28,32 +31,33 @@ router.post('/user/app_login', bodyParser(), async (ctx) => {
 			ctx.body = { code: 400, message: '参数不完整' };
 			return;
 		}
-		console.log(accessToken, openId, deviceInfo);
+		// console.log(accessToken, openId, deviceInfo);
+		console.log('accessToken', accessToken);
+		console.log('openId', openId);
+		console.log('deviceInfo', deviceInfo);
 
-		// console.log(accessToken, openId);
-		// console.log('deviceInfo', deviceInfo);
+		// Step 1: 获取手机号
+		const params = { access_token: accessToken, openid: openId };
+		const signStr = Object.keys(params)
+			.sort()
+			.map((key) => `${key}=${params[key]}`)
+			.join('&');
+		// 2. 生成 HMAC-SHA256 签名
+		const sign = crypto.createHmac('sha256', SECRET_KEY).update(signStr).digest('hex');
+		// 3. 请求云函数
+		const cloudUrl = `https://fc-mp-8f95879a-f871-43cc-961f-fa7c3730cf1d.next.bspapp.com/user/getPhoneNumber`;
+		const response = await axios.get(cloudUrl, {
+			params: { ...params, sign },
+		});
+		// 4. 判断云函数返回结果
+		if (response.data.code !== 0 || !response.data.data.phoneNumber) {
+			ctx.body = { code: 500, message: '云函数调用失败', error: response.data.message || '手机号获取失败' };
+			return;
+		}
+		// 5.	获取完整手机号
+		const fullPhoneNumber = response.data.data.phoneNumber;
 
-		// // Step 1: 获取手机号
-		// const params = { access_token: accessToken, openid: openId };
-		// const signStr = Object.keys(params)
-		// 	.sort()
-		// 	.map((key) => `${key}=${params[key]}`)
-		// 	.join('&');
-		// // 2. 生成 HMAC-SHA256 签名
-		// const sign = crypto.createHmac('sha256', SECRET_KEY).update(signStr).digest('hex');
-		// // 3. 请求云函数
-		// const cloudUrl = `https://fc-mp-8f95879a-f871-43cc-961f-fa7c3730cf1d.next.bspapp.com/user/getPhoneNumber`;
-		// const response = await axios.get(cloudUrl, {
-		// 	params: { ...params, sign },
-		// });
-		// // 4. 判断云函数返回结果
-		// if (response.data.code !== 0 || !response.data.data.phoneNumber) {
-		// 	ctx.body = { code: 500, message: '云函数调用失败', error: response.data.message || '手机号获取失败' };
-		// 	return;
-		// }
-		// // 5.	获取完整手机号
-		// const fullPhoneNumber = response.data.data.phoneNumber;
-		const fullPhoneNumber = '18927428970';
+		// console.log('fullPhoneNumber', fullPhoneNumber);
 
 		// Step 2: 加密手机号
 		const encryptedPhone = crypto
@@ -81,7 +85,7 @@ router.post('/user/app_login', bodyParser(), async (ctx) => {
 				},
 			);
 			//  查找用户和设备信息
-			userRecord = await user.findOne({ phoneNumber: encryptedPhone, 'devices.openId': openId.data.openid });
+			userRecord = await user.findOne({ phoneNumber: encryptedPhone, 'devices.openId': openId });
 		} else {
 			// 如果不存在用户或设备信息，插入新的记录
 			await user.updateOne(
@@ -105,7 +109,7 @@ router.post('/user/app_login', bodyParser(), async (ctx) => {
 				{ upsert: true },
 			);
 			//  查找用户和设备信息
-			userRecord = await user.findOne({ phoneNumber: encryptedPhone, 'devices.openId': openId.data.openid });
+			userRecord = await user.findOne({ phoneNumber: encryptedPhone, 'devices.openId': openId });
 		}
 
 		// Step 4: 生成Access Token
