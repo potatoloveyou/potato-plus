@@ -7,11 +7,10 @@ export const useShoppingCartStore = defineStore('shoppingCart', () => {
 
 	// 切换单个商品选中状态
 	const toggleItemSelection = ({ id }: { id: string }): void => {
-		const item = cartList.value.find((product: { goodsDetails: { _id: string } }) => product.goodsDetails._id === id);
+		const item = cartList.value.find((product: { _id: string }) => product._id === id);
 		if (item) {
 			item.checked = !item.checked;
 		}
-
 		// 判断是否还有勾选上的商品
 		if (selectedItems.value.length) {
 			uni.setTabBarBadge({
@@ -66,11 +65,13 @@ export const useShoppingCartStore = defineStore('shoppingCart', () => {
 	});
 
 	// 获取指定商品数量
-	const getCartItemQuantity = (itemId: string): number => {
-		const item = cartList.value.find(
-			(product: { goodsDetails: { _id: string } }) => product.goodsDetails._id === itemId,
-		);
-		return item ? item.quantity : 0;
+	const getCartItemQuantity = (goodsId: string): number => {
+		return cartList.value.reduce((sum: any, item: { goodsDetails: { _id: string }; quantity: any }) => {
+			if (item.goodsDetails._id === goodsId) {
+				return sum + item.quantity; // 累加相同商品的数量
+			}
+			return sum;
+		}, 0);
 	};
 
 	return {

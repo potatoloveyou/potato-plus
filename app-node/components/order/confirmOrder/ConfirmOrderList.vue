@@ -1,6 +1,9 @@
 <template>
 	<view class="confirm-order-list">
-		<view class="confirm-order-item" v-for="(item, index) in orderManageStore.confirmOrderList" :key="item._id">
+		<view
+			class="confirm-order-item"
+			v-for="(item, index) in orderManageStore.confirmOrderList"
+			:key="item?._id ? item._id : index">
 			<view class="item-top">
 				<image class="goods-img" :src="item.goodsDetails.imgUrl" mode="" />
 				<view class="goods-details">
@@ -47,7 +50,6 @@
 <script setup>
 	import { ref, computed } from 'vue';
 	import { onLoad } from '@dcloudio/uni-app';
-
 
 	import { useOrderManageStore } from '@/stores/orderManage';
 	const orderManageStore = useOrderManageStore();

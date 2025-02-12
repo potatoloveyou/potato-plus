@@ -37,10 +37,6 @@
 	onLoad(async () => {
 		await addressManageStore.getUserAddressData(queryparams.value);
 		addressManageStore.selectAddress = addressManageStore.defaultAddress;
-		console.log(addressManageStore.selectAddress);
-		if (!addressManageStore.selectAddress) {
-			console.log('请选择地址');
-		}
 	});
 
 	// 弹窗实例
@@ -54,9 +50,17 @@
 
 	// 提交订单
 	const submitOrder = async () => {
+		const firstOrderList = orderManageStore.confirmOrderList[0];
 		const temporaryData = {
 			shoppingIds: [],
 			addressId: addressManageStore.selectAddress._id,
+			shoppingItems: [
+				{
+					goodsId: firstOrderList.goodsDetails._id,
+					selectedAttributes: firstOrderList.selectedAttributes,
+					quantity: firstOrderList.quantity,
+				},
+			],
 		};
 		orderManageStore.confirmOrderList.forEach((item) => {
 			temporaryData.shoppingIds.push({
@@ -64,6 +68,7 @@
 				quantity: item.quantity,
 			});
 		});
+
 		const res = await addUserOrder(temporaryData);
 		console.log(res);
 		uni.switchTab({

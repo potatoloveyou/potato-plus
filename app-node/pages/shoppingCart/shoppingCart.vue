@@ -20,11 +20,7 @@
 			<scroll-view scroll-y :style="`height:${clentHeight}px;`">
 				<view class="shop-item" v-for="(item, index) in shoppingCartStore.cartList" :key="item._id">
 					<label class="radio">
-						<radio
-							value=""
-							color="#49bdfb"
-							:checked="item.checked"
-							@click="toggleItemSelection({ id: item.goodsDetails._id })" />
+						<radio value="" color="#49bdfb" :checked="item.checked" @click="toggleItemSelection({ id: item._id })" />
 					</label>
 					<image
 						class="goods-img"
@@ -166,7 +162,8 @@
 
 	// 删除商品
 	const deleteShoppingCartGoods = async () => {
-		try {
+		// console.log(shoppingCartStore.selectedItems);
+		if (shoppingCartStore.selectedItems.length) {
 			// 新增 / 修改的临时数据;
 			const tempShoppingCart = {
 				shoppingCartItemIds: [],
@@ -175,14 +172,15 @@
 			shoppingCartStore.selectedItems.forEach((item) => {
 				tempShoppingCart.shoppingCartItemIds.push(item._id);
 			});
-			// console.log(tempShoppingCart);
 
 			const res = await delUserShoppingCart(tempShoppingCart);
 			await getUserShoppingCartData();
 			uni.removeTabBarBadge({
 				index: 2,
 			});
-		} catch (error) {}
+			return;
+		}
+		uni.showToast({ title: '你还没有选择要删除的商品哦~', icon: 'none' });
 	};
 
 	// 输入框值改变时触发更新购物车商品数量
@@ -194,13 +192,14 @@
 		};
 
 		const res = await updateUserShoppingCart(tempShoppingCart);
-		// console.log(res);
 	};
 
 	// 结算
 	const settlement = () => {
 		if (shoppingCartStore.selectedItems.length) {
+			orderManageStore.confirmOrderList = [];
 			orderManageStore.confirmOrderList = shoppingCartStore.selectedItems;
+			// console.log(orderManageStore.confirmOrderList);
 
 			uni.navigateTo({
 				url: '/subPackages/order/confirmOrder/confirmOrder',
@@ -212,7 +211,6 @@
 
 	// 跳转到商品详情页
 	const goDetails = (id) => {
-		// console.log(id);
 		uni.navigateTo({
 			url: `/subPackages/details/details?id=${id}`,
 		});

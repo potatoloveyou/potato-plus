@@ -4,7 +4,9 @@
 			<template #titleBar-slot>
 				<view class="wx-app-index-nav">
 					<view class="nav-icons">
-						<uni-icons class="iconfont" fontFamily="CustomFont" :size="26">{{ '&#xe623;' }}</uni-icons>
+						<uni-icons class="iconfont" fontFamily="CustomFont" :size="26" @click="goSearch">{{
+							'&#xe623;'
+						}}</uni-icons>
 						<uni-icons class="iconfont" fontFamily="CustomFont" :size="26">{{ '&#xe615;' }}</uni-icons>
 					</view>
 					<text class="nav-text">首页</text>

@@ -61,10 +61,31 @@
 					</view>
 					<Linse />
 
-					<view class="goods-colour">
-						<view class="colour-title">颜色分类</view>
-						<view class="colour">
-							<view class="colour-tiem">透明</view>
+					<view class="goods-option">
+						<view class="option-title">颜色:</view>
+						<view class="option">
+							<view
+								class="option-tiem"
+								:class="selectedAttributes.color == item ? 'click' : ''"
+								v-for="item in goodsDetail?.attributes?.color"
+								:key="item"
+								@click="selectAttribute('color', item)">
+								{{ item }}
+							</view>
+						</view>
+					</view>
+					<Linse />
+					<view class="goods-option">
+						<view class="option-title">尺寸:</view>
+						<view class="option">
+							<view
+								class="option-tiem"
+								:class="selectedAttributes.size == item ? 'click' : ''"
+								v-for="item in goodsDetail?.attributes?.size"
+								:key="item"
+								@click="selectAttribute('size', item)">
+								{{ item }}
+							</view>
 						</view>
 					</view>
 					<Linse />
@@ -75,7 +96,7 @@
 					<Linse />
 				</view>
 
-				<button class="pop-confirm" @click="shoppingCartAdd">确认</button>
+				<button class="pop-confirm" @click="checkSwitch">确认</button>
 
 				<view class="safe-area-inset-bottom"></view>
 			</view>
@@ -96,11 +117,15 @@
 	import { useShoppingCartStore } from '@/stores/shoppingCart';
 	const shoppingCartStore = useShoppingCartStore();
 
+	import { useOrderManageStore } from '@/stores/orderManage';
+	const orderManageStore = useOrderManageStore();
+
 	// 商品详情数据
 	const goodsDetail = ref({});
 	const getGoodsDetailData = async (id) => {
-		let res = await getGoodsDetail(id);
+		const res = await getGoodsDetail(id);
 		goodsDetail.value = res.data;
+		// console.log(goodsDetail.value);
 	};
 
 	// 获取购物车数据
@@ -114,9 +139,9 @@
 				checked: false, // 默认未选中
 			}));
 		} else {
-			// console.log('购物车数据为空');
 			shoppingCartStore.cartList = [];
 		}
+		console.log(shoppingCartStore.cartList);
 	};
 
 	onLoad((e) => {
@@ -203,20 +228,25 @@
 	// 修改购买数量
 	const changeValue = (value) => {};
 
+	const selectedAttributes = ref({
+		color: '',
+		size: '',
+	});
+	const selectAttribute = (index, value) => {
+		selectedAttributes.value[index] = value;
+	};
 	// 加入购物车
 	const shoppingCartAdd = async () => {
 		// 新增/修改的临时数据
 		const tempShoppingCart = {
 			goodsId: goodsDetail.value._id,
 			quantity: goodsNum.value,
-			selectedAttributes: {
-				color: '红色',
-				size: 'XL',
-			},
+			selectedAttributes: selectedAttributes.value,
 		};
 		const res = await addUserShoppingCart(tempShoppingCart);
 		await getUserShoppingCartData();
 		options.value[2].info = shoppingCartStore.getCartItemQuantity(goodsDetail.value._id);
+
 		if (res.code === 0) {
 			uni.showToast({
 				title: '加入购物车成功',
@@ -231,9 +261,33 @@
 		closeCollectPopup();
 	};
 
+	// 确认下单
+	const settlement = async () => {
+		if (!selectedAttributes.value.color || !selectedAttributes.value.size) {
+			uni.showToast({
+				title: '请选择商品属性',
+				icon: 'none',
+			});
+			return;
+		}
+		const tempOrder = {
+			goodsDetails: goodsDetail.value,
+			selectedAttributes: selectedAttributes.value,
+			quantity: goodsNum.value,
+		};
+		orderManageStore.confirmOrderList = [];
+		orderManageStore.confirmOrderList.push(tempOrder);
+		uni.navigateTo({
+			url: '/subPackages/order/confirmOrder/confirmOrder',
+		});
+	};
+
+	const checkSwitch = () => {
+		mark.value ? shoppingCartAdd() : settlement();
+	};
+
 	// 底部左侧点击事件
 	const onClick = (event) => {
-		// console.log(event);
 		switch (event.content.icon) {
 			case 'chat':
 				console.log('客服');
@@ -251,20 +305,28 @@
 		}
 	};
 
-	// 编辑按钮状态
+	// mark
+	const mark = ref(true);
+	// 是否展示底部添加商品组件
 	const isPopup = ref(true);
 	// 加入购物车弹窗
 	const collectPopup = ref(null);
 	// 右侧按钮组点击事件
 	const buttonClick = (event) => {
 		// console.log(event);
+		isPopup.value = !isPopup.value;
+		selectedAttributes.value = {
+			color: '',
+			size: '',
+		};
 		switch (event.content.text) {
 			case '加入购物车':
+				mark.value = true;
 				collectPopup.value.open();
-				isPopup.value = !isPopup.value;
 				break;
 			case '立即购买':
-				console.log('立即购买');
+				mark.value = false;
+				collectPopup.value.open();
 				break;
 			default:
 				break;
@@ -332,6 +394,10 @@
 		.swiper {
 			width: 100%;
 			height: 700rpx;
+			.swiper-item {
+				.swiper-img {
+				}
+			}
 			.swiper-img {
 				width: 100%;
 				height: 700rpx;
@@ -368,6 +434,8 @@
 			z-index: 999;
 			transition: transform 0.3s ease-in-out; /* 平滑移动动画 */
 			transform: translateY(0%);
+			.safe-area-inset-bottom {
+			}
 			&.active {
 				transform: translateY(100%);
 			}
@@ -392,6 +460,8 @@
 					background-color: #49bdfb;
 				}
 			}
+		}
+		.active {
 		}
 
 		.collectPopup {
@@ -450,21 +520,44 @@
 						}
 					}
 				}
-				.goods-colour {
+				.goods-option {
 					padding: 20rpx 0;
-					.colour-title {
+					.option-title {
 						font-weight: bold;
 						padding-bottom: 10rpx;
 					}
-					.colour {
-						.colour-tiem {
+					.option {
+						display: flex;
+						.option-tiem {
+							background-color: #99999930;
+							padding: 10rpx;
+							margin-right: 30rpx;
+							width: 80rpx;
+							text-align: center;
+						}
+						.click {
+							background-color: #49bdfb;
+							color: #fff;
 						}
 					}
 				}
+				.goods-option {
+					.option-title {
+					}
+					.option {
+						.option-tiem {
+						}
+						.active {
+						}
+					}
+				}
+
 				.goods-num {
 					padding: 20rpx 0;
 					display: flex;
 					justify-content: space-between;
+					.goods-num-name {
+					}
 				}
 			}
 			.pop-confirm {
@@ -473,6 +566,8 @@
 				color: #fff;
 				// padding: 20rpx 0;
 				background-color: #49bdfb;
+			}
+			.safe-area-inset-bottom {
 			}
 		}
 	}

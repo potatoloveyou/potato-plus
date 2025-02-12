@@ -2,7 +2,7 @@ import { ref, computed } from 'vue';
 import { defineStore } from 'pinia';
 
 export const useOrderManageStore = defineStore('orderManage', () => {
-	// confirmOrderList
+	// 确认订单商品列表
 	const confirmOrderList = ref([]);
 
 	// 计算确认订单商品总金额

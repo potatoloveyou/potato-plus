@@ -11,7 +11,25 @@ const { ObjectId, order, shopping_cart_item } = require('../../db/mongo.ts');
 router.post('/order/add', verifyAccessToken, bodyParser(), async (ctx, next) => {
 	try {
 		const { userId } = ctx.state.user;
-		const { shoppingIds, addressId } = ctx.request.body;
+		const { shoppingIds, addressId, shoppingItems } = ctx.request.body;
+
+		// 这是直接从商品详情下单的
+		if (!shoppingIds.shoppingId) {
+			// 创建订单
+			const orderResult = await order.insertOne({
+				userId,
+				addressId,
+				shoppingItems,
+
+				status: '0',
+				createdAt: new Date(),
+				expiresIn: new Date(Date.now() + 1000 * 60 * 60 * 24), // 24小时后过期
+			});
+			ctx.body = {
+				code: 0,
+				orderResult,
+			};
+		}
 
 		// 构造 Map，方便查找 quantity
 		const shoppingIdMap = new Map(shoppingIds.map((item) => [item.shoppingId, item.quantity]));

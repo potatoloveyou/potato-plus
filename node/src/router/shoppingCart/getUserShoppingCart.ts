@@ -51,6 +51,7 @@ router.get('/shoppingCart/get', verifyAccessToken, async (ctx) => {
 						'goodsDetails.attributes': 1,
 					},
 				},
+				{ $sort: { updatedAt: -1 } },
 			])
 			.toArray();
 
