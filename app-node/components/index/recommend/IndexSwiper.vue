@@ -7,20 +7,20 @@
 </template>
 
 <script setup>
-const props = defineProps({
-	dataList: {
-		type: Array,
-	},
-});
+	const props = defineProps({
+		dataList: {
+			type: Array,
+		},
+	});
 </script>
 
 <style lang="scss" scoped>
-swiper {
-	width: 100%;
-	height: 340rpx;
-	.swiper-imgs {
+	swiper {
 		width: 100%;
-		height: 100%;
+		height: 340rpx;
+		.swiper-imgs {
+			width: 100%;
+			height: 100%;
+		}
 	}
-}
 </style>

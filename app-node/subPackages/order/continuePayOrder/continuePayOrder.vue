@@ -1,6 +1,7 @@
 <template>
+	<!-- 继续支付页 -->
 	<view class="continue-pay-order">
-		<ConfirmorderAddress :addressManage="orderDatails?.addressDetails" />
+		<ConfirmorderAddress :addressManage="addressManageStore.selectAddress" :orderId="orderId" />
 
 		<view class="confirm-order-list">
 			<view class="confirm-order-item" v-for="(item, index) in orderDatails?.shoppingItems" :key="item._id">
@@ -89,6 +90,9 @@
 
 	import ConfirmorderAddress from '@/components/order/confirmOrder/ConfirmorderAddress';
 
+	import { useAddressManageStore } from '@/stores/addressManage';
+	const addressManageStore = useAddressManageStore();
+
 	import { getAppointOrder, delUserOrder } from '@/api/apis';
 
 	// const addressDetails = ref({});
@@ -96,13 +100,16 @@
 	// 获取预约订单数据
 	const getAppointOrderData = async (id) => {
 		const res = await getAppointOrder(id);
-		console.log(res.data);
-		// addressDetails.value = res.data.addressDetails;
+		// console.log(res.data);
 		orderDatails.value = res.data;
+		addressManageStore.selectAddress = res.data.addressDetails;
+		console.log(addressManageStore.selectAddress);
 	};
 
+	const orderId = ref('');
 	onLoad((options) => {
-		getAppointOrderData(options.orderId);
+		orderId.value = options.orderId;
+		getAppointOrderData(orderId.value);
 	});
 
 	// 删除订单

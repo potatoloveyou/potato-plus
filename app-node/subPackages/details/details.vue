@@ -38,7 +38,8 @@
 			<view class="safe-area-inset-bottom"></view>
 		</view>
 
-		<uni-popup ref="collectPopup" type="bottom" :is-mask-click="false" :safe-area="false" v-model:show="isPopup">
+		<uni-popup ref="collectPopup" type="bottom" :is-mask-click="false" :safe-area="false">
+			<!-- v-model:show="isPopup" -->
 			<view class="collectPopup">
 				<view class="pop-content">
 					<view class="popHeader">
@@ -534,10 +535,10 @@
 							margin-right: 30rpx;
 							width: 80rpx;
 							text-align: center;
-						}
-						.click {
-							background-color: #49bdfb;
-							color: #fff;
+							&.click {
+								background-color: #49bdfb;
+								color: #fff;
+							}
 						}
 					}
 				}

@@ -90,7 +90,13 @@
 	import { useAddressManageStore } from '@/stores/addressManage';
 	const addressManageStore = useAddressManageStore();
 
-	import { getUserAddress, addUserAddress, delUserAddress, updateUserAddress } from '@/api/apis.ts';
+	import {
+		getUserAddress,
+		addUserAddress,
+		delUserAddress,
+		updateUserAddress,
+		updateUserOrderAddress,
+	} from '@/api/apis.ts';
 
 	// 查询参数
 	const queryparams = ref({
@@ -238,13 +244,27 @@
 			await updateAddress(editingAddressId.value);
 		}
 	};
-
 	// 选择地址
-	const selectAddress = (item) => {
-		if (routeParams.value?.from) {
-			addressManageStore.selectAddress = item;
-			uni.navigateBack({ delta: 1 });
+	const selectAddress = async (item) => {
+		if (!routeParams.value?.from == 'order' || !routeParams.value?.orderId) {
+			return;
 		}
+		const params = {
+			addressId: item._id,
+			orderId: routeParams.value?.orderId,
+		};
+		const res = await updateUserOrderAddress(params);
+		// addressManageStore.selectAddress
+		if (res.code !== 0) {
+			return uni.showToast({ title: '修改地址失败,请重试', icon: 'none' });
+		}
+		addressManageStore.selectAddress = item;
+		uni.navigateBack({
+			delta: 1,
+			success() {
+				uni.showToast({ title: '修改地址成功', icon: 'success' });
+			},
+		});
 	};
 </script>
 

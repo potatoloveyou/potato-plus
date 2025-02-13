@@ -8,7 +8,7 @@
 			showExtraIcon
 			:extraIcon="{ type: 'location', size: '50rpx' }"
 			link="navigateTo"
-			to="/subPackages/my/myAddress/myAddress?from=order"
+			:to="`/subPackages/my/myAddress/myAddress?orderId=${orderId}&from=order`"
 			v-if="addressManage">
 		</uni-list-item>
 		<uni-list-item
@@ -28,7 +28,7 @@
 	import { onLoad } from '@dcloudio/uni-app';
 	const prors = defineProps({
 		addressManage: Object,
-		isModify: Boolean,
+		orderId: String,
 	});
 </script>
 

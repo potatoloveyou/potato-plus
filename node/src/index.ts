@@ -112,5 +112,9 @@ router.use(getAppointOrder.routes());
 const deleteUserOrder = require('./router/order/deleteUserOrder.ts');
 router.use(deleteUserOrder.routes());
 
+// 更新用户订单地址
+const updateUserOrderAddress = require('./router/order/updateUserOrderAddress.ts');
+router.use(updateUserOrderAddress.routes());
+
 app.use(router.routes());
 app.listen(9229);

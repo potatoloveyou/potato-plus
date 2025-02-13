@@ -218,3 +218,12 @@ export const delUserOrder = (orderId: string) => {
 		method: 'DELETE',
 	});
 };
+
+// 更新用户订单地址
+export const updateUserOrderAddress = (data: object) => {
+	return request({
+		url: `/order/update/address`,
+		method: 'PUT',
+		data,
+	});
+};

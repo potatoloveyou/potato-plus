@@ -2,13 +2,20 @@
 	<view class="confirm-order bg-active-color">
 		<ConfirmorderAddress :addressManage="addressManageStore.selectAddress" />
 		<ConfirmOrderList />
+		<view class="reserve"></view>
+		<view class="safe-area-inset-bottom"></view>
 
 		<view class="order-bottom">
-			<view class="bottom-text bg-color" @click="submitOrder">立刻支付￥{{ orderManageStore.totalPrice }}</view>
+			<button class="bottom-text bg-color" @click="submitOrder">立刻支付￥{{ orderManageStore.totalPrice }}</button>
 			<view class="safe-area-inset-bottom"></view>
 		</view>
 
-		<uni-popup ref="collectPopup" type="bottom" :safe-area="false"> </uni-popup>
+		<uni-popup ref="collectPopup" type="bottom" :is-mask-click="true" :safe-area="false">
+			<view class="collectPopup">
+				<butto @click="collectPopupClose">确认支付</butto>
+				<view class="safe-area-inset-bottom"></view>
+			</view>
+		</uni-popup>
 	</view>
 </template>
 
@@ -71,15 +78,18 @@
 
 		const res = await addUserOrder(temporaryData);
 		console.log(res);
-		uni.switchTab({
-			url: '/pages/shoppingCart/shoppingCart',
-			success(success) {
-				uni.showToast({
-					title: '提交成功',
-					icon: 'success',
-				});
-			},
-		});
+		// uni.switchTab({
+		// 	url: '/pages/shoppingCart/shoppingCart',
+		// 	success(success) {
+		// 		uni.showToast({
+		// 			title: '提交成功',
+		// 			icon: 'success',
+		// 		});
+		// 	},
+		// });
+
+		// 打开支付弹窗
+		collectPopupOpen();
 	};
 </script>
 
@@ -92,21 +102,32 @@
 	}
 	.confirm-order {
 		height: 100vh;
+		.reserve {
+			height: 100rpx;
+		}
+		.safe-area-inset-bottom {
+		}
 
 		.order-bottom {
 			position: fixed;
 			left: 0;
 			bottom: 0;
 			width: 100%;
+			background-color: #fff;
 			.bottom-text {
 				margin: 0 30rpx;
 				text-align: center;
 				border-radius: 10rpx;
-				padding: 20rpx 0;
 				color: #fff;
 			}
 			.bg-color {
 			}
+			.safe-area-inset-bottom {
+			}
+		}
+		.collectPopup {
+			background-color: #fff;
+			max-height: 60vh;
 			.safe-area-inset-bottom {
 			}
 		}

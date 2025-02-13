@@ -115,10 +115,10 @@
 					padding: 30rpx;
 					box-sizing: border-box;
 					text-align: center;
-				}
-				.left-name-active {
-					border-left: 10rpx solid #49bdfb;
-					background-color: #fff;
+					&.left-name-active {
+						border-left: 10rpx solid #49bdfb;
+						background-color: #fff;
+					}
 				}
 			}
 		}

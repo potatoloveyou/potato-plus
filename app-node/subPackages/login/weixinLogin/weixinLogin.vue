@@ -239,14 +239,14 @@
 				}
 				.get-verify {
 					padding: 0 20rpx;
-				}
-				.auto {
-					pointer-events: auto;
-					color: #1aad19;
-				}
-				.none {
-					pointer-events: none;
-					opacity: 0.3;
+					&.auto {
+						pointer-events: auto;
+						color: #1aad19;
+					}
+					&.none {
+						pointer-events: none;
+						opacity: 0.3;
+					}
 				}
 			}
 			.clean-wrapper {
