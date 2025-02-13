@@ -9,13 +9,6 @@
 			<button class="bottom-text bg-color" @click="submitOrder">立刻支付￥{{ orderManageStore.totalPrice }}</button>
 			<view class="safe-area-inset-bottom"></view>
 		</view>
-
-		<uni-popup ref="collectPopup" type="bottom" :is-mask-click="true" :safe-area="false">
-			<view class="collectPopup">
-				<butto @click="collectPopupClose">确认支付</butto>
-				<view class="safe-area-inset-bottom"></view>
-			</view>
-		</uni-popup>
 	</view>
 </template>
 
@@ -46,17 +39,13 @@
 		addressManageStore.selectAddress = addressManageStore.defaultAddress;
 	});
 
-	// 弹窗实例
-	const collectPopup = ref(null);
-	const collectPopupOpen = () => {
-		collectPopup.value.open();
-	};
-	const collectPopupClose = () => {
-		collectPopup.value.close();
-	};
-
+	const isSubmitOrder = ref(false);
 	// 提交订单
 	const submitOrder = async () => {
+		if (isSubmitOrder.value) return;
+		isSubmitOrder.value = true;
+
+		// 获取订单列表
 		const firstOrderList = orderManageStore.confirmOrderList[0];
 		const temporaryData = {
 			shoppingIds: [],
@@ -77,19 +66,14 @@
 		});
 
 		const res = await addUserOrder(temporaryData);
-		console.log(res);
-		// uni.switchTab({
-		// 	url: '/pages/shoppingCart/shoppingCart',
-		// 	success(success) {
-		// 		uni.showToast({
-		// 			title: '提交成功',
-		// 			icon: 'success',
-		// 		});
-		// 	},
-		// });
+		const orderId = res.orderResult.insertedId;
 
-		// 打开支付弹窗
-		collectPopupOpen();
+		if (res.code == 0) {
+			console.log('提交订单成功');
+			uni.navigateTo({
+				url: `/subPackages/order/payOrder/payOrder?from=confirmOrder&orderId=${orderId}`,
+			});
+		}
 	};
 </script>
 
@@ -126,6 +110,7 @@
 			}
 		}
 		.collectPopup {
+			width: 100%;
 			background-color: #fff;
 			max-height: 60vh;
 			.safe-area-inset-bottom {

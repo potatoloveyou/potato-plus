@@ -249,9 +249,17 @@
 					}
 				},
 				{
+					"path": "payOrder/payOrder",
+					"style": {
+						"navigationBarTitleText": "支付订单",
+						"navigationStyle": "custom"
+					}
+				},
+				{
 					"path": "continuePayOrder/continuePayOrder",
 					"style": {
-						"navigationBarTitleText": "继续支付"
+						"navigationBarTitleText": "继续支付",
+						"navigationStyle": "custom"
 					}
 				}
 			]

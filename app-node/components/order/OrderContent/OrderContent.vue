@@ -42,7 +42,7 @@
 				<view class="bottom-button" v-else>
 					<view class="add-cart">加入购物车</view>
 					<view class="again-payment" @click="goContinuePayOrder(order)">修改信息</view>
-					<view class="continue-payment f-active-color">继续付款</view>
+					<view class="continue-payment f-active-color" @click="goPayOrder(order)">继续付款</view>
 				</view>
 			</view>
 		</view>
@@ -63,6 +63,13 @@
 	const goContinuePayOrder = async (order) => {
 		uni.navigateTo({
 			url: `/subPackages/order/continuePayOrder/continuePayOrder?orderId=${order._id}`,
+		});
+	};
+
+	// 跳转到支付订单页面
+	const goPayOrder = async (order) => {
+		uni.navigateTo({
+			url: `/subPackages/order/payOrder/payOrder?orderId=${order._id}`,
 		});
 	};
 </script>

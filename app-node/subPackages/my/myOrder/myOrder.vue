@@ -74,7 +74,7 @@
 		};
 		const res = await getUserOrder(queryparams);
 		newTopBar.value = initData(res);
-		console.log('newTopBar', newTopBar.value);
+		// console.log('newTopBar', newTopBar.value);
 	};
 
 	// 顶部tab
@@ -130,7 +130,6 @@
 
 		// 请求订单数据
 		const res = await getUserOrder(queryparams);
-		// console.log(res);
 
 		if (res?.data?.length) {
 			// **每次请求都覆盖旧数据，防止超时订单残留**

@@ -1,6 +1,18 @@
 <template>
 	<!-- 继续支付页 -->
 	<view class="continue-pay-order">
+		<NavBar>
+			<template #titleBar-slot>
+				<view class="wx-app-continue-pay-order-nav">
+					<view class="nav-icons">
+						<uni-icons class="iconfont" type="left" size="30" @click="clickLeft"></uni-icons>
+					</view>
+					<text class="nav-text">继续支付</text>
+					<view></view>
+				</view>
+			</template>
+		</NavBar>
+
 		<ConfirmorderAddress :addressManage="addressManageStore.selectAddress" :orderId="orderId" />
 
 		<view class="confirm-order-list">
@@ -89,6 +101,7 @@
 	import { onLoad } from '@dcloudio/uni-app';
 
 	import ConfirmorderAddress from '@/components/order/confirmOrder/ConfirmorderAddress';
+	import NavBar from '@/components/common/NavBar.vue';
 
 	import { useAddressManageStore } from '@/stores/addressManage';
 	const addressManageStore = useAddressManageStore();
@@ -106,16 +119,15 @@
 		console.log(addressManageStore.selectAddress);
 	};
 
-	const orderId = ref('');
+	// 路径参数
+	const routeParams = ref({});
 	onLoad((options) => {
-		orderId.value = options.orderId;
-		getAppointOrderData(orderId.value);
+		routeParams.value = options;
+		getAppointOrderData(routeParams.value.orderId);
 	});
 
 	// 删除订单
 	const deleteOrder = () => {
-		//
-
 		uni.showModal({
 			title: '确定要删除订单吗',
 			async success(success) {
@@ -134,6 +146,19 @@
 					}
 				}
 			},
+		});
+	};
+
+	const clickLeft = () => {
+		if (routeParams.value.from == 'payOrder' && routeParams.value.orderId) {
+			uni.switchTab({
+				url: '/pages/shoppingCart/shoppingCart',
+			});
+			return;
+		}
+
+		uni.navigateBack({
+			delta: 1,
 		});
 	};
 </script>
@@ -160,6 +185,23 @@
 	.continue-pay-order {
 		height: 100vh;
 		background-color: #f7f7f7;
+		.wx-app-continue-pay-order-nav {
+			width: 100%;
+			display: flex;
+			align-items: center;
+			& > view {
+				flex: 1;
+			}
+			.nav-icons {
+				.iconfont {
+					margin-left: 10rpx;
+				}
+			}
+			.nav-text {
+				font-size: 40rpx;
+			}
+		}
+
 		.confirm-order-list {
 			margin-top: 20rpx;
 			.confirm-order-item {
