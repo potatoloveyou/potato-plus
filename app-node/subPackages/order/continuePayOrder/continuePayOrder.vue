@@ -108,15 +108,12 @@
 
 	import { getAppointOrder, delUserOrder } from '@/api/apis';
 
-	// const addressDetails = ref({});
 	const orderDatails = ref({});
-	// 获取预约订单数据
+	// 获取指定订单数据
 	const getAppointOrderData = async (id) => {
 		const res = await getAppointOrder(id);
-		// console.log(res.data);
 		orderDatails.value = res.data;
 		addressManageStore.selectAddress = res.data.addressDetails;
-		console.log(addressManageStore.selectAddress);
 	};
 
 	// 路径参数

@@ -100,6 +100,10 @@ router.use(refreshToken.routes());
 const addUserOrder = require('./router/order/addUserOrder.ts');
 router.use(addUserOrder.routes());
 
+// 付款后更新订单状态
+const updateUserOrderStatus = require('./router/order/updateUserOrderStatus.ts');
+router.use(updateUserOrderStatus.routes());
+
 // 获取用户订单
 const getUserOrder = require('./router/order/getUserOrder.ts');
 router.use(getUserOrder.routes());

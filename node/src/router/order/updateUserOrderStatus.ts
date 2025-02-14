@@ -1,50 +1,25 @@
 const Router = require('@koa/router');
 const router = new Router();
 
-// 中间件，解析post请求的参数
 const bodyParser = require('koa-bodyparser');
 
 const verifyAccessToken = require('../../middleware/verifyAccessToken.ts');
 
-const { ObjectId, order, shopping_cart_item } = require('../../db/mongo.ts');
+const { ObjectId, order } = require('../../db/mongo.ts');
 
-router.post('/order/add', verifyAccessToken, bodyParser(), async (ctx, next) => {
+// 付款后更新订单状态
+router.put('/order/update/pay/status', verifyAccessToken, bodyParser(), async (ctx, next) => {
 	try {
 		const { userId } = ctx.state.user;
-		const { shoppingIds, addressId, shoppingItems } = ctx.request.body;
+		const { orderId } = ctx.request.body;
 
-		// 这是直接从商品详情下单的
-		if (!shoppingIds[0]?.shoppingId) {
-			// 创建订单
-			const orderResult = await order.insertOne({
-				userId,
-				addressId,
-				shoppingItems,
-
-				status: '0',
-				createdAt: new Date(),
-				expiresIn: new Date(Date.now() + 1000 * 60 * 60 * 24), // 24小时后过期
-			});
+		if (!orderId) {
 			ctx.body = {
-				code: 0,
-				orderResult,
+				code: 1,
+				message: '缺少订单id',
 			};
 			return;
 		}
-
-		// 构造 Map，方便查找 quantity
-		const shoppingIdMap = new Map(shoppingIds.map((item) => [item.shoppingId, item.quantity]));
-
-		// 查询购物车中的商品
-		const shoppingIdList = shoppingIds.map((item) => new ObjectId(item.shoppingId));
-		const cartItems = await shopping_cart_item.find({ _id: { $in: shoppingIdList }, userId }).toArray();
-
-		// 构造订单商品列表
-		const updatedShoppingIds = cartItems.map((cartItem) => ({
-			goodsId: cartItem.goodsId,
-			selectedAttributes: cartItem.selectedAttributes,
-			quantity: shoppingIdMap.get(cartItem._id.toString()) || cartItem.quantity,
-		}));
 
 		/**
 		 * status	状态含义	说明
@@ -74,19 +49,22 @@ router.post('/order/add', verifyAccessToken, bodyParser(), async (ctx, next) => 
 		 * 53 用户信息异常：用户提供的地址或联系方式有误。
 		 */
 
-		// 创建订单
-		const orderResult = await order.insertOne({
-			userId,
-			addressId,
-			shoppingItems: updatedShoppingIds,
-			status: '0',
-			createdAt: new Date(),
-			expiresIn: new Date(Date.now() + 1000 * 60 * 60 * 24), // 24小时后过期
-		});
+		await order.updateOne(
+			{
+				_id: new ObjectId(orderId),
+				userId,
+			},
+			{
+				$set: {
+					status: '1',
+				},
+			},
+		);
 
 		ctx.body = {
 			code: 0,
-			orderResult,
+			userId,
+			orderId,
 		};
 	} catch (error) {}
 });

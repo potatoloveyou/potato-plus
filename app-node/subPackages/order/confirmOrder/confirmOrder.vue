@@ -67,7 +67,6 @@
 
 		const res = await addUserOrder(temporaryData);
 		const orderId = res.orderResult.insertedId;
-
 		if (res.code == 0) {
 			console.log('提交订单成功');
 			uni.navigateTo({

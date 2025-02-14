@@ -80,13 +80,13 @@ router.get('/order/get/:orderId', verifyAccessToken, async (ctx, next) => {
 					$group: {
 						_id: '$_id',
 						userId: { $first: '$userId' },
-						addressDetails: { $first: '$addressDetails' },
-						shoppingItems: { $push: '$shoppingItems' },
-						status: { $first: '$status' },
-						statusDescription: { $first: '$statusDescription' },
+						addressDetails: { $first: '$addressDetails' },// 收货地址
+						shoppingItems: { $push: '$shoppingItems' },// 商品列表
+						status: { $first: '$status' },// 订单状态
+						statusDescription: { $first: '$statusDescription' },// 订单状态描述
 						createdAt: { $first: '$createdAt' },
 						expiresIn: { $first: '$expiresIn' },
-						totalPrice: { $sum: { $multiply: ['$shoppingItems.goodsDetails.pprice', '$shoppingItems.quantity'] } },
+						totalPrice: { $sum: { $multiply: ['$shoppingItems.goodsDetails.pprice', '$shoppingItems.quantity'] } },// 商品总价
 						totalDiscount: {
 							$sum: { $multiply: ['$shoppingItems.goodsDetails.discountAmount', '$shoppingItems.quantity'] },
 						},

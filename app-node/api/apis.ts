@@ -204,6 +204,21 @@ export const getUserOrder = (data: any) => {
 	});
 };
 
+// 付款后更新订单状态
+export const updateUserOrderStatus = (data: object) => {
+	return request({
+		url: `/order/update/pay/status`,
+		method: 'PUT',
+		data,
+	});
+
+	// return request({
+	// 	url: `/order/update/pay/status`,
+	// 	method: 'PUT',
+	// 	data: orderId,
+	// })
+};
+
 // 获取指定用户订单
 export const getAppointOrder = (orderId: string) => {
 	return request({
